@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yk.common.layout.NestedScrollableHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentViewerItemScrollContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:isScrollContainer="true"
+    android:nestedScrollingEnabled="true">
+
+    <com.yk.contentviewer.maincontent.ContentViewerWevView
+        android:id="@+id/contentViewerItemContentItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="true"
+        android:overScrollMode="always"
+        android:scrollbars="none">
+
+    </com.yk.contentviewer.maincontent.ContentViewerWevView>
+
+    <View
+        android:id="@+id/contentViewerItemDivider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="bottom"
+        android:background="@android:color/darker_gray" />
+
+</com.yk.common.layout.NestedScrollableHost>

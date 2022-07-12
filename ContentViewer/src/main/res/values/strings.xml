@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_pager">ContentPager</string>
+    <string name="table_of_content">Table of Content</string>
+    <string name="string_to_translate">String to translate</string>
+    <string name="context_to_translate">Context to Translate</string>
+    <string name="add_to_dictionary_by_default">Add to Dictionary by Default</string>
+    <string name="call_size_bar">Call Size Bar</string>
+    <string name="translate">Translate</string>
+    <string name="language">Language</string>
+    <string name="play">Play</string>
+    <string name="source">Source</string>
+    <string name="target">Target</string>
+</resources>

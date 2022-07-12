@@ -1,0 +1,16 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="delay_entries">
+        <item>Every 20 minutes</item>
+        <item>Every 40 minutes</item>
+        <item>Every hour</item>
+        <item>Every 2 hours</item>
+    </string-array>
+
+    <string-array name="delay_values">
+        <item>20</item>
+        <item>40</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+</resources>

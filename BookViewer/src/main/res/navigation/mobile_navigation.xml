@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.yk.bookviewer.ui.home.BookFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_book" />
+
+    <fragment
+        android:id="@+id/navigation_dictionary"
+        android:name="com.yk.bookviewer.ui.dictionary.DictionaryFragment"
+        android:label="@string/title_dictionary"
+        tools:layout="@layout/fragment_dictionary">
+        <action
+            android:id="@+id/action_navigate_dictionary_to_definition"
+            app:destination="@id/navigation_definition" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_definition"
+        android:name="com.yk.bookviewer.ui.dictionary.DictionaryDefinitionFragment"
+        android:label="@string/title_definition"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.yk.bookviewer.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>

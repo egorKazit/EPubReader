@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/learning_header">
+
+        <SwitchPreferenceCompat
+            app:key="learning"
+            app:title="@string/learning_title" />
+
+        <ListPreference
+            app:dependency="learning"
+            app:entries="@array/delay_entries"
+            app:entryValues="@array/delay_values"
+            app:key="learning_delay"
+            app:title="Learning Notification" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

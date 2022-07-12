@@ -1,0 +1,115 @@
+package com.yk.bookviewer.ui.home;
+
+import android.content.Intent;
+import android.os.Build;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.yk.bookviewer.R;
+import com.yk.common.model.book.Book;
+import com.yk.common.model.book.BookPool;
+import com.yk.common.model.book.BookService;
+import com.yk.common.model.book.BookServiceException;
+import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.ContentViewer;
+
+import kotlin.io.ByteStreamsKt;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+/**
+ * Recycler view adapter to get list of loaded books.
+ * Events to open the book are set in the view holder
+ */
+@RequiresApi(api = Build.VERSION_CODES.S)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentRecyclerViewAdapter.BookViewHolder> {
+
+    @NonNull
+    @Override
+    public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.fragment_book_item, parent, false);
+        return new BookViewHolder(view);
+    }
+
+
+    @Override
+    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
+        Book book = BookPool.getBook(position);
+        holder.bookName.setText(book.getTitle());
+        if (book.getCover() != null) {
+            try {
+                Glide.with(holder.itemView.getContext())
+                        .load(ByteStreamsKt.readBytes(BookService
+                                .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
+                        .centerCrop()
+                        .fitCenter()
+                        .placeholder(R.drawable.ic_no_image_foreground)
+                        .error(R.drawable.ic_no_image_foreground)
+                        .into(holder.bookImage);
+            } catch (BookServiceException bookServiceException) {
+                Toaster.make(holder.itemView.getContext(), String.format("Cover for %s can not be read", book.getTitle()), bookServiceException);
+            }
+        } else
+            holder.bookImage.setImageResource(R.drawable.ic_no_image_foreground);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return BookPool.getSize();
+    }
+
+    /**
+     * Book View holder.
+     * The class is needed to set data and events of a view for a recycler item
+     */
+    protected class BookViewHolder extends RecyclerView.ViewHolder {
+
+        private final ImageView bookImage;
+        private final TextView bookName;
+
+        public BookViewHolder(@NonNull View itemView) {
+            super(itemView);
+            bookImage = itemView.findViewById(R.id.bookImage);
+            bookImage.setOnClickListener(v -> openBook());
+            bookImage.setOnLongClickListener(new BookFragmentOnLongClickListener(bookImage.getContext(), this::openBook, this::deleteBook));
+            bookName = itemView.findViewById(R.id.bookName);
+            bookName.setOnClickListener(v -> openBook());
+        }
+
+        /**
+         * Set handler on item click
+         */
+        private void openBook() {
+            Book book = BookPool.getBook(getLayoutPosition());
+            BookService.updateLatestBookPath(itemView.getContext(), book.getFilePath());
+            try {
+                // create new intent and start activity
+                Intent intent = new Intent(itemView.getContext(), ContentViewer.class);
+                BookService.initFromPath(book.getFilePath());
+                itemView.getContext().startActivity(intent);
+            } catch (BookServiceException bookServiceException) {
+                Toaster.make(bookName.getContext(), String.format("Cover for %s can not be loaded", book.getTitle()), bookServiceException);
+            }
+        }
+
+        /**
+         * Method to delete book
+         */
+        private void deleteBook() {
+            // remove from pool and notify about changes
+            BookPool.removeBook(getLayoutPosition());
+            notifyItemRemoved(getLayoutPosition());
+        }
+    }
+}
