@@ -11,6 +11,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.yk.bookviewer.databinding.ActivityBookViewerBinding;
+import com.yk.common.learning.GenericUniqueJobScheduler;
+import com.yk.common.learning.NotificationStateResolver;
+import com.yk.common.learning.NotificationWorker;
+import com.yk.common.utils.PreferenceHelper;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class BookViewer extends AppCompatActivity {
@@ -39,6 +43,8 @@ public class BookViewer extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_book_viewer);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+        if (new PreferenceHelper().isLearningEnabled() && !NotificationStateResolver.isSchedulerRunning(this))
+            new GenericUniqueJobScheduler(this, NotificationWorker.class, 0).schedule("LearningNotification");
     }
 
     @Override

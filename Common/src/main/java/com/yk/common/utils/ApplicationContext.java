@@ -5,9 +5,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.learning.GenericUniqueJobScheduler;
-import com.yk.common.learning.NotificationStateResolver;
-import com.yk.common.learning.NotificationWorker;
 import com.yk.common.persistance.AppDatabaseAbstract;
 import com.yk.common.persistance.AppDatabaseFactory;
 
@@ -32,10 +29,6 @@ public class ApplicationContext extends Application {
         super.onCreate();
         context = this;
         appDatabaseAbstract = AppDatabaseFactory.getFromContext(this);
-        //TODO: move if to separate method
-        if (!NotificationStateResolver.hasActiveNotification(getApplicationContext()) && new PreferenceHelper().isLearningEnabled())
-            new GenericUniqueJobScheduler(context, NotificationWorker.class, 0).schedule("LearningNotification");
-        NotificationStateResolver.releaseState(getApplicationContext());
     }
 
 }
