@@ -50,7 +50,7 @@ public class GenericUniqueJobScheduler {
         data.forEach(builder::put);
         // create and start one time worker request
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(workerClass)
-                .setInitialDelay(initialDelay, TimeUnit.MINUTES)
+                .setInitialDelay(initialDelay, TimeUnit.SECONDS)
                 .setInputData(builder.build())
                 .build();
         NotificationStateResolver.saveState(context, oneTimeWorkRequest.getId());
