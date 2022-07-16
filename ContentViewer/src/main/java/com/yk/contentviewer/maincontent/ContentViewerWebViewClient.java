@@ -7,7 +7,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
@@ -37,6 +36,7 @@ public class ContentViewerWebViewClient extends WebViewClient {
     private final JavaScriptInteractor javaScriptInteractor;
     private final ContentViewerWevView webView;
     private final Function<Uri, WebResourceResponse> onRequestFunction;
+    private final Runnable onLoadFunction;
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -46,7 +46,7 @@ public class ContentViewerWebViewClient extends WebViewClient {
                 ParentMethodCaller.callConsumerOnParent(view, ViewPager2.class,
                         (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), BookService.getBookService().getChapterByHRef(request.getUrl().getPath()));
             } catch (BookServiceException bookServiceException) {
-                Toaster.make(webView.getContext(),"Book can not be loaded",bookServiceException);
+                Toaster.make(webView.getContext(), "Book can not be loaded", bookServiceException);
             }
             return super.shouldOverrideUrlLoading(view, request);
         } else {
@@ -79,5 +79,6 @@ public class ContentViewerWebViewClient extends WebViewClient {
                         webView::handleSelectPhrase);
         javaScriptInteractor.setupScript(selectionScript);
         webView.scrollTo(0, webView.getScrollPositionY());
+        onLoadFunction.run();
     }
 }

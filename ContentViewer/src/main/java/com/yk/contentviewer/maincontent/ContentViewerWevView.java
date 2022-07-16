@@ -103,7 +103,7 @@ public class ContentViewerWevView extends WebView {
         getSettings().setLoadWithOverviewMode(true);
         getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        setWebViewClient(new ContentViewerWebViewClient(javaScriptInteractor, thisWevView, thisWevView::onRequest));
+        setWebViewClient(new ContentViewerWebViewClient(javaScriptInteractor, thisWevView, thisWevView::onRequest, thisWevView::setContentPosition));
 
         try {
             if (bookService.getTextSize() != 0)
@@ -115,12 +115,7 @@ public class ContentViewerWevView extends WebView {
         setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             scrollPositionY = scrollY;
             if (scrollPositionY > 0) {
-                int wholePagesCount = (int) Math.ceil(getVerticalScrollRange() * 1.0 / getHeight() - 1);
-                int currentPagePosition = (int) Math.ceil(scrollPositionY * 1.0 / getHeight());
-                currentPagePosition = Math.min(currentPagePosition, wholePagesCount);
-                ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(
-                        String.format("Progress: %s page of %s pages", currentPagePosition, wholePagesCount)
-                );
+                setContentPosition();
                 ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(VISIBLE);
             } else {
                 ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(INVISIBLE);
@@ -136,6 +131,15 @@ public class ContentViewerWevView extends WebView {
             Toaster.make(getContext(), "Error on loading", bookServiceException);
         }
 
+    }
+
+    public void setContentPosition() {
+        int wholePagesCount = (int) Math.ceil(getVerticalScrollRange() * 1.0 / getHeight() - 1);
+        int currentPagePosition = (int) Math.ceil(scrollPositionY * 1.0 / getHeight());
+        currentPagePosition = Math.min(currentPagePosition, wholePagesCount);
+        ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(
+                String.format("Progress: %s page of %s pages", currentPagePosition, wholePagesCount)
+        );
     }
 
     public int getVerticalScrollRange() {
@@ -238,5 +242,4 @@ public class ContentViewerWevView extends WebView {
         }
         return null;
     }
-
 }

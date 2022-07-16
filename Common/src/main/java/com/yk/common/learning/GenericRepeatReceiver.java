@@ -31,7 +31,6 @@ public class GenericRepeatReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // release notification state at first
-        NotificationStateResolver.releaseState(context);
         if (intent.getExtras() != null) {
             handleOutcomes(context, intent);
             repeatIfNeeded(context, intent);
@@ -74,7 +73,7 @@ public class GenericRepeatReceiver extends BroadcastReceiver {
         if (shouldSchedulerBeRepeated) {
             // get worker class
             String workerClassName = intent.getStringExtra(GlobalConstants.SCHEDULER_WORKER_CLASS_NAME);
-            int workerRepeatInterval = intent.getIntExtra(GlobalConstants.SCHEDULER_WORKER_REPEAT_INTERVAL, 180);
+            int workerRepeatInterval = intent.getIntExtra(GlobalConstants.SCHEDULER_WORKER_REPEAT_INTERVAL, 20);
             try {
                 // get class by name and schedule new job
                 Class<?> workerClass = Class.forName(workerClassName);

@@ -45,7 +45,7 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         // no action if learning is disabled or notification is already shown
-        if (!new PreferenceHelper().isLearningEnabled() || NotificationStateResolver.hasActiveNotification(this.getApplicationContext()))
+        if (!new PreferenceHelper().isLearningEnabled())
             return Result.success();
         // no action if dictionary is empty
         if (DictionaryPool.getDictionaries().size() == 0)
@@ -88,7 +88,6 @@ public class NotificationWorker extends Worker {
                 );
         // notify and save state
         notificationManager.notify(notificationId, notificationBuilder.build());
-        NotificationStateResolver.saveState(notificationId);
         // set job status
         return Result.success();
     }

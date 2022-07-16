@@ -32,10 +32,8 @@ public class ApplicationContext extends Application {
         super.onCreate();
         context = this;
         appDatabaseAbstract = AppDatabaseFactory.getFromContext(this);
-        //TODO: move if to separate method
-        if (!NotificationStateResolver.hasActiveNotification(getApplicationContext()) && new PreferenceHelper().isLearningEnabled())
+        if (new PreferenceHelper().isLearningEnabled() && !NotificationStateResolver.isSchedulerRunning(context))
             new GenericUniqueJobScheduler(context, NotificationWorker.class, 0).schedule("LearningNotification");
-        NotificationStateResolver.releaseState(getApplicationContext());
     }
 
 }

@@ -53,6 +53,7 @@ public class GenericUniqueJobScheduler {
                 .setInitialDelay(initialDelay, TimeUnit.MINUTES)
                 .setInputData(builder.build())
                 .build();
+        NotificationStateResolver.saveState(context, oneTimeWorkRequest.getId());
         // enqueue unique job
         WorkManager.getInstance(context).enqueueUniqueWork(uniqueWorkName,
                 ExistingWorkPolicy.REPLACE,
