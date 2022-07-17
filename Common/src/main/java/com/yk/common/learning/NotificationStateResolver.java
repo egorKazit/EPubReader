@@ -15,8 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import lombok.SneakyThrows;
-
 /**
  * Class to store notification id
  */
@@ -31,19 +29,20 @@ public class NotificationStateResolver {
                     new BufferedReader(new InputStreamReader(context.openFileInput(LAST_NOTIFICATION_FILE)));
             String workUUID = outputStream.readLine();
             var workInfoById = WorkManager.getInstance(context).getWorkInfoById(UUID.fromString(workUUID));
-            if (workInfoById.get() == null)
-                return false;
-            return !workInfoById.get().getState().isFinished();
+            return workInfoById.get() != null;
         } catch (IOException | ExecutionException | InterruptedException exception) {
             Log.e("Error", exception.getMessage());
             return false;
         }
     }
 
-    @SneakyThrows
     public static void saveState(Context context, UUID uuid) {
-        OutputStream outputStream = context.openFileOutput(LAST_NOTIFICATION_FILE, Context.MODE_PRIVATE);
-        outputStream.write(uuid.toString().getBytes(StandardCharsets.UTF_8));
+        try {
+            OutputStream outputStream = context.openFileOutput(LAST_NOTIFICATION_FILE, Context.MODE_PRIVATE);
+            outputStream.write(uuid.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException ioException) {
+            Log.e("Error", ioException.getMessage());
+        }
     }
 
 }
