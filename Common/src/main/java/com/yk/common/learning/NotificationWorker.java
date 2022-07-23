@@ -59,7 +59,6 @@ public class NotificationWorker extends Worker {
         notificationManager.createNotificationChannel(notificationChannel);
         // prepare content intent
         Intent headerIntent = new Intent();
-        headerIntent.putExtra(GlobalConstants.NOTIFICATION_FLAG, true);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 headerIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
