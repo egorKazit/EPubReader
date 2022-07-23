@@ -30,7 +30,6 @@ public class GenericRepeatReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        // release notification state at first
         if (intent.getExtras() != null) {
             handleOutcomes(context, intent);
             repeatIfNeeded(context, intent);
