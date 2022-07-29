@@ -21,8 +21,6 @@ import com.yk.common.model.dictionary.DictionaryPool;
 import com.yk.common.model.dictionary.LearningEntry;
 import com.yk.common.utils.PreferenceHelper;
 
-import java.util.Random;
-
 import lombok.SneakyThrows;
 
 /**
@@ -32,8 +30,9 @@ import lombok.SneakyThrows;
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class NotificationWorker extends Worker {
 
+    public static final int NOTIFICATION_ID = 100130141;
+
     private final Context context;
-    private final int notificationId = new Random().nextInt();
 
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -72,22 +71,28 @@ public class NotificationWorker extends Worker {
                 .setContentText(learningEntry.getOriginWord())
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)
-                .setDeleteIntent(new GenericPendingIntent(context).appendSchedulerRepeating(NotificationWorker.class).getPendingIntent());
+                .setDeleteIntent(new PreferenceHelper().isLearningEnabled() ?
+                        new GenericPendingIntent(context).appendSchedulerRepeating(NotificationWorker.class).getPendingIntent() :
+                        new GenericPendingIntent(context).getPendingIntent());
         // set up notification actions
         learningEntry.getPossibleTranslations()
                 .forEach(action -> {
                             Bundle bundle = new Bundle();
                             bundle.putString(GlobalConstants.OUTCOME_SINGLE, action);
-                            bundle.putInt(GlobalConstants.NOTIFICATION_ID, notificationId);
+                            bundle.putInt(GlobalConstants.NOTIFICATION_ID, NOTIFICATION_ID);
                             notificationBuilder.addAction(0, action,
-                                    new GenericPendingIntent(context)
-                                            .appendSchedulerRepeating(NotificationWorker.class)
-                                            .appendActionHandling(AnswerWorker.class, bundle)
-                                            .getPendingIntent());
+                                    new PreferenceHelper().isLearningEnabled() ?
+                                            new GenericPendingIntent(context)
+                                                    .appendSchedulerRepeating(NotificationWorker.class)
+                                                    .appendActionHandling(AnswerWorker.class, bundle)
+                                                    .getPendingIntent() :
+                                            new GenericPendingIntent(context)
+                                                    .appendActionHandling(AnswerWorker.class, bundle)
+                                                    .getPendingIntent());
                         }
                 );
         // notify and save state
-        notificationManager.notify(notificationId, notificationBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
         // set job status
         return Result.success();
     }

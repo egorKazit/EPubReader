@@ -50,10 +50,10 @@ public class GenericUniqueJobScheduler {
         data.forEach(builder::put);
         // create and start one time worker request
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(workerClass)
-                .setInitialDelay(initialDelay, TimeUnit.SECONDS)
+                .setInitialDelay(initialDelay, TimeUnit.MINUTES)
                 .setInputData(builder.build())
                 .build();
-        NotificationStateResolver.saveState(context, oneTimeWorkRequest.getId());
+        NotificationStateResolver.saveWorkUUID(context, oneTimeWorkRequest.getId());
         // enqueue unique job
         WorkManager.getInstance(context).enqueueUniqueWork(uniqueWorkName,
                 ExistingWorkPolicy.REPLACE,
