@@ -1,5 +1,6 @@
 package com.yk.bookviewer;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -11,7 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.yk.bookviewer.databinding.ActivityBookViewerBinding;
-import com.yk.common.learning.LearningOperator;
+import com.yk.common.service.AllNeedsService;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class BookViewer extends AppCompatActivity {
@@ -40,7 +41,8 @@ public class BookViewer extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_book_viewer);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-        new LearningOperator(this).startLearning();
+        Intent intent = new Intent(this, AllNeedsService.class);
+        startService(intent);
     }
 
     @Override

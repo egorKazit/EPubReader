@@ -11,7 +11,6 @@ import com.yk.common.utils.learning.WordDefiner;
 import com.yk.common.utils.learning.WordOperatorException;
 import com.yk.common.utils.learning.WordTranslator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

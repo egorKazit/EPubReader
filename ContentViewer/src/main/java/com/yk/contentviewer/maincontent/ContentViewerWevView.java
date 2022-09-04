@@ -31,6 +31,8 @@ import com.yk.common.utils.learning.WordTranslator;
 import com.yk.contentviewer.R;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import lombok.Getter;
 
@@ -50,6 +52,8 @@ public class ContentViewerWevView extends WebView {
     private int chapterPosition;
     @Getter
     private int scrollPositionY = 0;
+    private int chapterSize;
+    private boolean isChapterSizeUpdated;
     private BookService bookService;
 
     /**
@@ -96,11 +100,14 @@ public class ContentViewerWevView extends WebView {
             Toaster.make(ApplicationContext.getContext(), "Error on script loading", bookServiceException);
         }
 
+        chapterSize = bookService.getCurrentChapterSize();
+
         requestFocus();
         getSettings().setJavaScriptEnabled(true);
         getSettings().setAllowFileAccess(true);
         getSettings().setAllowContentAccess(true);
         getSettings().setLoadWithOverviewMode(true);
+        getSettings().setUseWideViewPort(true);
         getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         setWebViewClient(new ContentViewerWebViewClient(javaScriptInteractor, thisWevView, thisWevView::onRequest, thisWevView::setContentPosition));
@@ -121,10 +128,12 @@ public class ContentViewerWevView extends WebView {
                 ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(INVISIBLE);
             }
             ContentViewerStateSaver.getInstance().startContentSaver(scrollPositionY);
+//            bookService.setCurrentChapterSize(getHeight());
         });
 
         try {
             if (WordTranslator.getLanguage().equals(bookService.getLanguage())) {
+                ((Activity) getContext()).findViewById(R.id.contentViewerSoundPlay).setVisibility(GONE);
                 ((Activity) getContext()).findViewById(R.id.contentViewerTranslatedWord).setVisibility(GONE);
             }
         } catch (BookServiceException bookServiceException) {
@@ -134,8 +143,9 @@ public class ContentViewerWevView extends WebView {
     }
 
     public void setContentPosition() {
-        int wholePagesCount = (int) Math.ceil(getVerticalScrollRange() * 1.0 / getHeight() - 1);
-        int currentPagePosition = (int) Math.ceil(scrollPositionY * 1.0 / getHeight());
+        int height = getHeight();
+        int wholePagesCount = (int) Math.ceil(getVerticalScrollRange() * 1.0 / height - 1);
+        int currentPagePosition = (int) Math.ceil(scrollPositionY * 1.0 / height);
         currentPagePosition = Math.min(currentPagePosition, wholePagesCount);
         ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(
                 String.format("Progress: %s page of %s pages", currentPagePosition, wholePagesCount)
@@ -227,12 +237,11 @@ public class ContentViewerWevView extends WebView {
                             .filter(mimeType -> mimeType.getChapterRef().equals(finalResourcePath))
                             .map(TableOfContent.Spine::getMediaType)
                             .findFirst().orElseGet(() -> {
-                        if (finalResourcePath.endsWith(".css"))
-                            return "text/css";
-                        else if (finalResourcePath.endsWith(".js"))
-                            return "text/javascript";
-                        else
+                        try {
+                            return Files.probeContentType(Paths.get(finalResourcePath));
+                        } catch (IOException ioException) {
                             return "text/html";
+                        }
                     }),
                     Xml.Encoding.UTF_8.name(),
                     BookService.getBookService().getResourceAsStream(resourcePath)

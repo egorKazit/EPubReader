@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,6 +23,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.yk.common.launcher.ActivityResultLauncherWrapper;
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.model.dictionary.DictionaryPool;
 import com.yk.common.utils.Toaster;
 import com.yk.common.utils.ZoomOutPageTransformer;
@@ -32,6 +34,7 @@ import com.yk.contentviewer.maincontent.ContentViewerPagerAdapter;
 import com.yk.contentviewer.maincontent.ContentViewerStateSaver;
 import com.yk.contentviewer.maincontent.ContentViewerWevView;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +57,7 @@ public class ContentViewer extends AppCompatActivity {
         DictionaryPool.init();
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_content_viewer);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ViewPager2 contentViewPager = findViewById(R.id.contentViewerChapterPager);
         // create and set adapter
@@ -115,7 +119,9 @@ public class ContentViewer extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean returnValue = super.onPrepareOptionsMenu(menu);
-        prepareLanguageOptionMenu(menu, findViewById(R.id.contentViewerTranslatedWord));
+        prepareLanguageOptionMenu(menu, findViewById(R.id.contentViewerHeader),
+                List.of(findViewById(R.id.contentViewerTranslatedWord), findViewById(R.id.contentViewerSoundPlay)),
+                List.of(findViewById(R.id.contentViewerTableOfContent)));
         return returnValue;
     }
 
@@ -143,7 +149,7 @@ public class ContentViewer extends AppCompatActivity {
                     // hide progress bar
                     findViewById(R.id.contentViewerItemSize).setVisibility(View.GONE);
                     try {
-                        BookService.getBookService().updatePersistenceBook();
+                        BookServiceHelper.updatePersistenceBook(BookService.getBookService());
                     } catch (BookServiceException bookServiceException) {
                         Toaster.make(getApplicationContext(), "Error on loading", bookServiceException);
                     }

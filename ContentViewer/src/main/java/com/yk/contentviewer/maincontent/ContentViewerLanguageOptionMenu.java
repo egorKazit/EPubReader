@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import androidx.annotation.RequiresApi;
 
@@ -28,10 +28,12 @@ public class ContentViewerLanguageOptionMenu {
     /**
      * Method to prepare option menu
      *
-     * @param menu          option menu
-     * @param translateWord translated word view
+     * @param menu                option menu
+     * @param translateWordLayout translated word view
      */
-    public static void prepareLanguageOptionMenu(Menu menu, TextView translateWord) {
+    public static void prepareLanguageOptionMenu(Menu menu, ViewGroup translateWordLayout,
+                                                 List<View> viewToReactOnLanguageChange,
+                                                 List<View> leftViews) {
         // find menu and create sub menu
         MenuItem menuItem = menu.findItem(R.id.targetLanguageValue);
         SubMenu subMenu = menuItem.getSubMenu();
@@ -43,7 +45,7 @@ public class ContentViewerLanguageOptionMenu {
             languages = WordTranslator.getLanguages();
             sourceLanguage = BookService.getBookService().getLanguage();
         } catch (WordOperatorException | BookServiceException exception) {
-            Toaster.make(translateWord.getContext(), "Error on table of content loading", exception);
+            Toaster.make(translateWordLayout.getContext(), "Error on table of content loading", exception);
             return;
         }
         if (languages == null)
@@ -52,10 +54,14 @@ public class ContentViewerLanguageOptionMenu {
         languages.forEach(language -> subMenu.add(0, index.getAndIncrement(), Menu.NONE, language.getName())
                 .setOnMenuItemClickListener(item -> {
                     WordTranslator.setLanguage(languages.get(item.getItemId()).getLanguage());
-
                     menuItem.setTitle(languages.get(item.getItemId()).getName());
                     if (WordTranslator.getLanguage().equals(sourceLanguage)) {
-                        translateWord.setVisibility(View.GONE);
+                        viewToReactOnLanguageChange.forEach(view -> view.setVisibility(View.GONE));
+                        translateWordLayout.getLayoutParams().height = leftViews.stream().mapToInt(View::getHeight).sum();
+                        translateWordLayout.getLayoutParams().width = leftViews.stream().mapToInt(View::getWidth).sum();
+                    } else {
+                        viewToReactOnLanguageChange.forEach(view -> view.setVisibility(View.VISIBLE));
+                        translateWordLayout.getLayoutParams().width = ((ViewGroup)translateWordLayout.getParent()).getLayoutParams().width;
                     }
                     return false;
                 }));

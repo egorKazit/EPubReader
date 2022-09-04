@@ -15,7 +15,6 @@ import static com.yk.common.constants.Tags.ROOT_FILES;
 import static com.yk.common.constants.Tags.TITLE;
 import static com.yk.common.utils.JsonContentHelper.getContentInJson;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -31,7 +30,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -79,18 +77,6 @@ public class BookService {
         } catch (IOException ioException) {
             Log.e("BookService", "Error on Book Service initialization");
             throw new BookServiceException("Error on Book Service initialization", ioException);
-        }
-    }
-
-    public static void updateLatestBookPath(Context context, String bookPath) {
-        try {
-            FileOutputStream fileOutputStream = context.openFileOutput("lastBook.txt", Context.MODE_PRIVATE);
-            fileOutputStream.write(bookPath.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-        } catch (IOException e) {
-            // it's important, but not critical, so exception is not rethrown
-            Log.e("BookService", "Error on latest book path update");
         }
     }
 
@@ -168,20 +154,7 @@ public class BookService {
 
     public static BookService initFromPath(String path) throws BookServiceException {
         bookService = buildFromPath(path);
-        Thread currentThread = Thread.currentThread();
-        new Thread(() -> {
-            bookService.book = ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(path);
-            synchronized (currentThread) {
-                currentThread.notify();
-            }
-        }).start();
-        synchronized (currentThread) {
-            try {
-                currentThread.wait();
-            } catch (InterruptedException interruptedException) {
-                throw new BookServiceException("Error on loading book from database");
-            }
-        }
+        bookService.book = BookServiceHelper.uploadBookFromDatabase(path);
         if (bookService.book == null) {
             bookService.book = Book.builder().addingDate(new Date()).filePath(path)
                     .filePath(path)
@@ -191,13 +164,9 @@ public class BookService {
                     .creator(bookService.getCreator())
                     .textSize(100)
                     .build();
-            bookService.createPersistenceBook();
+            BookServiceHelper.createPersistenceBook(bookService);
         }
         return bookService;
-    }
-
-    public static void removeBook(Book book) {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().deleteBook(book)).start();
     }
 
     public String getPath() {
@@ -229,7 +198,6 @@ public class BookService {
         return "";
     }
 
-
     public int getCurrentChapter() {
         return book.getCurrentChapter();
     }
@@ -238,10 +206,18 @@ public class BookService {
         book.setCurrentChapter(currentChapter);
     }
 
+    public int getCurrentChapterSize() {
+        return book.getCurrentChapterSize();
+    }
+
+    public void setCurrentChapterSize(int currentChapterSize) {
+        book.setCurrentChapterSize(currentChapterSize);
+    }
+
     public int getChapterByHRef(String href) {
-        return tableOfContent.getChapterTree().stream().filter(chapter -> href.endsWith(chapter.getChapterRef()))
+        return tableOfContent.getSpines().stream().filter(chapter -> href.endsWith(chapter.getChapterRef()))
                 .findAny().orElseThrow(RuntimeException::new)
-                .getSpineRefId();
+                .getSpineId();
     }
 
     public int getCurrentChapterPosition() {
@@ -272,14 +248,6 @@ public class BookService {
         } catch (IOException | JSONException exception) {
             throw new BookServiceException("Table of content can not be found", exception);
         }
-    }
-
-    private void createPersistenceBook() {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(getBook())).start();
-    }
-
-    public void updatePersistenceBook() {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().updateBook(getBook())).start();
     }
 
     private String getCoverId() throws BookServiceException {

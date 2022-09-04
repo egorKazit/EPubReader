@@ -1,16 +1,15 @@
 package com.yk.contentviewer.maincontent;
 
 import android.os.Build;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.utils.ApplicationContext;
 import com.yk.common.utils.Toaster;
 
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -52,7 +51,7 @@ public class ContentViewerStateSaver {
                 try {
                     BookService.getBookService()
                             .setCurrentChapterPosition(position);
-                    BookService.getBookService().updatePersistenceBook();
+                    BookServiceHelper.updatePersistenceBook(BookService.getBookService());
                 } catch (BookServiceException bookServiceException) {
                     Toaster.make(ApplicationContext.getContext(), "Error on state loading", bookServiceException);
                 }

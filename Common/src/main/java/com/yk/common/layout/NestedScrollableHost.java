@@ -91,8 +91,8 @@ public class NestedScrollableHost extends FrameLayout {
             boolean isVpHorizontal = orientation == ViewPager2.ORIENTATION_HORIZONTAL;
 
             // assuming ViewPager2 touch-slop is 2x touch-slop of child
-            float scaledDx = Math.abs(dx) * (isVpHorizontal ? .3f : .5f);
-            float scaledDy = Math.abs(dy) * (isVpHorizontal ? .1f : .05f);
+            float scaledDx = Math.abs(dx) * (isVpHorizontal ? .03f : .05f);
+            float scaledDy = Math.abs(dy) * (isVpHorizontal ? .01f : .005f);
             if (scaledDx > touchSlop || scaledDy > touchSlop) {
                 // Gesture is parallel, query child if movement in that direction is possible
                 // Child can scroll, disallow all parents to intercept

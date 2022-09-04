@@ -42,6 +42,7 @@
         <receiver
             android:name="com.yk.common.learning.GenericRepeatReceiver"
             android:enabled="true" />
+        <service android:name="com.yk.common.service.AllNeedsService" />
     </application>
 
 </manifest>

@@ -64,7 +64,7 @@ public class BookPool {
      * @param id book id
      */
     public static void removeBook(int id) {
-        BookService.removeBook(BOOKS.get(id));
+        BookServiceHelper.removePersistenceBook(BOOKS.get(id));
         BOOKS.remove(BOOKS.get(id));
     }
 

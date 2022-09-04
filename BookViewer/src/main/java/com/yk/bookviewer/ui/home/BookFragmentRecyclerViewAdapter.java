@@ -18,6 +18,7 @@ import com.yk.common.model.book.Book;
 import com.yk.common.model.book.BookPool;
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
@@ -92,7 +93,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
          */
         private void openBook() {
             Book book = BookPool.getBook(getLayoutPosition());
-            BookService.updateLatestBookPath(itemView.getContext(), book.getFilePath());
+            BookServiceHelper.updateLatestBookPath(itemView.getContext(), book.getFilePath());
             try {
                 // create new intent and start activity
                 Intent intent = new Intent(itemView.getContext(), ContentViewer.class);

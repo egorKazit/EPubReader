@@ -1,13 +1,13 @@
 package com.yk.contentviewer.maincontent;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
 
     private final Function<Integer, ContentViewerWevView> retriever;
     private final int viewId;
-    private BookService bookService;
+    private final BookService bookService;
 
     /**
      * Main constructor
@@ -45,13 +45,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         super.onPageScrolled(position, positionOffset, positionOffsetPixels);
         if (checkDirection) {
-            if (thresholdOffset > positionOffset && positionOffsetPixels > thresholdOffsetPixels) {
-                Log.i("C.TAG", "going down");
-                isScrollingUp = false;
-            } else {
-                Log.i("C.TAG", "going up");
-                isScrollingUp = true;
-            }
+            isScrollingUp = !(thresholdOffset > positionOffset) || positionOffsetPixels <= thresholdOffsetPixels;
             checkDirection = false;
         }
     }
@@ -60,7 +54,6 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     public void onPageScrollStateChanged(int state) {
         super.onPageScrollStateChanged(state);
         if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
-            Log.e("state", String.valueOf(state));
             checkDirection = true;
         }
 
@@ -90,6 +83,6 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
             contentViewerWevView.setTextSize(bookService.getTextSize());
         }
         bookService.setCurrentChapter(position);
-        bookService.updatePersistenceBook();
+        BookServiceHelper.updatePersistenceBook(bookService);
     }
 }

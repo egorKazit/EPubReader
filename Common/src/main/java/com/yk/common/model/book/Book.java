@@ -41,6 +41,8 @@ public class Book {
     private int currentChapter;
     @ColumnInfo(name = "current_chapter_position")
     private int currentChapterPosition;
+    @ColumnInfo(name = "current_chapter_size", defaultValue = "0")
+    private int currentChapterSize;
     @ColumnInfo(name = "cover")
     private String cover;
     @ColumnInfo(name = "creator")
