@@ -8,7 +8,7 @@ var click = function (event){
                      var rangeToSelectWord = document.createRange();
                      rangeToSelectWord.setStart(rangeForWord.startContainer, rangeForWord.startOffset);
                      rangeToSelectWord.setEnd(rangeForWord.endContainer, rangeForWord.endOffset);
-                     if(rangeForWord.toString().trim() != '' && /^[a-zA-Z1-9]+$/.test(rangeForWord.toString().trim())){
+                     if(rangeForWord.toString().trim() != '' && /^[a-zA-Z1-9\'\-]+$/.test(rangeForWord.toString().trim())){
                          var selection = window.getSelection();
                          selection.removeAllRanges();
                          selection.addRange(rangeToSelectWord);
