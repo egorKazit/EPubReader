@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.utils.PreferenceHelper;
 import com.yk.contentviewer.R;
 
 import lombok.AllArgsConstructor;
@@ -56,7 +57,7 @@ public class ContentViewerItemSelector {
                 .viewId(R.id.contentViewerItemContentItem)
                 .consumerOnProgressChange((viewId, progress) -> {
                     try {
-                        ((ContentViewerWevView) activity.findViewById(viewId)).setTextSize(progress);
+                        ((ContentViewerWebView) activity.findViewById(viewId)).setTextSize(progress);
                     } catch (BookServiceException bookServiceException) {
                         Log.e("Sizer issue", bookServiceException.getMessage());
                     }
@@ -65,6 +66,18 @@ public class ContentViewerItemSelector {
                 .onStopTrackingWrapper(showProgressBar)
                 .build());
         showProgressBar.run();
+        return true;
+    }
+
+    /**
+     * Method to hide or show translation context
+     *
+     * @param item menu item
+     * @return true if state is changed
+     */
+    public boolean onNightModeCall(MenuItem item) {
+        PreferenceHelper.Instance.INSTANCE.helper.enableNightMode(item.isChecked());
+        item.setChecked(!item.isChecked());
         return true;
     }
 

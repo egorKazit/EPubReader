@@ -13,6 +13,14 @@
             app:key="learning_delay"
             app:title="Learning Notification" />
 
+        <SwitchPreferenceCompat
+            app:key="nightMode"
+            app:title="@string/night_mode" />
+
+        <ListPreference
+            app:key="font"
+            app:title="Choose font" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

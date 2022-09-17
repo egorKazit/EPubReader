@@ -47,6 +47,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = BookPool.getBook(position);
         holder.bookName.setText(book.getTitle());
+
         if (book.getCover() != null) {
             try {
                 Glide.with(holder.itemView.getContext())
@@ -54,14 +55,15 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                                 .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
                         .centerCrop()
                         .fitCenter()
-                        .placeholder(R.drawable.ic_no_image_foreground)
-                        .error(R.drawable.ic_no_image_foreground)
+                        .placeholder(R.mipmap.ic_default_book_cover_foreground)
+                        .error(R.mipmap.ic_default_book_cover_foreground)
                         .into(holder.bookImage);
             } catch (BookServiceException bookServiceException) {
                 Toaster.make(holder.itemView.getContext(), String.format("Cover for %s can not be read", book.getTitle()), bookServiceException);
             }
         } else
-            holder.bookImage.setImageResource(R.drawable.ic_no_image_foreground);
+
+            holder.bookImage.setImageResource(R.mipmap.ic_default_book_cover_foreground);
 
     }
 

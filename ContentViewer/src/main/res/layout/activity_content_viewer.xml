@@ -1,105 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contentViewerBookContent"
+    android:id="@+id/contentViewerHolder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentViewerContent"
+    <ImageView
+        android:id="@+id/contentViewerBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_book_background_foreground" />
 
-        <TextView
-            android:id="@+id/contentViewerTranslatedContext"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="@string/context_to_translate"
-            android:textSize="16sp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/contentViewerHeader"
-            app:layout_constraintTop_toBottomOf="@+id/contentViewerHeader" />
+    <LinearLayout
+        android:id="@+id/contentViewerBookContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/contentViewerHeader"
+            android:id="@+id/contentViewerContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/contentViewerSoundPlay"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:contentDescription="@string/play"
-                android:focusable="false"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/contentViewerTranslatedWord"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_speech_play_foreground" />
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/contentViewerTranslatedWord"
+                android:id="@+id/contentViewerTranslatedContext"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="@string/string_to_translate"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
-                app:layout_constraintHorizontal_weight="8"
-                app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="@string/context_to_translate"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/contentViewerHeader"
+                app:layout_constraintTop_toBottomOf="@+id/contentViewerHeader" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contentViewerHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/contentViewerSoundPlay"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/play"
+                    android:focusable="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/contentViewerTranslatedWord"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_speech_play_foreground" />
+
+                <TextView
+                    android:id="@+id/contentViewerTranslatedWord"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="@string/string_to_translate"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
+                    app:layout_constraintHorizontal_weight="8"
+                    app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/contentViewerTableOfContent"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:contentDescription="@string/table_of_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@id/contentViewerTranslatedWord"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_table_of_content_foreground" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/contentViewerChapterPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:nestedScrollingEnabled="false"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/contentViewerPosition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="3dp"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            tools:ignore="SmallSp" />
+
+        <LinearLayout
+            android:id="@+id/contentViewerFontHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
 
             <ImageView
-                android:id="@+id/contentViewerTableOfContent"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:contentDescription="@string/table_of_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/contentViewerTranslatedWord"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_table_of_content_foreground" />
+                android:id="@+id/contentViewerFontLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_arrow_left_foreground" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/contentViewerFont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/contentViewerChapterPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:nestedScrollingEnabled="false"
-        android:orientation="vertical" />
+            <ImageView
+                android:id="@+id/contentViewerFontRight"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_arrow_right_foreground" />
 
-    <TextView
-        android:id="@+id/contentViewerPosition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="3dp"
-        android:textSize="10sp"
-        android:visibility="invisible"
-        tools:ignore="SmallSp" />
+        </LinearLayout>
 
-    <SeekBar
-        android:id="@+id/contentViewerItemSize"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="500"
-        android:min="150"
-        android:padding="5dp"
-        android:progress="100"
-        android:visibility="gone" />
+        <SeekBar
+            android:id="@+id/contentViewerItemSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="500"
+            android:min="150"
+            android:padding="5dp"
+            android:progress="100"
+            android:visibility="gone" />
 
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

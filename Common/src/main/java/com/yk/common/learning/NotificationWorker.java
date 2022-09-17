@@ -44,7 +44,7 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         // no action if learning is disabled or notification is already shown
-        if (!new PreferenceHelper().isLearningEnabled())
+        if (!PreferenceHelper.Instance.INSTANCE.helper.isLearningEnabled())
             return Result.success();
         // no action if dictionary is empty
         if (DictionaryPool.getDictionaries().size() == 0)
@@ -71,7 +71,7 @@ public class NotificationWorker extends Worker {
                 .setContentText(learningEntry.getOriginWord())
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)
-                .setDeleteIntent(new PreferenceHelper().isLearningEnabled() ?
+                .setDeleteIntent(PreferenceHelper.Instance.INSTANCE.helper.isLearningEnabled() ?
                         new GenericPendingIntent(context).appendSchedulerRepeating(NotificationWorker.class).getPendingIntent() :
                         new GenericPendingIntent(context).getPendingIntent());
         // set up notification actions
@@ -81,7 +81,7 @@ public class NotificationWorker extends Worker {
                             bundle.putString(GlobalConstants.OUTCOME_SINGLE, action);
                             bundle.putInt(GlobalConstants.NOTIFICATION_ID, NOTIFICATION_ID);
                             notificationBuilder.addAction(0, action,
-                                    new PreferenceHelper().isLearningEnabled() ?
+                                    PreferenceHelper.Instance.INSTANCE.helper.isLearningEnabled() ?
                                             new GenericPendingIntent(context)
                                                     .appendSchedulerRepeating(NotificationWorker.class)
                                                     .appendActionHandling(AnswerWorker.class, bundle)

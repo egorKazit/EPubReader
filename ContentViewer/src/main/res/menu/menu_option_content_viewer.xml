@@ -3,14 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/darkMode"
+        android:checkable="true"
+        android:title="@string/night_mode" />
+    <item
         android:id="@+id/translateContext"
         android:checkable="true"
         android:title="@string/context_to_translate"
         app:showAsAction="never" />
-
     <item
         android:id="@+id/callSizer"
         android:title="@string/call_size_bar" />
+    <item
+        android:id="@+id/textFont"
+        android:title="@string/text_font" />
     <item
         android:id="@+id/targetLanguageText"
         android:title="@string/language"
@@ -19,8 +25,7 @@
         android:id="@+id/targetLanguageValue"
         android:title=""
         app:showAsAction="ifRoom|withText">
-        <menu>
-        </menu>
+        <menu></menu>
     </item>
 
 </menu>

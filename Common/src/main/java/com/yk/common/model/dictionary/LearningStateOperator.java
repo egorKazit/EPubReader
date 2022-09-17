@@ -6,8 +6,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.utils.ApplicationContext;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

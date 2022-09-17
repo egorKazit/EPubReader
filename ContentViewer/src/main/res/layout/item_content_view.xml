@@ -6,7 +6,7 @@
     android:isScrollContainer="true"
     android:nestedScrollingEnabled="true">
 
-    <com.yk.contentviewer.maincontent.ContentViewerWevView
+    <com.yk.contentviewer.maincontent.ContentViewerWebView
         android:id="@+id/contentViewerItemContentItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
         android:overScrollMode="always"
         android:scrollbars="none">
 
-    </com.yk.contentviewer.maincontent.ContentViewerWevView>
+    </com.yk.contentviewer.maincontent.ContentViewerWebView>
 
     <View
         android:id="@+id/contentViewerItemDivider"

@@ -11,4 +11,7 @@
     <string name="play">Play</string>
     <string name="source">Source</string>
     <string name="target">Target</string>
+    <string name="zoomed_image">Zoomed Image</string>
+    <string name="night_mode">Night mode</string>
+    <string name="text_font">Text Font</string>
 </resources>

@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.projectlombok:lombok'
     implementation 'androidx.slice:slice-core:1.0.0'
     implementation 'androidx.slice:slice-builders:1.0.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation "androidx.webkit:webkit:1.2.0-alpha01"
     testImplementation 'junit:junit:4.13.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

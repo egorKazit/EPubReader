@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
+
+import java.util.Arrays;
 
 /**
  * Preference helper.
@@ -15,6 +18,8 @@ public class PreferenceHelper {
 
     private final static String LEARNING_ENABLED = "LEARNING_ENABLED";
     private final static String LEARNING_INTERVAL = "LEARNING_INTERVAL";
+    private final static String NIGHT_MODE = "NIGHT_MODE";
+    private final static String CONTENT_FONT = "CONTENT_FONT";
     private final static String PREFERENCE_FILE = "PREFERENCE_FILE";
 
     private final SharedPreferences sharedPreferences;
@@ -22,7 +27,7 @@ public class PreferenceHelper {
     /**
      * Default constructor
      */
-    public PreferenceHelper() {
+    private PreferenceHelper() {
         sharedPreferences = ApplicationContext.getContext().getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE);
     }
 
@@ -45,6 +50,22 @@ public class PreferenceHelper {
         return sharedPreferences.getInt(LEARNING_INTERVAL, 20);
     }
 
+    /**
+     * Method to check if night mode is enabled
+     *
+     * @return true if night mode is enabled
+     */
+    public boolean isNightMode() {
+        int nightMode = sharedPreferences.getInt(NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_NO);
+        return nightMode == AppCompatDelegate.MODE_NIGHT_YES;
+    }
+
+    public ContentFont getContentFont() {
+        String contentFontId = sharedPreferences.getString(CONTENT_FONT, ContentFont.DEFAULT.getId());
+        return Arrays.stream(ContentFont.values())
+                .filter(contentFont -> contentFont.getId().equals(contentFontId))
+                .findFirst().orElse(ContentFont.DEFAULT);
+    }
 
     /**
      * Method to set learning flag
@@ -66,6 +87,35 @@ public class PreferenceHelper {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(LEARNING_INTERVAL, learningInterval);
         editor.apply();
+    }
+
+    /**
+     * Method to set night mode
+     *
+     * @param isNightMode night mode flag
+     */
+    public void enableNightMode(boolean isNightMode) {
+        int nightMode;
+        if (isNightMode) {
+            nightMode = AppCompatDelegate.MODE_NIGHT_NO;
+        } else {
+            nightMode = AppCompatDelegate.MODE_NIGHT_YES;
+        }
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(NIGHT_MODE, nightMode);
+        editor.apply();
+    }
+
+    public void setContentFont(ContentFont contentFont) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CONTENT_FONT, contentFont.getId());
+        editor.apply();
+    }
+
+    public enum Instance {
+        INSTANCE;
+        public final PreferenceHelper helper = new PreferenceHelper();
     }
 
 }
