@@ -59,18 +59,43 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
         return 0;
     }
 
+    public void refresh() {
+        fragmentManager.getFragments().forEach(fragment -> {
+            if (fragment.getView() == null)
+                return;
+            ContentViewerWebView contentViewerWebView = fragment.getView().findViewById(R.id.contentViewerItemContentItem);
+            if (contentViewerWebView == null)
+                return;
+            contentViewerWebView.reload();
+        });
+    }
+
+
+    /**
+     * Page adapter fragment
+     */
     public static class ContentFragment extends Fragment {
 
-        private final int position;
-        private BookService bookService;
+        private final int chapterNumber;
 
+        /**
+         * Constructor without parameters.
+         * Chapter number is taken from book service
+         *
+         * @throws BookServiceException exception on book read
+         */
         public ContentFragment() throws BookServiceException {
-            this.bookService = BookService.getBookService();
-            this.position = bookService.getCurrentChapter();
+            BookService bookService = BookService.getBookService();
+            this.chapterNumber = bookService.getCurrentChapterNumber();
         }
 
-        public ContentFragment(int position) {
-            this.position = position;
+        /**
+         * Constructor with chapter number
+         *
+         * @param chapterNumber chapter number
+         */
+        public ContentFragment(int chapterNumber) {
+            this.chapterNumber = chapterNumber;
         }
 
         @SneakyThrows
@@ -78,12 +103,11 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.item_content_view, container, false);
-            ContentViewerWevView contentViewerWevView = rootView.findViewById(R.id.contentViewerItemContentItem);
-            int currentChapterPosition = BookService.getBookService().getCurrentChapterPosition();
-            if (position != BookService.getBookService().getCurrentChapter()) {
-                currentChapterPosition = 0;
-            }
-            contentViewerWevView.uploadChapter(position, currentChapterPosition);
+            ContentViewerWebView contentViewerWebView = rootView.findViewById(R.id.contentViewerItemContentItem);
+            int chapterPosition =
+                    chapterNumber == BookService.getBookService().getCurrentChapterNumber() ?
+                            BookService.getBookService().getCurrentChapterPosition() : 0;
+            contentViewerWebView.uploadChapter(chapterNumber, chapterPosition);
             return rootView;
         }
 

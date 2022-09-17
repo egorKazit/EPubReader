@@ -79,7 +79,8 @@ public class JavaScriptInteractor {
     public enum JavascriptInterfaceTag {
         JAVASCRIPT_CLICK_WORD_INTERFACE("JavascriptClickInteractionInterface"),
         JAVASCRIPT_SELECT_PHRASE_INTERFACE("JavascriptSelectInteractionInterface"),
-        JAVASCRIPT_CLICK_PHRASE_INTERFACE("JavascriptPhraseInteractionInterface");
+        JAVASCRIPT_CLICK_PHRASE_INTERFACE("JavascriptPhraseInteractionInterface"),
+        JAVASCRIPT_CLICK_IMAGE_INTERFACE("JavascriptImageInteractionInterface");
         private final String name;
     }
 

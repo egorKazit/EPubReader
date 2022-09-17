@@ -2,6 +2,7 @@ package com.yk.contentviewer.maincontent;
 
 import android.app.Activity;
 import android.os.Build;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
@@ -10,6 +11,7 @@ import androidx.annotation.RequiresApi;
 
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.utils.PreferenceHelper;
 import com.yk.contentviewer.R;
 
 import lombok.AllArgsConstructor;
@@ -44,7 +46,7 @@ public class ContentViewerItemSelector {
      *
      * @param showProgressBar           progress bar function
      * @param cancelTimerForProgressBar cancel progress bar function
-     * @return
+     * @return true by default
      */
     public boolean onSizerCall(Runnable showProgressBar, Runnable cancelTimerForProgressBar) throws BookServiceException {
         SeekBar seekBar = activity.findViewById(R.id.contentViewerItemSize);
@@ -53,18 +55,29 @@ public class ContentViewerItemSelector {
         seekBar.setVisibility(View.VISIBLE);
         seekBar.setOnSeekBarChangeListener(ContentViewerOnSeekBarChangeListener.builder()
                 .viewId(R.id.contentViewerItemContentItem)
-                .consumerOnProgressChange((viewId, progress) ->
-                {
+                .consumerOnProgressChange((viewId, progress) -> {
                     try {
-                        ((ContentViewerWevView) activity.findViewById(viewId)).setTextSize(progress);
+                        ((ContentViewerWebView) activity.findViewById(viewId)).setTextSize(progress);
                     } catch (BookServiceException bookServiceException) {
-                        bookServiceException.printStackTrace();
+                        Log.e("Sizer issue", bookServiceException.getMessage());
                     }
                 })
                 .onStartTrackingWrapper(cancelTimerForProgressBar)
                 .onStopTrackingWrapper(showProgressBar)
                 .build());
         showProgressBar.run();
+        return true;
+    }
+
+    /**
+     * Method to hide or show translation context
+     *
+     * @param item menu item
+     * @return true if state is changed
+     */
+    public boolean onNightModeCall(MenuItem item) {
+        PreferenceHelper.Instance.INSTANCE.helper.enableNightMode(item.isChecked());
+        item.setChecked(!item.isChecked());
         return true;
     }
 

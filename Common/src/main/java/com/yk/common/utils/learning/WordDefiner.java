@@ -43,7 +43,7 @@ public class WordDefiner {
             // do call
             response = call.execute();
         } catch (IOException ioException) {
-            throw new WordOperatorException("Error on definition", ioException);
+             throw new WordOperatorException("Error on definition", ioException);
         }
         // parse response
         String definitionsInJson = new BufferedReader(new InputStreamReader(response.body().byteStream()))

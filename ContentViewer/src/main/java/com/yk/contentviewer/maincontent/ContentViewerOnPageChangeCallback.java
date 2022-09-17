@@ -1,13 +1,13 @@
 package com.yk.contentviewer.maincontent;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
 import java.util.function.Function;
@@ -25,9 +25,9 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     private boolean checkDirection;
     private boolean isScrollingUp = false;
 
-    private final Function<Integer, ContentViewerWevView> retriever;
+    private final Function<Integer, ContentViewerWebView> retriever;
     private final int viewId;
-    private BookService bookService;
+    private final BookService bookService;
 
     /**
      * Main constructor
@@ -35,7 +35,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
      * @param retriever retriever function
      * @param viewId    view
      */
-    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWevView> retriever, int viewId) throws BookServiceException {
+    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) throws BookServiceException {
         this.retriever = retriever;
         this.viewId = viewId;
         this.bookService = BookService.getBookService();
@@ -45,13 +45,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         super.onPageScrolled(position, positionOffset, positionOffsetPixels);
         if (checkDirection) {
-            if (thresholdOffset > positionOffset && positionOffsetPixels > thresholdOffsetPixels) {
-                Log.i("C.TAG", "going down");
-                isScrollingUp = false;
-            } else {
-                Log.i("C.TAG", "going up");
-                isScrollingUp = true;
-            }
+            isScrollingUp = !(thresholdOffset > positionOffset) || positionOffsetPixels <= thresholdOffsetPixels;
             checkDirection = false;
         }
     }
@@ -60,7 +54,6 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     public void onPageScrollStateChanged(int state) {
         super.onPageScrollStateChanged(state);
         if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
-            Log.e("state", String.valueOf(state));
             checkDirection = true;
         }
 
@@ -70,26 +63,26 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
-        ContentViewerWevView contentViewerWevView = retriever.apply(this.viewId);
-        if (isScrollingUp && position > bookService.getCurrentChapter()) {
-            ParentMethodCaller.callConsumerOnParent(contentViewerWevView, ViewPager2.class,
-                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapter());
+        ContentViewerWebView contentViewerWebView = retriever.apply(this.viewId);
+        if (isScrollingUp && position > bookService.getCurrentChapterNumber()) {
+            ParentMethodCaller.callConsumerOnParent(contentViewerWebView, ViewPager2.class,
+                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapterNumber());
             return;
         }
-        if (!isScrollingUp && position < bookService.getCurrentChapter()) {
-            ParentMethodCaller.callConsumerOnParent(contentViewerWevView, ViewPager2.class,
-                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapter());
+        if (!isScrollingUp && position < bookService.getCurrentChapterNumber()) {
+            ParentMethodCaller.callConsumerOnParent(contentViewerWebView, ViewPager2.class,
+                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapterNumber());
             return;
         }
-        if (contentViewerWevView != null) {
+        if (contentViewerWebView != null) {
             int height = 0;
-            if (position < bookService.getCurrentChapter())
+            if (position < bookService.getCurrentChapterNumber())
                 height = 1000000000;
-            contentViewerWevView.scrollTo(0, height);
+            contentViewerWebView.scrollTo(0, height);
             bookService.setCurrentChapterPosition(height);
-            contentViewerWevView.setTextSize(bookService.getTextSize());
+            contentViewerWebView.setTextSize(bookService.getTextSize());
         }
-        bookService.setCurrentChapter(position);
-        bookService.updatePersistenceBook();
+        bookService.setCurrentChapterNumber(position);
+        BookServiceHelper.updatePersistenceBook(bookService);
     }
 }

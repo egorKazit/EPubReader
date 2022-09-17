@@ -34,25 +34,24 @@ import lombok.AllArgsConstructor;
 public class ContentViewerWebViewClient extends WebViewClient {
 
     private final JavaScriptInteractor javaScriptInteractor;
-    private final ContentViewerWevView webView;
+    private final ContentViewerWebView contentViewerWebView;
     private final Function<Uri, WebResourceResponse> onRequestFunction;
-    private final Runnable onLoadFunction;
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        if (request.getUrl().getScheme().equals(ContentViewerWevView.INTERNAL_PROTOCOL)) {
-            webView.stopLoading();
+        if (request.getUrl().getScheme().equals(ContentViewerWebView.INTERNAL_BOOK_PROTOCOL)) {
+            contentViewerWebView.stopLoading();
             try {
                 ParentMethodCaller.callConsumerOnParent(view, ViewPager2.class,
                         (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), BookService.getBookService().getChapterByHRef(request.getUrl().getPath()));
             } catch (BookServiceException bookServiceException) {
-                Toaster.make(webView.getContext(), "Book can not be loaded", bookServiceException);
+                Toaster.make(contentViewerWebView.getContext(), "Book can not be loaded", bookServiceException);
             }
             return super.shouldOverrideUrlLoading(view, request);
         } else {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(request.getUrl());
-            webView.getContext().startActivity(i);
+            contentViewerWebView.getContext().startActivity(i);
             return true;
         }
     }
@@ -66,19 +65,21 @@ public class ContentViewerWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        String selectionScript = new BufferedReader(new InputStreamReader(webView.getResources().openRawResource(R.raw.selection)))
+        String selectionScript = new BufferedReader(new InputStreamReader(contentViewerWebView.getResources().openRawResource(R.raw.selection)))
                 .lines().collect(Collectors.joining());
         javaScriptInteractor.
                 addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_WORD_INTERFACE,
-                        webView::handleSelectWord);
+                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedWord);
         javaScriptInteractor.
                 addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_SELECT_PHRASE_INTERFACE,
-                        webView::handleSelectedPhrase);
+                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedPhrase);
         javaScriptInteractor.
                 addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_PHRASE_INTERFACE,
-                        webView::handleSelectPhrase);
+                        contentViewerWebView.getContentViewerJSHandler()::handleContextOfSelectedWord);
+        javaScriptInteractor.
+                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_IMAGE_INTERFACE,
+                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedImage);
         javaScriptInteractor.setupScript(selectionScript);
-        webView.scrollTo(0, webView.getScrollPositionY());
-        onLoadFunction.run();
+        contentViewerWebView.scrollTo(0, contentViewerWebView.getVerticalPosition());
     }
 }

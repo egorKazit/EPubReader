@@ -58,7 +58,7 @@ public class GenericPendingIntent {
     GenericPendingIntent appendSchedulerRepeating(Class<? extends Worker> classWorker) {
         intent.putExtra(GlobalConstants.SCHEDULER_REPEAT_FLAG, true);
         intent.putExtra(GlobalConstants.SCHEDULER_WORKER_CLASS_NAME, classWorker.getName());
-        intent.putExtra(GlobalConstants.SCHEDULER_WORKER_REPEAT_INTERVAL, new PreferenceHelper().getLearningInterval());
+        intent.putExtra(GlobalConstants.SCHEDULER_WORKER_REPEAT_INTERVAL, PreferenceHelper.Instance.INSTANCE.helper.getLearningInterval());
         return this;
     }
 

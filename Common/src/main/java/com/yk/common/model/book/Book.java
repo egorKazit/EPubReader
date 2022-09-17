@@ -37,8 +37,8 @@ public class Book {
     private String rootPath;
     @ColumnInfo(name = "title")
     private String title;
-    @ColumnInfo(name = "current_chapter")
-    private int currentChapter;
+    @ColumnInfo(name = "current_chapter_number")
+    private int currentChapterNumber;
     @ColumnInfo(name = "current_chapter_position")
     private int currentChapterPosition;
     @ColumnInfo(name = "cover")

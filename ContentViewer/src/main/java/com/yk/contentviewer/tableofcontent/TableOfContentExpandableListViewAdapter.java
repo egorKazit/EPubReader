@@ -109,7 +109,7 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
                 chapterToSelect = (TableOfContent.Chapter) getGroup(groupPosition);
             Intent intent = new Intent();
             try {
-                BookService.getBookService().setCurrentChapter(chapterToSelect.getSpineRefId());
+                BookService.getBookService().setCurrentChapterNumber(chapterToSelect.getSpineRefId());
             } catch (BookServiceException bookServiceException) {
                 bookServiceException.printStackTrace();
             }

@@ -15,7 +15,6 @@ import static com.yk.common.constants.Tags.ROOT_FILES;
 import static com.yk.common.constants.Tags.TITLE;
 import static com.yk.common.utils.JsonContentHelper.getContentInJson;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -31,7 +30,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,7 +63,7 @@ public class BookService {
     private final String rootDirectory;
     private final JSONObject contentFileHeader;
     private final JSONObject contentFileZipEntryInJson;
-    private final JSONArray meta;
+    private final Object meta;
     private TableOfContent tableOfContent;
 
 
@@ -82,16 +80,8 @@ public class BookService {
         }
     }
 
-    public static void updateLatestBookPath(Context context, String bookPath) {
-        try {
-            FileOutputStream fileOutputStream = context.openFileOutput("lastBook.txt", Context.MODE_PRIVATE);
-            fileOutputStream.write(bookPath.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-        } catch (IOException e) {
-            // it's important, but not critical, so exception is not rethrown
-            Log.e("BookService", "Error on latest book path update");
-        }
+    public boolean isEntryPresented(String resourceName) {
+        return bookZipFile.getEntry(new File(rootDirectory, resourceName).getPath()) != null;
     }
 
     public InputStream getResourceAsStream(String resourceName) throws IOException {
@@ -150,7 +140,7 @@ public class BookService {
             bookServiceBuilder.contentFileZipEntryInJson(contentFileZipEntryInJson);
             JSONObject contentFileHeader = contentFileZipEntryInJson.getJSONObject(PACKAGE.getTag()).getJSONObject(METADATA.getTag());
             bookServiceBuilder.contentFileHeader(contentFileHeader);
-            bookServiceBuilder.meta(contentFileHeader.getJSONArray(META.getTag()));
+            bookServiceBuilder.meta(contentFileHeader.get(META.getTag()));
 
         } catch (IOException | JSONException exception) {
             Log.e("BookService", "Error on content building");
@@ -168,20 +158,7 @@ public class BookService {
 
     public static BookService initFromPath(String path) throws BookServiceException {
         bookService = buildFromPath(path);
-        Thread currentThread = Thread.currentThread();
-        new Thread(() -> {
-            bookService.book = ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(path);
-            synchronized (currentThread) {
-                currentThread.notify();
-            }
-        }).start();
-        synchronized (currentThread) {
-            try {
-                currentThread.wait();
-            } catch (InterruptedException interruptedException) {
-                throw new BookServiceException("Error on loading book from database");
-            }
-        }
+        bookService.book = BookServiceHelper.uploadBookFromDatabase(path);
         if (bookService.book == null) {
             bookService.book = Book.builder().addingDate(new Date()).filePath(path)
                     .filePath(path)
@@ -191,13 +168,9 @@ public class BookService {
                     .creator(bookService.getCreator())
                     .textSize(100)
                     .build();
-            bookService.createPersistenceBook();
+            BookServiceHelper.createPersistenceBook(bookService);
         }
         return bookService;
-    }
-
-    public static void removeBook(Book book) {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().deleteBook(book)).start();
     }
 
     public String getPath() {
@@ -229,27 +202,26 @@ public class BookService {
         return "";
     }
 
-
-    public int getCurrentChapter() {
-        return book.getCurrentChapter();
+    public int getCurrentChapterNumber() {
+        return book.getCurrentChapterNumber();
     }
 
-    public void setCurrentChapter(int currentChapter) {
-        book.setCurrentChapter(currentChapter);
+    public void setCurrentChapterNumber(int currentChapter) {
+        book.setCurrentChapterNumber(currentChapter);
     }
 
     public int getChapterByHRef(String href) {
-        return tableOfContent.getChapterTree().stream().filter(chapter -> href.endsWith(chapter.getChapterRef()))
+        return tableOfContent.getSpines().stream().filter(chapter -> href.endsWith(chapter.getChapterRef()))
                 .findAny().orElseThrow(RuntimeException::new)
-                .getSpineRefId();
+                .getSpineId();
     }
 
     public int getCurrentChapterPosition() {
         return book.getCurrentChapterPosition();
     }
 
-    public void setCurrentChapterPosition(int currentChapterPosition) {
-        book.setCurrentChapterPosition(currentChapterPosition);
+    public void setCurrentChapterPosition(int currentChapterNumber) {
+        book.setCurrentChapterPosition(currentChapterNumber);
     }
 
     public int getTextSize() {
@@ -274,20 +246,19 @@ public class BookService {
         }
     }
 
-    private void createPersistenceBook() {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(getBook())).start();
-    }
-
-    public void updatePersistenceBook() {
-        new Thread(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().updateBook(getBook())).start();
-    }
-
     private String getCoverId() throws BookServiceException {
         try {
-            for (int index = 0; index < meta.length(); index++) {
-                if (((JSONObject) meta.get(index)).has(NAME.getTag())
-                        && ((JSONObject) meta.get(index)).getString(NAME.getTag()).equals("cover")) {
-                    return ((JSONObject) meta.get(index)).getString(CONTENT.getTag());
+            if (meta instanceof JSONArray) {
+                for (int index = 0; index < ((JSONArray) meta).length(); index++) {
+                    if (((JSONObject) ((JSONArray) meta).get(index)).has(NAME.getTag())
+                            && ((JSONObject) ((JSONArray) meta).get(index)).getString(NAME.getTag()).equals("cover")) {
+                        return ((JSONObject) ((JSONArray) meta).get(index)).getString(CONTENT.getTag());
+                    }
+                }
+            } else if (meta instanceof JSONObject) {
+                if (((JSONObject) meta).has(NAME.getTag())
+                        && ((JSONObject) meta).getString(NAME.getTag()).equals("cover")) {
+                    return ((JSONObject) meta).getString(CONTENT.getTag());
                 }
             }
         } catch (JSONException jsonException) {

@@ -18,6 +18,7 @@ import com.yk.common.model.book.Book;
 import com.yk.common.model.book.BookPool;
 import com.yk.common.model.book.BookService;
 import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
@@ -46,6 +47,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = BookPool.getBook(position);
         holder.bookName.setText(book.getTitle());
+
         if (book.getCover() != null) {
             try {
                 Glide.with(holder.itemView.getContext())
@@ -53,14 +55,15 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                                 .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
                         .centerCrop()
                         .fitCenter()
-                        .placeholder(R.drawable.ic_no_image_foreground)
-                        .error(R.drawable.ic_no_image_foreground)
+                        .placeholder(R.mipmap.ic_default_book_cover_foreground)
+                        .error(R.mipmap.ic_default_book_cover_foreground)
                         .into(holder.bookImage);
             } catch (BookServiceException bookServiceException) {
                 Toaster.make(holder.itemView.getContext(), String.format("Cover for %s can not be read", book.getTitle()), bookServiceException);
             }
         } else
-            holder.bookImage.setImageResource(R.drawable.ic_no_image_foreground);
+
+            holder.bookImage.setImageResource(R.mipmap.ic_default_book_cover_foreground);
 
     }
 
@@ -92,7 +95,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
          */
         private void openBook() {
             Book book = BookPool.getBook(getLayoutPosition());
-            BookService.updateLatestBookPath(itemView.getContext(), book.getFilePath());
+            BookServiceHelper.updateLatestBookPath(itemView.getContext(), book.getFilePath());
             try {
                 // create new intent and start activity
                 Intent intent = new Intent(itemView.getContext(), ContentViewer.class);

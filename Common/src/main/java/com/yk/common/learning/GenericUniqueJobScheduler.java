@@ -55,7 +55,7 @@ public class GenericUniqueJobScheduler {
                 .build();
         NotificationStateResolver.saveWorkUUID(context, oneTimeWorkRequest.getId());
         // enqueue unique job
-        WorkManager.getInstance(context).enqueueUniqueWork(uniqueWorkName,
+        WorkManager.getInstance().enqueueUniqueWork(uniqueWorkName,
                 ExistingWorkPolicy.REPLACE,
                 oneTimeWorkRequest);
 
