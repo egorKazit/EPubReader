@@ -40,6 +40,10 @@ public abstract class DictionaryDao {
     @Query("SELECT * FROM origin_word WHERE origin_word = :originWord AND source_language = :sourceLanguage AND target_language = :targetLanguage")
     public abstract Dictionary getDictionaryByWord(String originWord, String sourceLanguage, String targetLanguage);
 
+    @Transaction
+    @Query("SELECT * FROM origin_word WHERE origin_word LIKE :pattern")
+    public abstract List<Dictionary> search(String pattern);
+
     /**
      * Method to add new dictionary with translations and definitions
      *
@@ -61,22 +65,22 @@ public abstract class DictionaryDao {
         addWordDefinitions(wordDefinitions);
     }
 
-    /**
-     * Method to update translations
-     */
-    public DictionaryDao updateTranslations(OriginWord originWord, List<WordTranslation> wordTranslations) {
-        wordTranslations.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
-        addWordTranslations(wordTranslations);
-        return this;
-    }
-
-    /**
-     * Method to update definitions
-     */
-    public void updateDefinitions(OriginWord originWord, List<WordDefinition> wordDefinitions) {
-        wordDefinitions.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
-        addWordDefinitions(wordDefinitions);
-    }
+//    /**
+//     * Method to update translations
+//     */
+//    public DictionaryDao updateTranslations(OriginWord originWord, List<WordTranslation> wordTranslations) {
+//        wordTranslations.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
+//        addWordTranslations(wordTranslations);
+//        return this;
+//    }
+//
+//    /**
+//     * Method to update definitions
+//     */
+//    public void updateDefinitions(OriginWord originWord, List<WordDefinition> wordDefinitions) {
+//        wordDefinitions.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
+//        addWordDefinitions(wordDefinitions);
+//    }
 
     /**
      * Method to add origin word

@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4"
+        android:contentDescription="@string/folder_file_description"
         android:paddingTop="5dp"
         android:paddingEnd="5dp" />
 

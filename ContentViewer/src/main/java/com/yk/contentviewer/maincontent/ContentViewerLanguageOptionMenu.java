@@ -7,13 +7,14 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.model.dictionary.Language;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.dictionary.LanguageService;
 import com.yk.common.utils.Toaster;
-import com.yk.common.utils.learning.WordOperatorException;
-import com.yk.common.utils.learning.WordTranslator;
 import com.yk.contentviewer.R;
 
 import java.util.List;
@@ -31,42 +32,43 @@ public class ContentViewerLanguageOptionMenu {
      * @param menu                option menu
      * @param translateWordLayout translated word view
      */
-    public static void prepareLanguageOptionMenu(Menu menu, ViewGroup translateWordLayout,
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static void prepareLanguageOptionMenu(@NonNull Menu menu, ViewGroup translateWordLayout,
                                                  List<View> viewToReactOnLanguageChange,
                                                  List<View> leftViews) {
         // find menu and create sub menu
         MenuItem menuItem = menu.findItem(R.id.targetLanguageValue);
         SubMenu subMenu = menuItem.getSubMenu();
         AtomicInteger index = new AtomicInteger();
-        List<WordTranslator.Language> languages;
+        List<Language> languages;
         String sourceLanguage;
         // get all supported languages and book language
         try {
-            languages = WordTranslator.getLanguages();
+            languages = LanguageService.getInstance().getLanguages();
             sourceLanguage = BookService.getBookService().getLanguage();
-        } catch (WordOperatorException | BookServiceException exception) {
+        } catch (BookServiceException exception) {
             Toaster.make(translateWordLayout.getContext(), "Error on table of content loading", exception);
             return;
         }
-        if (languages == null)
+        if (subMenu == null)
             return;
         // inflate all languages
         languages.forEach(language -> subMenu.add(0, index.getAndIncrement(), Menu.NONE, language.getName())
                 .setOnMenuItemClickListener(item -> {
-                    WordTranslator.setLanguage(languages.get(item.getItemId()).getLanguage());
+                    LanguageService.getInstance().setLanguage(languages.get(item.getItemId()).getLanguage());
                     menuItem.setTitle(languages.get(item.getItemId()).getName());
-                    if (WordTranslator.getLanguage().equals(sourceLanguage)) {
+                    if (LanguageService.getInstance().getLanguage().equals(sourceLanguage)) {
                         viewToReactOnLanguageChange.forEach(view -> view.setVisibility(View.GONE));
                         translateWordLayout.getLayoutParams().height = leftViews.stream().mapToInt(View::getHeight).sum();
                         translateWordLayout.getLayoutParams().width = leftViews.stream().mapToInt(View::getWidth).sum();
                     } else {
                         viewToReactOnLanguageChange.forEach(view -> view.setVisibility(View.VISIBLE));
-                        translateWordLayout.getLayoutParams().width = ((ViewGroup)translateWordLayout.getParent()).getLayoutParams().width;
+                        translateWordLayout.getLayoutParams().width = ((ViewGroup) translateWordLayout.getParent()).getLayoutParams().width;
                     }
                     return false;
                 }));
 
-        menuItem.setTitle(languages.stream().filter(language -> language.getLanguage().equals(WordTranslator.getLanguage()))
-                .findFirst().orElseGet(WordTranslator.Language::new).getName());
+        menuItem.setTitle(languages.stream().filter(language -> language.getLanguage().equals(LanguageService.getInstance().getLanguage()))
+                .findFirst().orElseGet(() -> new Language("ru", "Russian")).getName());
     }
 }

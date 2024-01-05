@@ -12,9 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
-import com.yk.common.model.dictionary.DictionaryPool;
-import com.yk.common.utils.learning.WordOperatorException;
-import com.yk.common.utils.learning.WordTranslator;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.dictionary.DictionaryService;
+import com.yk.common.service.dictionary.LanguageService;
+import com.yk.common.utils.ThreadOperator;
+import com.yk.common.http.WordOperatorException;
+import com.yk.common.http.WordTranslator;
 import com.yk.contentviewer.R;
 
 import java.util.Locale;
@@ -29,24 +33,30 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 public class ContentViewerJSHandler {
 
-    private final ContentViewerWebView contentViewerWebView;
+    private final Activity activity;
+    private final ThreadOperator wordTranslationThreadOperator = ThreadOperator.getInstance(true);
+    private final ThreadOperator phraseTranslationThreadOperator = ThreadOperator.getInstance(true);
 
     /**
      * Method to retrieve the word, translate it and put in correct place
      *
      * @param originalWord original word
      */
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void handleSelectedWord(@NonNull String originalWord) {
-        if (((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedWord).getVisibility() != View.VISIBLE) {
+        if (activity.findViewById(R.id.contentViewerTranslatedWord).getVisibility() != View.VISIBLE) {
             return;
         }
         // set translation text
-        new Thread(() -> {
-            String translation = DictionaryPool.getWordTranslation(originalWord.toLowerCase(Locale.ROOT));
-            ((Activity) contentViewerWebView.getContext()).runOnUiThread(() ->
-                    ((TextView) ((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedWord))
-                            .setText(String.format("%s - %s", originalWord.toLowerCase(Locale.ROOT), translation)));
-        }).start();
+        wordTranslationThreadOperator.addToQueue(() -> {
+            String translation = DictionaryService.getInstance().getDictionary(originalWord.toLowerCase(Locale.ROOT))
+                    .getMainTranslation();
+            activity.runOnUiThread(() -> {
+                var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
+                translatedWord.setText(String.format("%s - %s", originalWord.toLowerCase(Locale.ROOT), translation));
+                translatedWord.setSelected(true);
+            });
+        });
     }
 
     /**
@@ -54,21 +64,26 @@ public class ContentViewerJSHandler {
      *
      * @param originPhrase origin phrase
      */
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SetTextI18n")
     public void handleContextOfSelectedWord(@NonNull String originPhrase) {
         // set translation text
-        if (((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedContext).getVisibility() != View.VISIBLE) {
+        if (activity.findViewById(R.id.contentViewerTranslatedContext).getVisibility() != View.VISIBLE) {
             return;
         }
-        new Thread(() -> {
+        phraseTranslationThreadOperator.addToQueue(() -> {
             try {
-                ((TextView) ((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedContext))
-                        .setText(new WordTranslator().translateText(originPhrase).get(0));
-            } catch (WordOperatorException e) {
-                ((TextView) ((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedContext))
+                ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
+                        .setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
+                                        LanguageService.getInstance().getLanguage()).getTranslations()
+                                .stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals("Main"))
+                                .findAny()
+                                .orElseThrow(() -> new WordOperatorException("No translation")).getTranslation());
+            } catch (WordOperatorException | BookServiceException e) {
+                ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
                         .setText(GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage());
             }
-        }).start();
+        });
     }
 
     /**
@@ -76,23 +91,32 @@ public class ContentViewerJSHandler {
      *
      * @param originalPhrase original phrase
      */
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void handleSelectedPhrase(@NonNull String originalPhrase) {
         String originTextTrim = originalPhrase.trim();
-        if (originTextTrim.length() > 0 && !originTextTrim.contains(" ")) {
+        if (!originTextTrim.isEmpty() && !originTextTrim.contains(" ")) {
             // set translation text
-            new Thread(() -> ((TextView) ((Activity) contentViewerWebView.getContext()).findViewById(R.id.contentViewerTranslatedWord))
-                    .setText(DictionaryPool.getWordTranslation(originalPhrase))).start();
+            wordTranslationThreadOperator.addToQueue(() ->
+                    ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
+                            .setText(DictionaryService.getInstance().getDictionary(originalPhrase).getMainTranslation()));
+            new Thread(() -> ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
+                    .setText(DictionaryService.getInstance().getDictionary(originalPhrase).getMainTranslation())).start();
         } else {
             final AlertDialog alertDialog =
-                    new AlertDialog.Builder(contentViewerWebView.getContext())
+                    new AlertDialog.Builder(activity)
                             .setMessage(originTextTrim)
                             .setPositiveButton("Translate", null)
                             .setNegativeButton("Close", null).show();
             Button translateButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
             translateButton.setOnClickListener(dialog -> {
                 try {
-                    alertDialog.setMessage(String.join("\n", originTextTrim, new WordTranslator().translateText(originalPhrase).get(0)));
-                } catch (WordOperatorException e) {
+                    alertDialog.setMessage(String.join("\n", originTextTrim,
+                            WordTranslator.resolveTranslation(originalPhrase, BookService.getBookService().getLanguage(),
+                                            LanguageService.getInstance().getLanguage())
+                                    .getTranslations().stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals("Main"))
+                                    .findAny()
+                                    .orElseThrow(() -> new WordOperatorException("No translation")).getTranslation()));
+                } catch (WordOperatorException | BookServiceException e) {
                     alertDialog.setMessage(String.join("\n", originTextTrim, GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage()));
                 }
                 translateButton.setVisibility(View.GONE);
@@ -109,7 +133,7 @@ public class ContentViewerJSHandler {
     @SuppressLint("ClickableViewAccessibility")
     @SneakyThrows
     public void handleSelectedImage(@NonNull String imageUrl) {
-        ContentViewerImageDialog.openImageDialog(contentViewerWebView.getContext(), imageUrl);
+        ContentViewerImageDialog.openImageDialog(activity, imageUrl);
     }
 
 }

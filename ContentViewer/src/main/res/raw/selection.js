@@ -1,3 +1,4 @@
+console.log(`start script loading`);
 var click = function (event){
                  var rangeForWord = document.caretRangeFromPoint(event.clientX, event.clientY);
                  if(rangeForWord.startContainer.nodeType === Node.ELEMENT_NODE){
@@ -8,7 +9,7 @@ var click = function (event){
                      var rangeToSelectWord = document.createRange();
                      rangeToSelectWord.setStart(rangeForWord.startContainer, rangeForWord.startOffset);
                      rangeToSelectWord.setEnd(rangeForWord.endContainer, rangeForWord.endOffset);
-                     if(rangeForWord.toString().trim() != '' && /^[a-zA-Z1-9\'\-]+$/.test(rangeForWord.toString().trim())){
+                     if(rangeForWord.toString().trim() != ''){
                          var selection = window.getSelection();
                          selection.removeAllRanges();
                          selection.addRange(rangeToSelectWord);
@@ -39,8 +40,9 @@ var click = function (event){
 
                  }
              };
+console.log(`click is set`);
 document.addEventListener('click', click);
-document.addEventListener('click', click);
+console.log(`click function is assigned`);
 document.addEventListener('mouseup', function(event) {
     if(window.getSelection().toString().length){
         JavascriptSelectInteractionInterface.interact(window.getSelection().toString());

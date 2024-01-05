@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <include
-        android:id="@+id/include"
-        layout="@layout/dictionary_item" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/dictionaryDetailsDefinitions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/include"
-        tools:ignore="MissingConstraints" />
+        android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            android:id="@+id/include"
+            layout="@layout/dictionary_item" />
+
+        <TextView
+            android:id="@+id/dictionaryDetailsTranslationsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/dictionaryDetailsTranslations"
+            android:text="@string/translations"
+            android:textSize="20sp"
+            android:padding="5dp"
+            app:layout_constraintTop_toBottomOf="@+id/include" />
+
+        <LinearLayout
+            android:id="@+id/dictionaryDetailsTranslations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/dictionaryDetailsTranslationsLabel"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/dictionaryDetailsDefinitionsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/dictionaryDetailsDefinitions"
+            android:text="@string/definitions"
+            android:textSize="20sp"
+            android:padding="5dp"
+            app:layout_constraintTop_toBottomOf="@+id/dictionaryDetailsTranslations" />
+
+        <LinearLayout
+            android:id="@+id/dictionaryDetailsDefinitions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/dictionaryDetailsDefinitionsLabel"
+            tools:ignore="MissingConstraints" />
+
+    </LinearLayout>
+</ScrollView>

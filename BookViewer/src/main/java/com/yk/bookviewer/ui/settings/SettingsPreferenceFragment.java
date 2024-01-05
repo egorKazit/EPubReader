@@ -10,9 +10,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.yk.bookviewer.R;
-import com.yk.common.learning.LearningOperator;
-import com.yk.common.utils.ApplicationContext;
-import com.yk.common.utils.ContentFont;
+import com.yk.common.service.learning.LearningOperator;
+import com.yk.common.context.ApplicationContext;
+import com.yk.common.constants.ContentFont;
 import com.yk.common.utils.PreferenceHelper;
 
 import java.util.Arrays;
@@ -23,11 +23,11 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        setPreferencesFromResource(R.xml.settoings_preferences, rootKey);
+        setPreferencesFromResource(R.xml.settings_preferences, rootKey);
         SwitchPreferenceCompat learningSwitch = findPreference("learning");
         if (learningSwitch != null) {
             learningSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-                PreferenceHelper.Instance.INSTANCE.helper.setLearningEnabled((Boolean) newValue);
+                PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setLearningEnabled((Boolean) newValue);
                 if ((boolean) newValue)
                     new LearningOperator(ApplicationContext.getContext()).startLearning();
                 else {
@@ -35,12 +35,12 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
                 }
                 return true;
             });
-            learningSwitch.setChecked(PreferenceHelper.Instance.INSTANCE.helper.isLearningEnabled());
+            learningSwitch.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isLearningEnabled());
         }
         ListPreference learningIntervalList = findPreference("learning_delay");
         if (learningIntervalList != null) {
             learningIntervalList.setOnPreferenceChangeListener((preference, newValue) -> {
-                PreferenceHelper.Instance.INSTANCE.helper.setLearningInterval(Integer.parseInt((String) newValue));
+                PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setLearningInterval(Integer.parseInt((String) newValue));
                 return true;
             });
         }
@@ -50,10 +50,10 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
             darkModeSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
                 var newValueInCorrectType = (Boolean) newValue;
                 darkModeSwitch.setChecked(newValueInCorrectType);
-                PreferenceHelper.Instance.INSTANCE.helper.enableNightMode(!newValueInCorrectType);
+                PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.enableNightMode(!newValueInCorrectType);
                 return true;
             });
-            darkModeSwitch.setChecked(PreferenceHelper.Instance.INSTANCE.helper.isNightMode());
+            darkModeSwitch.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
         }
 
         ListPreference fontSettings = findPreference("font");
@@ -65,11 +65,11 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
                     .stream(ContentFont.values()).map(contentFont -> (CharSequence) contentFont.getId())
                     .collect(Collectors.toList()).toArray(new CharSequence[]{});
             fontSettings.setEntries(entries);
-            fontSettings.setValue(PreferenceHelper.Instance.INSTANCE.helper.getContentFont().getId());
+            fontSettings.setValue(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont().getId());
             fontSettings.setEntryValues(entryValues);
             fontSettings.setOnPreferenceChangeListener((preference, newValue) -> {
                 ContentFont contentFont = ContentFont.valueOfContentFontId((String) newValue);
-                PreferenceHelper.Instance.INSTANCE.helper.setContentFont(contentFont);
+                PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setContentFont(contentFont);
                 return true;
             });
         }

@@ -1,5 +1,7 @@
 package com.yk.common.utils;
 
+import androidx.annotation.NonNull;
+
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,49 +10,70 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-final public class ThreadOperator {
+public class ThreadOperator {
 
-    private final static Queue<Runnable> PERSISTENCE_OPERATION_QUEUE = new LinkedBlockingQueue<>();
-    private final static ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-    private final static Thread PROCESSOR;
+    private final Queue<Runnable> persistenceOperationQueue = new LinkedBlockingQueue<>();
+    private final ExecutorService executor;
+    private boolean isRunning = true;
+    private Thread threadWithRunningTask = null;
 
-    static {
-        PROCESSOR = new Thread(() -> {
-            while (true) {
-                Runnable taskToExecute = PERSISTENCE_OPERATION_QUEUE.poll();
-                if (taskToExecute == null)
-                    waitForThread();
-                else
-                    EXECUTOR_SERVICE.submit(taskToExecute);
-            }
-        });
-        PROCESSOR.start();
+    @NonNull
+    public static ThreadOperator getInstance(boolean isConcurrent) {
+        return new ThreadOperator(isConcurrent);
     }
 
-    public static void addToQueue(Runnable runnable) {
-        PERSISTENCE_OPERATION_QUEUE.add(runnable);
-        synchronized (ThreadOperator.class) {
-            ThreadOperator.class.notify();
+    public void addToQueue(Runnable runnable) {
+        persistenceOperationQueue.add(runnable);
+        synchronized (this) {
+            this.notifyAll();
         }
     }
 
-    public static <T, Y, E extends Exception> Object executeSingle(Function<Y, T> operator, Y parameter, Thrower<E> thrower) throws E {
+    public void stop() {
+        this.isRunning = false;
+        if (threadWithRunningTask != null && threadWithRunningTask.isAlive()) {
+            threadWithRunningTask.interrupt();
+        }
+    }
+
+    public <T, Y, E extends Exception> T executeSingle(Function<Y, T> operator, Y parameter, Thrower<E> thrower) throws E {
         return perform(() -> operator.apply(parameter), thrower);
     }
 
-    public static <T, E extends Exception> Object executeSingle(Supplier<T> operator, Thrower<E> thrower) throws E {
+    public <T, E extends Exception> T executeSingle(Supplier<T> operator, Thrower<E> thrower) throws E {
         return perform(operator, thrower);
     }
 
-    private static <T, E extends Exception> T perform(Supplier<T> singleRunOperator, Thrower<E> thrower) throws E {
-        AtomicReference<T> bookAtomicReference = new AtomicReference<>();
+    private ThreadOperator(boolean isConcurrent) {
+        if (isConcurrent) {
+            executor = null;
+        } else {
+            executor = Executors.newFixedThreadPool(20);
+        }
+        Thread operator = new Thread(() -> {
+            while (isRunning) {
+                Runnable taskToExecute = persistenceOperationQueue.poll();
+                if (taskToExecute == null)
+                    waitForThread();
+                else {
+                    if (executor != null) {
+                        executor.submit(taskToExecute);
+                    } else {
+                        taskToExecute.run();
+                    }
+                }
+            }
+        });
+        operator.setDaemon(true);
+        operator.start();
+    }
 
-        Thread threadWithRunningTask = new Thread(() -> bookAtomicReference.set(singleRunOperator.get()));
+    private <T, E extends Exception> T perform(Supplier<T> singleRunOperator, Thrower<E> thrower) throws E {
+        AtomicReference<T> objectAtomicReference = new AtomicReference<>();
+
+        threadWithRunningTask = new Thread(() -> objectAtomicReference.set(singleRunOperator.get()));
         threadWithRunningTask.start();
 
         try {
@@ -58,17 +81,17 @@ final public class ThreadOperator {
         } catch (InterruptedException interruptedException) {
             thrower.throwException();
         }
-        return bookAtomicReference.get();
+        return objectAtomicReference.get();
     }
 
     @SneakyThrows
-    private static void waitForThread() {
-        synchronized (ThreadOperator.class) {
-            ThreadOperator.class.wait();
+    private void waitForThread() {
+        synchronized (this) {
+            this.wait();
         }
     }
 
-    private static void joinThread(Thread threadToJoin) throws InterruptedException {
+    private static void joinThread(@NonNull Thread threadToJoin) throws InterruptedException {
         threadToJoin.join();
     }
 

@@ -1,6 +1,8 @@
 package com.yk.common.utils;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -23,6 +25,12 @@ public class Toaster {
             messageBuilder.append(" cause: ").append(exceptionToProcess.getMessage());
             exceptionToProcess = exceptionToProcess.getCause();
         }
-        Toast.makeText(context, messageBuilder.toString(), Toast.LENGTH_LONG).show();
+        TextView textView = new TextView(context);
+        textView.setText(messageBuilder.toString());
+        textView.setTextColor(Color.BLUE);
+        Toast toast = new Toast(context.getApplicationContext());
+        toast.setView(textView);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 }

@@ -9,10 +9,12 @@ import android.widget.SeekBar;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.contentviewer.R;
+
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 
@@ -58,8 +60,18 @@ public class ContentViewerItemSelector {
                 .consumerOnProgressChange((viewId, progress) -> {
                     try {
                         ((ContentViewerWebView) activity.findViewById(viewId)).setTextSize(progress);
+
+                        String javascript = "var images = document.getElementsByTagName('img'); " +
+                                "for (var i = 0; i < images.length; i++) {" +
+                                "  var img = images[i];" +
+                                String.format("  var targetWidth = Math.round(%s * img.width);", (float) BookService.getBookService().getTextSize() / 200) +
+                                "  targetWidth = targetWidth < 80 ? 80 : targetWidth;" +
+                                "  console.log(targetWidth);" +
+                                "  img.width = targetWidth;" +
+                                "}";
+                        ((ContentViewerWebView) activity.findViewById(viewId)).loadUrl("javascript:" + javascript);
                     } catch (BookServiceException bookServiceException) {
-                        Log.e("Sizer issue", bookServiceException.getMessage());
+                        Log.e("Sizer issue", Objects.requireNonNull(bookServiceException.getMessage()));
                     }
                 })
                 .onStartTrackingWrapper(cancelTimerForProgressBar)
@@ -76,7 +88,7 @@ public class ContentViewerItemSelector {
      * @return true if state is changed
      */
     public boolean onNightModeCall(MenuItem item) {
-        PreferenceHelper.Instance.INSTANCE.helper.enableNightMode(item.isChecked());
+        PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.enableNightMode(item.isChecked());
         item.setChecked(!item.isChecked());
         return true;
     }

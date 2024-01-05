@@ -2,6 +2,7 @@ package com.yk.bookviewer;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,19 +13,15 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.yk.bookviewer.databinding.ActivityBookViewerBinding;
-import com.yk.common.learning.LearningOperator;
+import com.yk.common.service.learning.LearningOperator;
 import com.yk.common.utils.PreferenceHelper;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class BookViewer extends AppCompatActivity {
 
+    @SuppressWarnings("all")
     private ActivityBookViewerBinding binding;
     private NavController navController;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +40,7 @@ public class BookViewer extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         new LearningOperator(this).startLearning();
-        if (PreferenceHelper.Instance.INSTANCE.helper.isNightMode()) {
+        if (PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
     }
@@ -52,4 +49,25 @@ public class BookViewer extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return navController.navigateUp();
     }
+
+
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+////        if(navController.getCurrentDestination())
+//        getMenuInflater().inflate(R.menu.search_menu, menu);
+////        if (menuState.containsKey(com.yk.contentviewer.R.id.darkMode) && menuState.get(com.yk.contentviewer.R.id.darkMode) != null) {
+////            var item = menu.findItem(com.yk.contentviewer.R.id.darkMode);
+////            item.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
+////        }
+////        if (menuState.containsKey(com.yk.contentviewer.R.id.translateContext) && menuState.get(com.yk.contentviewer.R.id.translateContext) != null) {
+////            var localValue = menuState.get(com.yk.contentviewer.R.id.translateContext);
+////            if (localValue == null)
+////                localValue = false;
+////            if (localValue)
+////                contentViewerItemSelector.onTranslationContextCall(menu.findItem(com.yk.contentviewer.R.id.translateContext));
+////        }
+//        return true;
+//    }
+
 }

@@ -7,10 +7,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -23,20 +25,25 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.yk.common.launcher.ActivityResultLauncherWrapper;
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
-import com.yk.common.model.book.BookServiceHelper;
-import com.yk.common.model.dictionary.DictionaryPool;
+import com.yk.common.context.ActivityResultLauncherWrapper;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.book.BookServiceHelper;
+import com.yk.common.service.dictionary.DictionaryService;
+import com.yk.common.service.dictionary.LanguageService;
+import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
-import com.yk.common.utils.ZoomOutPageTransformer;
+import com.yk.common.context.ZoomOutPageTransformer;
 import com.yk.contentviewer.maincontent.ContentViewerItemSelector;
 import com.yk.contentviewer.maincontent.ContentViewerOnPageChangeCallback;
 import com.yk.contentviewer.maincontent.ContentViewerOnSpeechClickListener;
+import com.yk.contentviewer.maincontent.ContentViewerOnTranslationClickListener;
 import com.yk.contentviewer.maincontent.ContentViewerPagerAdapter;
 import com.yk.contentviewer.maincontent.ContentViewerStateSaver;
 import com.yk.contentviewer.maincontent.ContentViewerWebView;
 import com.yk.contentviewer.maincontent.ContentViewerWebViewFontRecyclerAdapter;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,12 +65,14 @@ public class ContentViewer extends AppCompatActivity {
     private final Map<Integer, Timer> timers = new HashMap<>();
     private final Map<Integer, Boolean> menuState = new HashMap<>();
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SneakyThrows
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DictionaryPool.init();
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        DictionaryService.getInstance().init();
+        LanguageService.getInstance().init(this);
+        supportRequestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_content_viewer);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -73,7 +82,7 @@ public class ContentViewer extends AppCompatActivity {
         contentViewPager.setAdapter(contentViewerPagerAdapter);
         // set zoom change animation
         contentViewPager.setPageTransformer(new ZoomOutPageTransformer());
-        // move to the end of chapter if do to previous page
+        // move to the end of chapter if it goes to previous page
         contentViewPager.registerOnPageChangeCallback(new ContentViewerOnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
         try {
             // set current chapter
@@ -91,17 +100,17 @@ public class ContentViewer extends AppCompatActivity {
         ContentViewerWebViewFontRecyclerAdapter contentViewerWebViewFontRecyclerAdapter =
                 new ContentViewerWebViewFontRecyclerAdapter()
                         .setRunnableBeforeAction(() -> cancelTimerForShownElement(R.id.contentViewerFontHolder))
-                        .setRunnableAfterAction(() -> showTimerForShownElement(R.id.contentViewerFontHolder));
+                        .setRunnableAfterAction(() -> startTimerForShownElement(R.id.contentViewerFontHolder));
         recyclerViewFont.setAdapter(contentViewerWebViewFontRecyclerAdapter);
         findViewById(R.id.contentViewerFontLeft).setOnClickListener(v -> {
             cancelTimerForShownElement(R.id.contentViewerFontHolder);
             contentViewerWebViewFontRecyclerAdapter.left();
-            showTimerForShownElement(R.id.contentViewerFontHolder);
+            startTimerForShownElement(R.id.contentViewerFontHolder);
         });
         findViewById(R.id.contentViewerFontRight).setOnClickListener(v -> {
             cancelTimerForShownElement(R.id.contentViewerFontHolder);
             contentViewerWebViewFontRecyclerAdapter.right();
-            showTimerForShownElement(R.id.contentViewerFontHolder);
+            startTimerForShownElement(R.id.contentViewerFontHolder);
         });
 
         // handle table of content load on click
@@ -113,6 +122,10 @@ public class ContentViewer extends AppCompatActivity {
         // handle on speech click
         ImageView speechImage = findViewById(R.id.contentViewerSoundPlay);
         speechImage.setOnClickListener(new ContentViewerOnSpeechClickListener(this));
+
+        // handle on speech click
+        TextView textView = findViewById(R.id.contentViewerTranslatedWord);
+        textView.setOnClickListener(new ContentViewerOnTranslationClickListener(this));
 
         // register activity result
         intentActivityResultLauncher =
@@ -142,13 +155,10 @@ public class ContentViewer extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_option_content_viewer, menu);
+        getMenuInflater().inflate(R.menu.content_viewer_menu, menu);
         if (menuState.containsKey(R.id.darkMode) && menuState.get(R.id.darkMode) != null) {
             var item = menu.findItem(R.id.darkMode);
-            var localValue = menuState.get(R.id.darkMode);
-            if (localValue == null)
-                localValue = false;
-            item.setChecked(localValue);
+            item.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
         }
         if (menuState.containsKey(R.id.translateContext) && menuState.get(R.id.translateContext) != null) {
             var localValue = menuState.get(R.id.translateContext);
@@ -160,6 +170,21 @@ public class ContentViewer extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, @NotNull Menu menu) {
+        var darkModeItem = menu.findItem(R.id.darkMode);
+        if (darkModeItem != null) {
+            darkModeItem.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
+        }
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean returnValue = super.onPrepareOptionsMenu(menu);
@@ -182,10 +207,10 @@ public class ContentViewer extends AppCompatActivity {
             menuState.put(R.id.translateContext, item.isChecked());
             return valueOut;
         } else if (itemId == R.id.callSizer) {
-            return contentViewerItemSelector.onSizerCall(() -> showTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+            return contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
         } else if (itemId == R.id.textFont) {
             findViewById(R.id.contentViewerFontHolder).setVisibility(View.VISIBLE);
-            showTimerForShownElement(R.id.contentViewerFontHolder);
+            startTimerForShownElement(R.id.contentViewerFontHolder);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -194,7 +219,7 @@ public class ContentViewer extends AppCompatActivity {
     /**
      * Method to show progress bar for time that is defined in timer
      */
-    private void showTimerForShownElement(int contentId) {
+    private void startTimerForShownElement(int contentId) {
         timers.put(contentId, new Timer());
         Timer timer = timers.get(contentId);
         if (timer == null)
@@ -238,8 +263,4 @@ public class ContentViewer extends AppCompatActivity {
         menuState.put(R.id.translateContext, value);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

@@ -7,8 +7,8 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.dictionary.DictionaryPool;
-import com.yk.common.utils.learning.WordSpeaker;
+import com.yk.common.service.dictionary.DictionaryService;
+import com.yk.common.http.WordSpeaker;
 import com.yk.contentviewer.R;
 
 /**
@@ -32,7 +32,7 @@ public class ContentViewerOnSpeechClickListener implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         PopupMenu popup = new PopupMenu(context, v);
-        if (DictionaryPool.getLastOriginWord() == null)
+        if (DictionaryService.getInstance().getLastOriginWord() == null)
             return;
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -43,7 +43,7 @@ public class ContentViewerOnSpeechClickListener implements View.OnClickListener 
             }
             return true;
         });
-        popup.inflate(R.menu.menu_translation_content_viewer);
+        popup.inflate(R.menu.speech_menu);
         popup.show();
     }
 }

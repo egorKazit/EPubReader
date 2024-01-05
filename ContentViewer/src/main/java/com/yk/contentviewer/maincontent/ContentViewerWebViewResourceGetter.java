@@ -1,5 +1,6 @@
 package com.yk.contentviewer.maincontent;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Xml;
@@ -9,12 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
 import com.yk.common.model.book.TableOfContent;
-import com.yk.common.utils.ContentFont;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.constants.ContentFont;
 import com.yk.common.utils.InputStreamWrapper;
 import com.yk.common.utils.PreferenceHelper;
+import com.yk.common.utils.Toaster;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,28 +30,25 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ContentViewerWebViewResourceGetter {
 
-    private final ContentViewerWebView contentViewerWebView;
+    private final Activity activity;
 
     @Nullable
     WebResourceResponse onBookRequest(@NonNull Uri bookUri) {
-        String resourcePath = bookUri.getPath();
+        String resourcePath = bookUri.getPath() != null ? bookUri.getPath() : "";
         if (resourcePath.equals("/"))
-            resourcePath = bookUri.getAuthority();
+            resourcePath = bookUri.getAuthority() != null ? bookUri.getAuthority() : "";
         if (resourcePath.charAt(0) == '/')
             resourcePath = resourcePath.substring(1);
         try {
             var mimeTypeForResource = getMimeType(resourcePath);
             InputStream inputStream;
-            if (resourcePath.endsWith(".css")) {
-                inputStream = new InputStreamWrapper(BookService.getBookService().getResourceAsStream(resourcePath))
-                        .setReplacer(ContentViewerWebViewResourceEnum.CSS_TEXT_ALIGN.toMap());
-            } else if (resourcePath.endsWith(".html")) {
-                if (PreferenceHelper.Instance.INSTANCE.helper.getContentFont() == ContentFont.DEFAULT)
+            if (resourcePath.endsWith("html") || resourcePath.endsWith("htm")) {
+                if (PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont() == ContentFont.DEFAULT)
                     inputStream = new InputStreamWrapper(BookService.getBookService().getResourceAsStream(resourcePath));
                 else
                     inputStream = new InputStreamWrapper(BookService.getBookService().getResourceAsStream(resourcePath))
                             .setInjector(ContentViewerWebViewResourceEnum.HTML_TEXT_FONT_HEADER.toMap(
-                                    PreferenceHelper.Instance.INSTANCE.helper.getContentFont().getFontTechnicalName()))
+                                    PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont().getFontTechnicalName()))
                             .setReplacer(ContentViewerWebViewResourceEnum.HTML_TEXT_FONT_BODY.toMap());
             } else {
                 inputStream = BookService.getBookService().getResourceAsStream(resourcePath);
@@ -61,7 +60,7 @@ public class ContentViewerWebViewResourceGetter {
                     inputStream
             );
         } catch (IOException | BookServiceException e) {
-            e.printStackTrace();
+            Toaster.make(activity, "Error on load", e);
         }
         return null;
     }
@@ -69,12 +68,14 @@ public class ContentViewerWebViewResourceGetter {
     @Nullable
     WebResourceResponse onInternalFileRequest(@NonNull Uri internalFileUri) {
         String path = internalFileUri.getPath();
+        if (path == null)
+            return null;
         String mimeTypeForResource;
         try {
             mimeTypeForResource = Files.probeContentType(Paths.get(path));
             return new WebResourceResponse(mimeTypeForResource,
                     Xml.Encoding.UTF_8.name(),
-                    contentViewerWebView.getContext().getAssets().open(path.substring(1)));
+                    activity.getAssets().open(path.substring(1)));
         } catch (IOException ioException) {
             return null;
         }

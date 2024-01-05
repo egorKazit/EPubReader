@@ -11,17 +11,13 @@ import android.webkit.WebViewClient;
 import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
-import com.yk.common.utils.JavaScriptInteractor;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.ParentMethodCaller;
 import com.yk.common.utils.Toaster;
-import com.yk.contentviewer.R;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,13 +29,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ContentViewerWebViewClient extends WebViewClient {
 
-    private final JavaScriptInteractor javaScriptInteractor;
     private final ContentViewerWebView contentViewerWebView;
     private final Function<Uri, WebResourceResponse> onRequestFunction;
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        if (request.getUrl().getScheme().equals(ContentViewerWebView.INTERNAL_BOOK_PROTOCOL)) {
+        if (Objects.equals(request.getUrl().getScheme(), ContentViewerWebView.INTERNAL_BOOK_PROTOCOL)) {
             contentViewerWebView.stopLoading();
             try {
                 ParentMethodCaller.callConsumerOnParent(view, ViewPager2.class,
@@ -61,25 +56,20 @@ public class ContentViewerWebViewClient extends WebViewClient {
         return onRequestFunction.apply(request.getUrl());
     }
 
-
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        String selectionScript = new BufferedReader(new InputStreamReader(contentViewerWebView.getResources().openRawResource(R.raw.selection)))
-                .lines().collect(Collectors.joining());
-        javaScriptInteractor.
-                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_WORD_INTERFACE,
-                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedWord);
-        javaScriptInteractor.
-                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_SELECT_PHRASE_INTERFACE,
-                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedPhrase);
-        javaScriptInteractor.
-                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_PHRASE_INTERFACE,
-                        contentViewerWebView.getContentViewerJSHandler()::handleContextOfSelectedWord);
-        javaScriptInteractor.
-                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_IMAGE_INTERFACE,
-                        contentViewerWebView.getContentViewerJSHandler()::handleSelectedImage);
-        javaScriptInteractor.setupScript(selectionScript);
-        contentViewerWebView.scrollTo(0, contentViewerWebView.getVerticalPosition());
+//        try {
+//            var targetChapter = url.replace(ContentViewerWebView.INTERNAL_BOOK_PROTOCOL + "://localhost/", "");
+//            if (BookService.getBookService().getChapterByHRef(targetChapter) == BookService.getBookService().getCurrentChapterNumber())
+        contentViewerWebView.setScripts();
+//        } catch (BookServiceException ignored) {
+//
+//        }
+    }
+
+    @Override
+    public void onPageCommitVisible(WebView view, String url) {
+        super.onPageCommitVisible(view, url);
     }
 }

@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_book_background_foreground" />
+        android:contentDescription="@string/content_background"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:id="@+id/contentViewerBookContent"
@@ -64,7 +64,11 @@
                     android:id="@+id/contentViewerTranslatedWord"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
                     android:padding="5dp"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
                     android:text="@string/string_to_translate"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -110,6 +114,7 @@
             android:id="@+id/contentViewerFontHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="fill"
             android:orientation="horizontal"
             android:paddingBottom="8dp"
             android:visibility="gone">
@@ -119,13 +124,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/font_left_arrow"
                 android:src="@drawable/ic_arrow_left_foreground" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/contentViewerFont"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
+                android:foregroundGravity="center_vertical"
                 android:orientation="horizontal" />
 
             <ImageView
@@ -133,6 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:contentDescription="@string/font_right_arrow"
                 android:src="@drawable/ic_arrow_right_foreground" />
 
         </LinearLayout>

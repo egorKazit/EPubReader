@@ -13,8 +13,8 @@ import android.view.View;
 import androidx.annotation.RequiresApi;
 
 import com.github.chrisbanes.photoview.PhotoView;
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.contentviewer.R;
 
 import java.io.IOException;
@@ -26,11 +26,11 @@ import lombok.NoArgsConstructor;
 
 /**
  * Image dialog.
- * It's going to be called on click by picture in a book
+ * It's going to be called on picture click in a book
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @RequiresApi(api = Build.VERSION_CODES.S)
-public class ContentViewerImageDialog {
+public final class ContentViewerImageDialog {
 
     private static double INITIAL_HEIGHT;
     private static double INITIAL_WIDTH;
@@ -60,8 +60,8 @@ public class ContentViewerImageDialog {
     }
 
     private static void setSize(View view) {
-        view.getLayoutParams().height += INITIAL_HEIGHT;
-        view.getLayoutParams().width += INITIAL_WIDTH;
+        view.getLayoutParams().height += (int) INITIAL_HEIGHT;
+        view.getLayoutParams().width += (int) INITIAL_WIDTH;
     }
 
 }

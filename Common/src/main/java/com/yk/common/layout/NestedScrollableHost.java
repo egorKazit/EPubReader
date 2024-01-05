@@ -19,7 +19,6 @@ public class NestedScrollableHost extends FrameLayout {
 
     private ViewPager2 parentViewPager;
     private int touchSlop = 0;
-    private float initialX = 0f;
     private float initialY = 0f;
 
     public NestedScrollableHost(@NonNull Context context) {
@@ -82,7 +81,6 @@ public class NestedScrollableHost extends FrameLayout {
 
 
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            initialX = e.getX();
             initialY = e.getY();
             getParent().requestDisallowInterceptTouchEvent(true);
         } else if (e.getAction() == MotionEvent.ACTION_MOVE) {

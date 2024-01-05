@@ -61,7 +61,7 @@ public final class InputStreamWrapper extends InputStream {
      * @return itself
      */
     public InputStreamWrapper setInjector(Map<String, String> injectorMap) {
-        injectorMap.forEach(injector::put);
+        injector.putAll(injectorMap);
         return this;
     }
 
@@ -93,7 +93,7 @@ public final class InputStreamWrapper extends InputStream {
         // process regular read
         var bufferValue = buf[pos];
         pos++;
-        return bufferValue;
+        return bufferValue & 0xFF;
     }
 
     /**
