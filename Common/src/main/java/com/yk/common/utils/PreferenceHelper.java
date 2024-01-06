@@ -7,6 +7,9 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.yk.common.constants.ContentFont;
+import com.yk.common.context.ApplicationContext;
+
 import java.util.Arrays;
 
 /**
@@ -113,7 +116,7 @@ public class PreferenceHelper {
         editor.apply();
     }
 
-    public enum Instance {
+    public enum PreferenceHelperHolder {
         INSTANCE;
         public final PreferenceHelper helper = new PreferenceHelper();
     }

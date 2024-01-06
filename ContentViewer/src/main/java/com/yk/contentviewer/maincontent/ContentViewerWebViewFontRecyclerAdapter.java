@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.yk.common.utils.ContentFont;
+import com.yk.common.constants.ContentFont;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.contentviewer.R;
 
@@ -22,14 +22,14 @@ import java.util.List;
 public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
 
     private final List<ContentFont> fontData = List.of(ContentFont.values());
-    private int index = 0;
+    private int index;
     private final int size = (fontData.size());
     private Runnable runnableBeforeAction;
     private Runnable runnableAfterAction;
 
     public ContentViewerWebViewFontRecyclerAdapter() {
         super();
-        index = Integer.parseInt(PreferenceHelper.Instance.INSTANCE.helper.getContentFont().getId());
+        index = Integer.parseInt(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont().getId());
     }
 
     @NonNull
@@ -48,14 +48,17 @@ public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapte
         ContentFont contentFont = fontData.get(realIndex);
         holder.textView.setText(contentFont.getFontName());
         if (contentFont.getFontTechnicalName() != null) {
-            Typeface type = Typeface.createFromAsset(holder.textView.getContext().getAssets(), "fonts/" + contentFont.getFontTechnicalName());
+//            Typeface type = Typeface.createFromAsset(holder.textView.getContext().getAssets(), "fonts/" + contentFont.getFontTechnicalName());
+            Typeface type = new Typeface.Builder(holder.textView.getContext().getAssets(), "fonts/" + contentFont.getFontTechnicalName())
+                    .setWeight(500)
+                    .build();
             holder.textView.setTypeface(type);
         } else {
             holder.textView.setTypeface(Typeface.DEFAULT);
         }
         holder.textView.setOnClickListener(v -> {
             runnableBeforeAction.run();
-            PreferenceHelper.Instance.INSTANCE.helper.setContentFont(contentFont);
+            PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setContentFont(contentFont);
             ViewPager2 viewPager = holder.textView.getRootView().findViewById(R.id.contentViewerChapterPager);
             ContentViewerPagerAdapter contentViewerPagerAdapter = (ContentViewerPagerAdapter) viewPager.getAdapter();
             if (contentViewerPagerAdapter != null)
@@ -95,7 +98,7 @@ public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapte
         notifyItemRangeChanged(0, 3);
     }
 
-    static class ContentViewerWebViewFontHolder extends RecyclerView.ViewHolder {
+    public static class ContentViewerWebViewFontHolder extends RecyclerView.ViewHolder {
 
         private final TextView textView;
 

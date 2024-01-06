@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.yk.bookviewer">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -18,11 +18,11 @@
     </queries>
 
     <application
-        android:name="com.yk.common.utils.ApplicationContext"
+        android:name="com.yk.common.context.ApplicationContext"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_main"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_main_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EPubReader">
         <activity
@@ -37,11 +37,12 @@
         <activity android:name="com.yk.fileexplorer.FileExplorer" />
         <activity
             android:name="com.yk.contentviewer.ContentViewer"
-            android:screenOrientation="nosensor" />
+            android:screenOrientation="nosensor"
+            tools:ignore="DiscouragedApi" />
         <activity android:name="com.yk.contentviewer.TableOfContentViewer" />
 
         <receiver
-            android:name="com.yk.common.learning.GenericRepeatReceiver"
+            android:name="com.yk.common.service.learning.GenericRepeatReceiver"
             android:enabled="true" />
     </application>
 

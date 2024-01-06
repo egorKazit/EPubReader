@@ -16,21 +16,38 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.yk.bookviewer.R;
 import com.yk.common.constants.GlobalConstants;
-import com.yk.common.model.dictionary.DictionaryPool;
+import com.yk.common.model.dictionary.Dictionary;
+import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.utils.Toaster;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 /**
  * Dictionary fragment recycler view adapter.
  * It inflates a dictionary item layout and set event listeners
  */
 @RequiresApi(api = Build.VERSION_CODES.S)
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DictionaryFragmentRecyclerViewAdapter.DictionaryFragmentViewHolder> {
 
     private final Fragment parentFragment;
+    @Setter(AccessLevel.PACKAGE)
+    private List<Dictionary> dictionaries;
+
+    DictionaryFragmentRecyclerViewAdapter(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        try {
+            dictionaries = futureDictionaries.get();
+        } catch (ExecutionException | InterruptedException exception) {
+            Toaster.make(parentFragment.requireActivity(), "Can not load translations", exception);
+            dictionaries = List.of();
+        }
+    }
 
     @NonNull
     @Override
@@ -44,8 +61,8 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull DictionaryFragmentViewHolder holder, int position) {
         // fill in data
-        holder.dictionaryOriginWord.setText(DictionaryPool.getDictionaries().get(position).getOriginWord().getOriginWord());
-        holder.dictionaryTargetWord.setText(DictionaryPool.getDictionaries().get(position).getTranslations().get(0).getTranslation());
+        holder.dictionaryOriginWord.setText(dictionaries.get(position).getOriginWord().getOriginWord());
+        holder.dictionaryTargetWord.setText(DictionaryService.getMainTranslation(dictionaries.get(position)));
         // set listeners
         holder.dictionaryOriginWord.setOnClickListener(v -> navigateOnClick(position));
         holder.dictionaryTargetWord.setOnClickListener(v -> navigateOnClick(position));
@@ -54,7 +71,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public int getItemCount() {
-        return DictionaryPool.getDictionaries().size();
+        return dictionaries.size();
     }
 
     /**
@@ -64,8 +81,8 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
      */
     private void navigateOnClick(int position) {
         // check if navigation is possible -> definitions should be defined and exist(at least 1)
-        if (DictionaryPool.getDictionaries().get(position).getDefinitions() == null ||
-                DictionaryPool.getDictionaries().get(position).getDefinitions().size() == 0) {
+        if (dictionaries.get(position).getDefinitions() == null ||
+                dictionaries.get(position).getDefinitions().isEmpty()) {
             Toaster.make(parentFragment.getContext(), "No definitions found", null);
             return;
         }
@@ -80,7 +97,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     /**
      * Dictionary fragment item holder
      */
-    protected static class DictionaryFragmentViewHolder extends RecyclerView.ViewHolder {
+    public static class DictionaryFragmentViewHolder extends RecyclerView.ViewHolder {
 
         private final LinearLayout dictionaryContainer;
         private final TextView dictionaryOriginWord;

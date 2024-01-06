@@ -28,6 +28,8 @@ public class WordTranslation {
     @ColumnInfo(name = "origin_word_id")
     private int originWordId;
 
+    @ColumnInfo(name = "part_of_speech")
+    private String partOfSpeech;
     @ColumnInfo(name = "translation")
     private String translation;
 }

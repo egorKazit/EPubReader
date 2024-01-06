@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/viewer_background"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_main_background_foreground"
         android:visibility="gone"/>

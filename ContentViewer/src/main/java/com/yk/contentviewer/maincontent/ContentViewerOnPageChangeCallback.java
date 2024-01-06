@@ -5,9 +5,9 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
-import com.yk.common.model.book.BookServiceHelper;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
 import java.util.function.Function;

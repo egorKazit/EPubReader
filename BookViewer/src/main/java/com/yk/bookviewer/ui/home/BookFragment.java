@@ -18,10 +18,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.yk.bookviewer.databinding.FragmentBookBinding;
 import com.yk.common.constants.GlobalConstants;
-import com.yk.common.launcher.ActivityResultLauncherWrapper;
-import com.yk.common.model.book.BookPool;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.context.ActivityResultLauncherWrapper;
+import com.yk.common.model.book.Book;
+import com.yk.common.service.book.BookPool;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.ContentViewer;
 
 import java.util.Objects;
 
@@ -46,7 +50,7 @@ public class BookFragment extends Fragment {
                 ActivityResultLauncherWrapper
                         .getLauncher(this::registerForActivityResult,
                                 new ActivityResultContracts.StartActivityForResult(),
-                                intent -> loadBook(intent.getExtras().getString(GlobalConstants.BOOK_PATH)),
+                                intent -> loadBook(Objects.requireNonNull(intent.getExtras()).getString(GlobalConstants.BOOK_PATH)),
                                 intent -> {
                                 });
     }
@@ -79,8 +83,15 @@ public class BookFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.S)
     private void loadBook(String bookPath) {
         try {
-            if (BookPool.uploadBook(bookPath))
+            boolean[] isNewBook = {false};
+            Book book = BookPool.uploadBook(bookPath, isNewBook);
+            if (isNewBook[0])
                 Objects.requireNonNull(binding.bookList.getAdapter()).notifyDataSetChanged();
+            BookServiceHelper.updateLatestBookPath(requireContext(), book.getFilePath());
+            // create new intent and start activity
+            Intent intent = new Intent(requireContext(), ContentViewer.class);
+            BookService.initFromPath(book.getFilePath());
+            requireContext().startActivity(intent);
         } catch (BookServiceException bookServiceException) {
             Toaster.make(getContext(), "Can not load book", null);
         }

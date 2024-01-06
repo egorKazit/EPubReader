@@ -7,5 +7,9 @@
         android:id="@+id/recyclerFont"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:layout_gravity="center_vertical"
+        android:autoSizeTextType="uniform"
+        android:foregroundGravity="center|center_horizontal"
+        android:gravity="center"
+        android:padding="5dp" />
 </LinearLayout>

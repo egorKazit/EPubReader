@@ -22,10 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import lombok.AccessLevel;
@@ -46,7 +48,8 @@ public class TableOfContent {
     private TableOfContent() {
     }
 
-    static TableOfContent fromJson(@NonNull JSONObject tableOfContentInJson,
+
+    public static TableOfContent fromJson(@NonNull JSONObject tableOfContentInJson,
                                    @NonNull JSONObject contentFileInJson,
                                    @NonNull String coverId) throws JSONException {
         TableOfContent tableOfContent = new TableOfContent();
@@ -82,32 +85,53 @@ public class TableOfContent {
 
     private static void setChapterTree(JSONObject tableOfContentInJson,
                                        TableOfContent tableOfContent) throws JSONException {
-        JSONArray navigational = tableOfContentInJson.getJSONObject(NCX.getTag())
-                .getJSONObject(NAVIGATION_MAP.getTag())
-                .getJSONArray(NAVIGATION_POINT.getTag());
+        JSONObject navigationMap = tableOfContentInJson.getJSONObject(NCX.getTag())
+                .getJSONObject(NAVIGATION_MAP.getTag());
+        Object navigationalMiddle = navigationMap.get(NAVIGATION_POINT.getTag());
+        JSONArray navigational;
+        while (true) {
+            if (navigationalMiddle instanceof JSONArray) {
+                navigational = (JSONArray) navigationalMiddle;
+                break;
+            }
+            if (navigationalMiddle instanceof JSONObject) {
+                navigationalMiddle = ((JSONObject) navigationalMiddle).get(NAVIGATION_POINT.getTag());
+            }
+            if (!(navigationalMiddle instanceof JSONArray) && !(navigationalMiddle instanceof JSONObject)) {
+                navigational = new JSONArray();
+                break;
+            }
+        }
+        //JSONArray navigational = .getJSONArray(NAVIGATION_POINT.getTag())
         tableOfContent.chapterTree.addAll(mapJsonToChapters(navigational, tableOfContent));
     }
 
     private static List<Chapter> mapJsonToChapters(JSONArray chaptersInJson,
                                                    TableOfContent tableOfContent) throws JSONException {
-        List<Chapter> localChapters = new ArrayList<>();
-        for (int i = 0; i < chaptersInJson.length(); i++) {
-            JSONObject chapterInJson = chaptersInJson.getJSONObject(i);
-            Chapter.ChapterBuilder chapterBuilder = Chapter.builder()
-                    .chapterId(chapterInJson.getString(ID.getTag()))
-                    .chapterName(
-                            chapterInJson.getJSONObject(NAVIGATION_LABEL.getTag()).getString(TEXT.getTag()))
-                    .chapterRef(chapterInJson.getJSONObject(CONTENT.getTag()).getString(SOURCE.getTag()).split("#")[0]);
-            if (chapterInJson.has(NAVIGATION_POINT.getTag())) {
-                chapterBuilder.subChapters(new LinkedList<>(mapJsonToChapters(chapterInJson.getJSONArray(NAVIGATION_POINT.getTag()), tableOfContent)));
-            } else {
-                chapterBuilder.subChapters(new LinkedList<>());
+        AtomicReference<JSONException> exception = new AtomicReference<>();
+        var chaptersStream = IntStream.range(0, chaptersInJson.length()).mapToObj(i -> {
+            try {
+                JSONObject chapterInJson = chaptersInJson.getJSONObject(i);
+                Chapter.ChapterBuilder chapterBuilder = Chapter.builder()
+                        .chapterId(chapterInJson.has(ID.getTag()) ? chapterInJson.getString(ID.getTag()) : "local_test_chapter" + i)
+                        .chapterName(
+                                chapterInJson.getJSONObject(NAVIGATION_LABEL.getTag()).getString(TEXT.getTag()))
+                        .chapterRef(chapterInJson.getJSONObject(CONTENT.getTag()).getString(SOURCE.getTag()).split("#")[0]);
+                if (chapterInJson.has(NAVIGATION_POINT.getTag())) {
+                    chapterBuilder.subChapters(new LinkedList<>(mapJsonToChapters(chapterInJson.getJSONArray(NAVIGATION_POINT.getTag()), tableOfContent)));
+                } else {
+                    chapterBuilder.subChapters(new LinkedList<>());
+                }
+                Optional<Spine> spineDef = tableOfContent.spines.stream().filter(spine -> spine.chapterRef.equals(chapterBuilder.chapterRef)).findFirst();
+                spineDef.ifPresent(spine -> chapterBuilder.spineRefId(spine.spineId));
+                return chapterBuilder.build();
+            } catch (JSONException e) {
+                exception.set(e);
+
             }
-            Optional<Spine> spineDef = tableOfContent.spines.stream().filter(spine -> spine.chapterRef.equals(chapterBuilder.chapterRef)).findFirst();
-            spineDef.ifPresent(spine -> chapterBuilder.spineRefId(spine.spineId));
-            localChapters.add(chapterBuilder.build());
-        }
-        return localChapters;
+            return null;
+        });
+        return chaptersStream.collect(Collectors.toList());
     }
 
     public Spine getSpineById(int id) {

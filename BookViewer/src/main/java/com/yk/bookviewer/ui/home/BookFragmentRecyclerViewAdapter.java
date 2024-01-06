@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.yk.bookviewer.R;
 import com.yk.common.model.book.Book;
-import com.yk.common.model.book.BookPool;
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
-import com.yk.common.model.book.BookServiceHelper;
+import com.yk.common.service.book.BookPool;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
@@ -47,6 +47,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = BookPool.getBook(position);
         holder.bookName.setText(book.getTitle());
+        holder.bookName.setSelected(true);
 
         if (book.getCover() != null) {
             try {

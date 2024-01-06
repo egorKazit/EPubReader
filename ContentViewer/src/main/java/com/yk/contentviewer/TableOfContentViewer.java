@@ -8,8 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.tableofcontent.TableOfContentExpandableListViewAdapter;
 

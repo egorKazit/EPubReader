@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -18,15 +21,21 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.TableOfContent;
-import com.yk.common.utils.ApplicationContext;
-import com.yk.common.utils.JavaScriptInteractor;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
+import com.yk.common.service.dictionary.LanguageService;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
-import com.yk.common.utils.learning.WordTranslator;
 import com.yk.contentviewer.R;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -51,6 +60,8 @@ public class ContentViewerWebView extends WebView {
     private int allPageHeight = 0;
     private int onePageHeight = 0;
     private ContentViewerWebViewResourceGetter contentViewerWebViewResourceGetter;
+    private final ScaleGestureDetector scaleGestureDetector;
+    private final ContentViewerJavaScriptInteractor contentViewerJavaScriptInteractor = new ContentViewerJavaScriptInteractor(this);
 
     /**
      * Constructor with context
@@ -60,6 +71,7 @@ public class ContentViewerWebView extends WebView {
     public ContentViewerWebView(Context context) {
         super(context);
         init();
+        scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
     }
 
     /**
@@ -71,6 +83,7 @@ public class ContentViewerWebView extends WebView {
     public ContentViewerWebView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
+        scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
     }
 
     /**
@@ -83,6 +96,16 @@ public class ContentViewerWebView extends WebView {
     public ContentViewerWebView(@NonNull Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
+        scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        var parentResult = super.dispatchTouchEvent(event);
+        if (event.getPointerCount() >= 2)
+            return scaleGestureDetector.onTouchEvent(event);
+        else
+            return parentResult;
     }
 
     /**
@@ -93,10 +116,9 @@ public class ContentViewerWebView extends WebView {
             // get book service
             bookService = BookService.getBookService();
             // set text size
-            if (bookService.getTextSize() != 0)
-                setTextSize(bookService.getTextSize());
+            if (bookService.getTextSize() != 0) setTextSize(bookService.getTextSize());
             // set speech feature
-            if (WordTranslator.getLanguage().equals(bookService.getLanguage())) {
+            if (LanguageService.getInstance().getLanguage().equals(bookService.getLanguage())) {
                 ((Activity) getContext()).findViewById(R.id.contentViewerSoundPlay).setVisibility(GONE);
                 ((Activity) getContext()).findViewById(R.id.contentViewerTranslatedWord).setVisibility(GONE);
             }
@@ -104,17 +126,17 @@ public class ContentViewerWebView extends WebView {
             Toaster.make(ApplicationContext.getContext(), "Error on script loading", bookServiceException);
         }
 
-        contentViewerJSHandler = new ContentViewerJSHandler(this);
-        contentViewerWebViewResourceGetter = new ContentViewerWebViewResourceGetter(this);
+        contentViewerJSHandler = new ContentViewerJSHandler((Activity) this.getContext());
+        contentViewerWebViewResourceGetter = new ContentViewerWebViewResourceGetter((Activity) this.getContext());
         setBackgroundColor(Color.TRANSPARENT);
 
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) && PreferenceHelper.Instance.INSTANCE.helper.isNightMode()) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) && PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode()) {
             WebSettingsCompat.setForceDark(getSettings(), WebSettingsCompat.FORCE_DARK_ON);
         }
 
         requestFocus();
         initSettings(this);
-        setWebViewClient(new ContentViewerWebViewClient(new JavaScriptInteractor(this), this, this::onRequest));
+        setWebViewClient(new ContentViewerWebViewClient(this, this::onRequest));
 
         setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             verticalPosition = scrollY;
@@ -124,7 +146,6 @@ public class ContentViewerWebView extends WebView {
             ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(verticalPosition > 0 ? VISIBLE : INVISIBLE);
             ContentViewerStateSaver.getInstance().startContentSaver(verticalPosition);
         });
-
     }
 
     @Override
@@ -136,14 +157,11 @@ public class ContentViewerWebView extends WebView {
     }
 
     public void setContentPosition() {
-        if (chapterNumber != bookService.getCurrentChapterNumber())
-            return;
+        if (chapterNumber != bookService.getCurrentChapterNumber()) return;
         int pagesCount = (int) Math.ceil(allPageHeight * 1.0 / onePageHeight - 1);
         int pageNumber = (int) Math.ceil(verticalPosition * 1.0 / onePageHeight);
         pageNumber = Math.min(pageNumber, pagesCount);
-        ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(
-                String.format("Progress: %s page of %s pages", pageNumber, pagesCount)
-        );
+        ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(String.format("Progress: %s page of %s pages", pageNumber, pagesCount));
     }
 
     public void setTextSize(int textSize) throws BookServiceException {
@@ -151,20 +169,80 @@ public class ContentViewerWebView extends WebView {
         bookService.setTextSize(textSize);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     void uploadChapter(int chapterPosition, int scrollPosition) throws BookServiceException {
         this.chapterNumber = chapterPosition;
         verticalPosition = scrollPosition;
         TableOfContent.Spine spine = bookService.getTableOfContent().getSpineById(chapterPosition);
         loadUrl(INTERNAL_BOOK_PROTOCOL + "://localhost/" + spine.getChapterRef());
+        this.addIntersections();
     }
 
     @SneakyThrows
     private WebResourceResponse onRequest(@NonNull Uri uri) {
-        if (BookService.getBookService().isEntryPresented(uri.getPath().substring(1)))
+        if (BookService.getBookService().isEntryPresented(Objects.requireNonNull(uri.getPath()).substring(1)))
             return contentViewerWebViewResourceGetter.onBookRequest(uri);
-        else
-            return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
+        else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    void addIntersections() {
+
+        contentViewerJavaScriptInteractor.
+                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_WORD_INTERFACE,
+                        contentViewerJSHandler::handleSelectedWord);
+        contentViewerJavaScriptInteractor.
+                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_SELECT_PHRASE_INTERFACE,
+                        contentViewerJSHandler::handleSelectedPhrase);
+        contentViewerJavaScriptInteractor.
+                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_PHRASE_INTERFACE,
+                        contentViewerJSHandler::handleContextOfSelectedWord);
+        contentViewerJavaScriptInteractor.
+                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_IMAGE_INTERFACE,
+                        contentViewerJSHandler::handleSelectedImage);
+    }
+
+    void setScripts() {
+        String selectionScript = new BufferedReader(new InputStreamReader(this.getResources().openRawResource(R.raw.selection)))
+                .lines().collect(Collectors.joining());
+        contentViewerJavaScriptInteractor.setupScript(selectionScript);
+        String javascript;
+        try {
+            Log.w("", "Sized = " + BookService.getBookService().getTextSize());
+            javascript = "var images = document.getElementsByTagName('img'); " +
+                    "for (var i = 0; i < images.length; i++) {" +
+                    "  var img = images[i];" +
+                    String.format("  var targetWidth = Math.round(%s * img.width);", (float) BookService.getBookService().getTextSize() / 200) +
+                    "  targetWidth = targetWidth < 80 ? 80 : targetWidth;" +
+                    "  console.log('targetWidth = ' + targetWidth);" +
+                    "  img.width = targetWidth;" +
+                    "}";
+            loadUrl("javascript:" + javascript);
+        } catch (BookServiceException e) {
+            throw new RuntimeException(e);
+        }
+        scrollTo(0, verticalPosition);
+    }
+
+    public class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        private float initialDistance;
+
+        @Override
+        public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
+            initialDistance = detector.getCurrentSpan();
+            return super.onScaleBegin(detector);
+        }
+
+        @SneakyThrows
+        @Override
+        public boolean onScale(@NotNull ScaleGestureDetector detector) {
+            var targetTextSize = (int) (ContentViewerWebView.this.getSettings().getTextZoom()
+                    * (1 + (detector.getCurrentSpan() - initialDistance) / initialDistance * .05));
+            targetTextSize = Math.min(Math.max(targetTextSize, 100), 500);
+            ContentViewerWebView.this.setTextSize(targetTextSize);
+            return super.onScale(detector);
+        }
+    }
 
 }

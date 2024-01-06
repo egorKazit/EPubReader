@@ -14,4 +14,7 @@
     <string name="zoomed_image">Zoomed Image</string>
     <string name="night_mode">Night mode</string>
     <string name="text_font">Text Font</string>
+    <string name="content_background">Content Background</string>
+    <string name="font_left_arrow">Font Left Arrow</string>
+    <string name="font_right_arrow">Font Right Arrow</string>
 </resources>

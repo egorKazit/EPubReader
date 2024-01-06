@@ -12,9 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
 import com.yk.common.model.book.TableOfContent;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.contentviewer.R;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
@@ -77,7 +77,6 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
         if (getChildrenCount(groupPosition) == 0) {
             setOnClickListener(groupPosition, 0, patentContentView, parent, false);
         }
-        this.notifyDataSetChanged();
         return patentContentView;
     }
 
@@ -88,7 +87,6 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
                 .inflate(R.layout.item_chapter_of_content, parent, false);
         ((TextView) childContentView.findViewById(R.id.parentChapterOfContentName)).setText(chapter.getChapterName());
         setOnClickListener(groupPosition, childPosition, childContentView, parent, true);
-        this.notifyDataSetChanged();
         return childContentView;
     }
 
@@ -111,12 +109,12 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
             try {
                 BookService.getBookService().setCurrentChapterNumber(chapterToSelect.getSpineRefId());
             } catch (BookServiceException bookServiceException) {
-                bookServiceException.printStackTrace();
+                Log.e(this.getClass().getName(), "Error at table of content loading: " + bookServiceException.getMessage());
             }
             try {
                 BookService.getBookService().setCurrentChapterPosition(0);
             } catch (BookServiceException bookServiceException) {
-                bookServiceException.printStackTrace();
+                Log.e(this.getClass().getName(), "Error at table of content loading: " + bookServiceException.getMessage());
             }
             ((Activity) parent.getContext()).setResult(Activity.RESULT_OK, intent);
             ((Activity) parent.getContext()).finish();

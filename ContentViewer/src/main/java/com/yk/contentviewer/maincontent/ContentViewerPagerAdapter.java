@@ -14,8 +14,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.yk.common.model.book.BookService;
-import com.yk.common.model.book.BookServiceException;
+import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.R;
 
@@ -98,6 +98,7 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
             this.chapterNumber = chapterNumber;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
         @SneakyThrows
         @Nullable
         @Override

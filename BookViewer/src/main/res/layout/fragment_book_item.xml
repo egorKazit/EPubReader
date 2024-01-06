@@ -26,8 +26,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="center|center_vertical"
         android:layout_weight="10"
+        android:ellipsize="marquee"
         android:foregroundGravity="center"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:textSize="18sp" />
 
 </LinearLayout>
