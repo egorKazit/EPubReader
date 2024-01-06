@@ -7,8 +7,8 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.http.WordSpeaker;
+import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.contentviewer.R;
 
 /**

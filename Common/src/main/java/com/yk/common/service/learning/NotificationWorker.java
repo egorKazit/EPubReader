@@ -1,6 +1,5 @@
 package com.yk.common.service.learning;
 
-//import static com.yk.common.service.dictionary.DictionaryPool.getLearningEntry;
 import static com.yk.common.service.learning.LearningOperator.getLearningEntry;
 
 import android.app.NotificationChannel;
@@ -31,7 +30,6 @@ import lombok.SneakyThrows;
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class NotificationWorker extends Worker {
 
-    //    public static final int NOTIFICATION_ID = 100130141;
     public static final int NOTIFICATION_ID = 666;
 
     private final Context context;
@@ -66,6 +64,8 @@ public class NotificationWorker extends Worker {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         // get current learning entry
         LearningEntry learningEntry = getLearningEntry(context);
+        if (learningEntry == null)
+            return Result.failure();
         // start building
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(androidx.core.R.drawable.notification_tile_bg)

@@ -54,7 +54,7 @@ public class DictionaryFragment extends Fragment {
                 MenuItem dictionarySearchViewItem = menu.findItem(R.id.dictionarySearch);
                 var dictionarySearch = (SearchView) dictionarySearchViewItem.getActionView();
                 assert dictionarySearch != null;
-                dictionarySearch.setOnQueryTextListener(new DictionaryFragmentSearchMenuHandler(dictionaryFragmentRecyclerViewAdapter));
+                dictionarySearch.setOnQueryTextListener(new DictionaryFragmentSearchMenuHandler(requireContext(), dictionaryFragmentRecyclerViewAdapter));
             }
 
             @Override

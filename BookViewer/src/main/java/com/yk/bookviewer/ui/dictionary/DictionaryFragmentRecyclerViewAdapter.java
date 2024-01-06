@@ -18,13 +18,13 @@ import com.yk.bookviewer.R;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.service.dictionary.DictionaryService;
-import com.yk.common.utils.ThreadOperator;
 import com.yk.common.utils.Toaster;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -40,8 +40,13 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     DictionaryFragmentRecyclerViewAdapter(Fragment parentFragment) {
         this.parentFragment = parentFragment;
-        dictionaries = ThreadOperator.getInstance(false).executeSingle(() ->
-                DictionaryService.getInstance().getDictionaries(), Exception::new);
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        try {
+            dictionaries = futureDictionaries.get();
+        } catch (ExecutionException | InterruptedException exception) {
+            Toaster.make(parentFragment.requireActivity(), "Can not load translations", exception);
+            dictionaries = List.of();
+        }
     }
 
     @NonNull
@@ -57,7 +62,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     public void onBindViewHolder(@NonNull DictionaryFragmentViewHolder holder, int position) {
         // fill in data
         holder.dictionaryOriginWord.setText(dictionaries.get(position).getOriginWord().getOriginWord());
-        holder.dictionaryTargetWord.setText(dictionaries.get(position).getMainTranslation());
+        holder.dictionaryTargetWord.setText(DictionaryService.getMainTranslation(dictionaries.get(position)));
         // set listeners
         holder.dictionaryOriginWord.setOnClickListener(v -> navigateOnClick(position));
         holder.dictionaryTargetWord.setOnClickListener(v -> navigateOnClick(position));

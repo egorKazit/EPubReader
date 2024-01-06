@@ -1,21 +1,32 @@
 package com.yk.bookviewer.ui.dictionary;
 
+import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 
+import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.service.dictionary.DictionaryService;
-import com.yk.common.utils.ThreadOperator;
+import com.yk.common.utils.Toaster;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class DictionaryFragmentSearchMenuHandler implements SearchView.OnQueryTextListener {
 
+    private final Context context;
     private final DictionaryFragmentRecyclerViewAdapter adapter;
-    private final ThreadOperator threadOperator = ThreadOperator.getInstance(false);
+    private Future<List<Dictionary>> futureDictionaries;
+
+    public DictionaryFragmentSearchMenuHandler(Context context, DictionaryFragmentRecyclerViewAdapter adapter) {
+        this.context = context;
+        this.adapter = adapter;
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
@@ -33,11 +44,18 @@ public class DictionaryFragmentSearchMenuHandler implements SearchView.OnQueryTe
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     private void updateDictionariesBasedOnSearch(String newText) {
-        threadOperator.stop();
-        var dictionaries = threadOperator.executeSingle(() -> DictionaryService.getInstance().searchDictionaries(String.format("%s%%", newText)), Exception::new);
+        if (futureDictionaries != null && !futureDictionaries.isDone() && !futureDictionaries.isCancelled())
+            futureDictionaries.cancel(true);
         adapter.notifyItemRangeRemoved(0, adapter.getItemCount());
-        adapter.setDictionaries(dictionaries);
-        adapter.notifyItemRangeInserted(0, dictionaries.size());
+        futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().searchDictionaries(String.format("%s%%", newText)));
+        try {
+            var dictionaries = futureDictionaries.get();
+            adapter.setDictionaries(dictionaries);
+            adapter.notifyItemRangeInserted(0, dictionaries.size());
+        } catch (ExecutionException | InterruptedException exception) {
+            Toaster.make(context, "Can not load translations", exception);
+            adapter.setDictionaries(new ArrayList<>());
+        }
     }
 
 }

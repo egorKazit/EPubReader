@@ -10,10 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.yk.common.constants.ContentFont;
 import com.yk.common.model.book.TableOfContent;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
-import com.yk.common.constants.ContentFont;
 import com.yk.common.utils.InputStreamWrapper;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;

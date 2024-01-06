@@ -45,6 +45,9 @@ public class AnswerWorker extends Worker {
         getApplicationContext().getMainExecutor().execute(() -> {
             // cancel notification
             ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
+            var learningEntry = getLearningEntry(context);
+            if(learningEntry == null)
+                return;
             // check answer
             if (getLearningEntry(context).getCorrectTranslation().equals(outcomeMessage)) {
                 Toast.makeText(context, "Correct", Toast.LENGTH_LONG).show();

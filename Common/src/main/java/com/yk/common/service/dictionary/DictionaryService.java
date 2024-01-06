@@ -2,18 +2,22 @@ package com.yk.common.service.dictionary;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
+import com.yk.common.context.ApplicationContext;
+import com.yk.common.http.WordOperatorException;
+import com.yk.common.http.WordTranslator;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.model.dictionary.WordTranslation;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
-import com.yk.common.context.ApplicationContext;
-import com.yk.common.http.WordOperatorException;
-import com.yk.common.http.WordTranslator;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,6 +33,7 @@ public final class DictionaryService {
 
     private String lastOriginWord;
     private Dictionary lastTranslatedDictionary;
+    public final static String MAIN_TRANSLATION = "Main";
 
     /**
      * Method to get instance
@@ -57,13 +62,18 @@ public final class DictionaryService {
         return ApplicationContext.getContext()
                 .getAppDatabaseAbstract()
                 .dictionaryDao()
-                .getDictionaries();
+                .getDictionaries().stream().sorted((firstDictionary, secondDictionary) ->
+                        firstDictionary.getOriginWord().getOriginWord().compareToIgnoreCase(secondDictionary.getOriginWord().getOriginWord()))
+                .collect(Collectors.toList());
     }
 
     public List<Dictionary> searchDictionaries(String pattern) {
         return ApplicationContext.getContext()
                 .getAppDatabaseAbstract()
-                .dictionaryDao().search(pattern);
+                .dictionaryDao().search(pattern)
+                .stream().sorted((firstDictionary, secondDictionary) ->
+                        firstDictionary.getOriginWord().getOriginWord().compareToIgnoreCase(secondDictionary.getOriginWord().getOriginWord()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -98,10 +108,18 @@ public final class DictionaryService {
             return dictionary;
         } catch (BookServiceException | WordOperatorException exception) {
             return new Dictionary(null,
-                    List.of(new WordTranslation(0, 0, Dictionary.MAIN_TRANSLATION,
+                    List.of(new WordTranslation(0, 0, MAIN_TRANSLATION,
                             GlobalConstants.ERROR_ON_TRANSLATE + exception.getMessage())),
                     null);
         }
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public static String getMainTranslation(Dictionary dictionary) {
+        return dictionary.getTranslations().stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN_TRANSLATION))
+                .findFirst().orElseGet(() -> new WordTranslation(0, 0, MAIN_TRANSLATION, "")).getTranslation();
     }
 
     /**

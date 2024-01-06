@@ -12,12 +12,13 @@ import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.model.dictionary.LearningEntry;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.utils.PreferenceHelper;
-import com.yk.common.utils.ThreadOperator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import lombok.AllArgsConstructor;
 
@@ -38,23 +39,29 @@ public class LearningOperator {
      */
     static LearningEntry getLearningEntry(Context context) {
         List<String> possibleTranslations = new ArrayList<>();
-        var dictionaries = ThreadOperator.getInstance(false).executeSingle(() -> DictionaryService.getInstance().getDictionaries(),Exception::new);
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        List<Dictionary> dictionaries;
+        try {
+            dictionaries = futureDictionaries.get();
+        } catch (ExecutionException | InterruptedException e) {
+            return null;
+        }
         int currentPosition = new LearningStateOperator().getWordPosition(context);
         if (currentPosition > 0) {
             int previousPosition = new Random().ints(0, currentPosition).findFirst().orElse(0);
-            possibleTranslations.add(dictionaries.get(previousPosition).getTranslations().get(0).getTranslation());
+            possibleTranslations.add(DictionaryService.getMainTranslation(dictionaries.get(previousPosition)));
         }
         Dictionary currentDictionary = dictionaries.get(currentPosition);
-        possibleTranslations.add(currentDictionary.getTranslations().get(0).getTranslation());
+        possibleTranslations.add(DictionaryService.getMainTranslation(currentDictionary));
         if ((currentPosition + 1) < dictionaries.size()) {
             int nextPosition = new Random().ints(currentPosition + 1, dictionaries.size()).findFirst()
                     .orElse(dictionaries.size());
-            possibleTranslations.add(dictionaries.get(nextPosition).getTranslations().get(0).getTranslation());
+            possibleTranslations.add(DictionaryService.getMainTranslation(dictionaries.get(nextPosition)));
         }
         Collections.shuffle(possibleTranslations, new Random());
         return LearningEntry.builder()
                 .originWord(currentDictionary.getOriginWord().getOriginWord())
-                .correctTranslation(currentDictionary.getTranslations().get(0).getTranslation())
+                .correctTranslation(DictionaryService.getMainTranslation(currentDictionary))
                 .possibleTranslations(possibleTranslations)
                 .build();
     }
@@ -64,7 +71,13 @@ public class LearningOperator {
      */
     static void markCorrectLearning(Context context) {
         LearningStateOperator learningStateOperator = new LearningStateOperator();
-        var dictionaries = ThreadOperator.getInstance(false).executeSingle(() -> DictionaryService.getInstance().getDictionaries(),Exception::new);
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        List<Dictionary> dictionaries;
+        try {
+            dictionaries = futureDictionaries.get();
+        } catch (ExecutionException | InterruptedException e) {
+            return;
+        }
         int currentPosition = learningStateOperator.getWordPosition(context);
         currentPosition++;
         if (currentPosition == dictionaries.size())

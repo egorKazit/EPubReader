@@ -6,17 +6,20 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.book.Book;
 import com.yk.common.context.ApplicationContext;
-import com.yk.common.utils.ThreadOperator;
+import com.yk.common.model.book.Book;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class BookServiceHelper {
 
-    private static final ThreadOperator threadOperator = ThreadOperator.getInstance(false);
+    //    private static final ThreadOperator threadOperator = ThreadOperator.getInstance(false);
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public static void updateLatestBookPath(Context context, String bookPath) {
         try {
@@ -31,23 +34,24 @@ public class BookServiceHelper {
     }
 
     static void createPersistenceBook(BookService bookService) {
-        threadOperator.addToQueue(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(bookService.getBook()));
+        executorService.submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(bookService.getBook()));
     }
 
     public static void updatePersistenceBook(BookService bookService) {
-        threadOperator.addToQueue(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().updateBook(bookService.getBook()));
+        executorService.submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().updateBook(bookService.getBook()));
     }
 
     public static void removePersistenceBook(Book book) {
-        threadOperator.addToQueue(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().deleteBook(book));
+        executorService.submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().deleteBook(book));
     }
 
     static Book uploadBookFromDatabase(String path) throws BookServiceException {
-        return threadOperator
-                .executeSingle(p -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(p), path,
-                        () -> {
-                            throw new BookServiceException("Error on loading book from database");
-                        });
+        var futureBook = Executors.newSingleThreadExecutor().submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(path));
+        try {
+            return futureBook.get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new BookServiceException("Can not load book", e);
+        }
     }
 
 }

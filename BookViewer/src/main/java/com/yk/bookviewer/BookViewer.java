@@ -2,7 +2,6 @@ package com.yk.bookviewer;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,25 +48,5 @@ public class BookViewer extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return navController.navigateUp();
     }
-
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-////        if(navController.getCurrentDestination())
-//        getMenuInflater().inflate(R.menu.search_menu, menu);
-////        if (menuState.containsKey(com.yk.contentviewer.R.id.darkMode) && menuState.get(com.yk.contentviewer.R.id.darkMode) != null) {
-////            var item = menu.findItem(com.yk.contentviewer.R.id.darkMode);
-////            item.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
-////        }
-////        if (menuState.containsKey(com.yk.contentviewer.R.id.translateContext) && menuState.get(com.yk.contentviewer.R.id.translateContext) != null) {
-////            var localValue = menuState.get(com.yk.contentviewer.R.id.translateContext);
-////            if (localValue == null)
-////                localValue = false;
-////            if (localValue)
-////                contentViewerItemSelector.onTranslationContextCall(menu.findItem(com.yk.contentviewer.R.id.translateContext));
-////        }
-//        return true;
-//    }
 
 }

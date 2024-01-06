@@ -12,16 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
+import com.yk.common.http.WordOperatorException;
+import com.yk.common.http.WordTranslator;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
-import com.yk.common.utils.ThreadOperator;
-import com.yk.common.http.WordOperatorException;
-import com.yk.common.http.WordTranslator;
 import com.yk.contentviewer.R;
 
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -34,8 +35,8 @@ import lombok.SneakyThrows;
 public class ContentViewerJSHandler {
 
     private final Activity activity;
-    private final ThreadOperator wordTranslationThreadOperator = ThreadOperator.getInstance(true);
-    private final ThreadOperator phraseTranslationThreadOperator = ThreadOperator.getInstance(true);
+    private final ExecutorService wordTranslationThreadOperator = Executors.newFixedThreadPool(20);
+    private final ExecutorService phraseTranslationThreadOperator = Executors.newFixedThreadPool(20);
 
     /**
      * Method to retrieve the word, translate it and put in correct place
@@ -48,9 +49,9 @@ public class ContentViewerJSHandler {
             return;
         }
         // set translation text
-        wordTranslationThreadOperator.addToQueue(() -> {
-            String translation = DictionaryService.getInstance().getDictionary(originalWord.toLowerCase(Locale.ROOT))
-                    .getMainTranslation();
+        wordTranslationThreadOperator.submit(() -> {
+            var dictionary = DictionaryService.getInstance().getDictionary(originalWord.toLowerCase(Locale.ROOT));
+            String translation = DictionaryService.getMainTranslation(dictionary);
             activity.runOnUiThread(() -> {
                 var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
                 translatedWord.setText(String.format("%s - %s", originalWord.toLowerCase(Locale.ROOT), translation));
@@ -71,7 +72,7 @@ public class ContentViewerJSHandler {
         if (activity.findViewById(R.id.contentViewerTranslatedContext).getVisibility() != View.VISIBLE) {
             return;
         }
-        phraseTranslationThreadOperator.addToQueue(() -> {
+        phraseTranslationThreadOperator.submit(() -> {
             try {
                 ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
                         .setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
@@ -96,11 +97,11 @@ public class ContentViewerJSHandler {
         String originTextTrim = originalPhrase.trim();
         if (!originTextTrim.isEmpty() && !originTextTrim.contains(" ")) {
             // set translation text
-            wordTranslationThreadOperator.addToQueue(() ->
+            wordTranslationThreadOperator.submit(() ->
                     ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
-                            .setText(DictionaryService.getInstance().getDictionary(originalPhrase).getMainTranslation()));
+                            .setText(DictionaryService.getMainTranslation(DictionaryService.getInstance().getDictionary(originalPhrase))));
             new Thread(() -> ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
-                    .setText(DictionaryService.getInstance().getDictionary(originalPhrase).getMainTranslation())).start();
+                    .setText(DictionaryService.getMainTranslation(DictionaryService.getInstance().getDictionary(originalPhrase)))).start();
         } else {
             final AlertDialog alertDialog =
                     new AlertDialog.Builder(activity)

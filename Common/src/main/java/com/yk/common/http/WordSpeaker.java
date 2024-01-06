@@ -8,11 +8,11 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.yk.common.context.ApplicationContext;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
-import com.yk.common.context.ApplicationContext;
 
 import java.util.Locale;
 
@@ -58,7 +58,7 @@ public class WordSpeaker {
      * The phrase is not coming in from outside, but is taken from dictionary pool
      */
     public static void speakTargetPhrase() {
-        new Thread(() -> speakPhrase(DictionaryService.getInstance().getLastTranslatedDictionary().getMainTranslation(),
+        new Thread(() -> speakPhrase(DictionaryService.getMainTranslation(DictionaryService.getInstance().getLastTranslatedDictionary()),
                 LanguageService.getInstance().getLanguage())).start();
     }
 

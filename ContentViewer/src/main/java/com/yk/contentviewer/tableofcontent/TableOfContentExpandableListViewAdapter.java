@@ -77,7 +77,6 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
         if (getChildrenCount(groupPosition) == 0) {
             setOnClickListener(groupPosition, 0, patentContentView, parent, false);
         }
-        this.notifyDataSetChanged();
         return patentContentView;
     }
 
@@ -88,7 +87,6 @@ public class TableOfContentExpandableListViewAdapter extends BaseExpandableListA
                 .inflate(R.layout.item_chapter_of_content, parent, false);
         ((TextView) childContentView.findViewById(R.id.parentChapterOfContentName)).setText(chapter.getChapterName());
         setOnClickListener(groupPosition, childPosition, childContentView, parent, true);
-        this.notifyDataSetChanged();
         return childContentView;
     }
 

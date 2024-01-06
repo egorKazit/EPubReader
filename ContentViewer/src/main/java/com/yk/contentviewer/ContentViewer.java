@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.context.ActivityResultLauncherWrapper;
+import com.yk.common.context.ZoomOutPageTransformer;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
@@ -33,7 +34,6 @@ import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
-import com.yk.common.context.ZoomOutPageTransformer;
 import com.yk.contentviewer.maincontent.ContentViewerItemSelector;
 import com.yk.contentviewer.maincontent.ContentViewerOnPageChangeCallback;
 import com.yk.contentviewer.maincontent.ContentViewerOnSpeechClickListener;

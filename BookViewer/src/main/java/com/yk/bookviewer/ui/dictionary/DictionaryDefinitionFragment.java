@@ -3,9 +3,6 @@ package com.yk.bookviewer.ui.dictionary;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,16 +10,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.yk.bookviewer.R;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.service.dictionary.DictionaryService;
-import com.yk.common.utils.ThreadOperator;
+import com.yk.common.utils.Toaster;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -42,14 +40,20 @@ public class DictionaryDefinitionFragment extends Fragment {
             return super.onCreateView(inflater, container, savedInstanceState);
 
         // get dictionary from a position. The position is provided from arguments
-        dictionary = ThreadOperator.getInstance(false).executeSingle(() ->
-                DictionaryService.getInstance().getDictionaries().get(getArguments().getInt(GlobalConstants.ORIGIN_WORD_POSITION)), Exception::new);
+        var futureDictionary = Executors.newSingleThreadExecutor()
+                .submit(() -> DictionaryService.getInstance().getDictionaries().get(getArguments().getInt(GlobalConstants.ORIGIN_WORD_POSITION)));
+        try {
+            dictionary = futureDictionary.get();
+        } catch (ExecutionException | InterruptedException exception) {
+            Toaster.make(requireContext(), "Can not load definitions", exception);
+            this.requireActivity().onBackPressed();
+        }
         // inflate view and put data in
         View rootView = inflater.inflate(R.layout.fragment_definitions, container, false);
         TextView originWord = rootView.findViewById(R.id.dictionaryOriginWord);
         originWord.setText(dictionary.getOriginWord().getOriginWord());
         TextView targetWord = rootView.findViewById(R.id.dictionaryTargetWord);
-        targetWord.setText(dictionary.getMainTranslation());
+        targetWord.setText(DictionaryService.getMainTranslation(dictionary));
         return rootView;
     }
 

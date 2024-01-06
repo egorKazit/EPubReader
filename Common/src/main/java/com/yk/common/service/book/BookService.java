@@ -21,9 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.Tags;
+import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
 import com.yk.common.model.book.TableOfContent;
-import com.yk.common.context.ApplicationContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;

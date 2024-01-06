@@ -6,15 +6,16 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.yk.common.model.dictionary.Language;
 import com.yk.common.context.ApplicationContext;
-import com.yk.common.utils.ThreadOperator;
-import com.yk.common.utils.Toaster;
 import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;
+import com.yk.common.model.dictionary.Language;
+import com.yk.common.utils.Toaster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.Getter;
@@ -45,7 +46,7 @@ public final class LanguageService {
                 .getAppDatabaseAbstract()
                 .languageDao();
         AtomicReference<WordOperatorException> wordOperatorExceptionAtomicReference = new AtomicReference<>();
-        var languages = ThreadOperator.getInstance(false).executeSingle(() -> {
+        var futureLanguages = Executors.newSingleThreadExecutor().submit(() -> {
             var languagesLocal = languageDao.getAllLanguages();
             if (languagesLocal == null || languagesLocal.isEmpty()) {
                 try {
@@ -58,12 +59,16 @@ public final class LanguageService {
                 languageDao.addLanguages(languagesLocal.toArray(Language[]::new));
             }
             return languagesLocal;
-        }, Exception::new);
-        if (wordOperatorExceptionAtomicReference.get() != null) {
-            Toaster.make(context, "Can not lead languages", wordOperatorExceptionAtomicReference.get());
-            return;
+        });
+        try {
+            var languages = futureLanguages.get();
+            if (wordOperatorExceptionAtomicReference.get() != null) {
+                Toaster.make(context, "Can not lead languages", wordOperatorExceptionAtomicReference.get());
+                return;
+            }
+            this.languages.addAll(languages);
+        } catch (ExecutionException | InterruptedException ignored) {
         }
-        this.languages.addAll(languages);
     }
 
     /**

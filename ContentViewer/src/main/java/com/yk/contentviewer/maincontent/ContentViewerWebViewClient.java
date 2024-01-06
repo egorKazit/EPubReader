@@ -59,13 +59,7 @@ public class ContentViewerWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-//        try {
-//            var targetChapter = url.replace(ContentViewerWebView.INTERNAL_BOOK_PROTOCOL + "://localhost/", "");
-//            if (BookService.getBookService().getChapterByHRef(targetChapter) == BookService.getBookService().getCurrentChapterNumber())
         contentViewerWebView.setScripts();
-//        } catch (BookServiceException ignored) {
-//
-//        }
     }
 
     @Override

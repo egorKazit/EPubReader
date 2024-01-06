@@ -10,9 +10,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.yk.bookviewer.R;
-import com.yk.common.service.learning.LearningOperator;
-import com.yk.common.context.ApplicationContext;
 import com.yk.common.constants.ContentFont;
+import com.yk.common.context.ApplicationContext;
+import com.yk.common.service.learning.LearningOperator;
 import com.yk.common.utils.PreferenceHelper;
 
 import java.util.Arrays;
