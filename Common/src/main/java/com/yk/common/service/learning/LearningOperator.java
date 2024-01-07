@@ -3,9 +3,7 @@ package com.yk.common.service.learning;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.work.WorkManager;
 
 import com.yk.common.model.dictionary.Dictionary;
@@ -23,7 +21,7 @@ import java.util.concurrent.Executors;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class LearningOperator {
     private final Context context;
 
@@ -39,7 +37,7 @@ public class LearningOperator {
      */
     static LearningEntry getLearningEntry(Context context) {
         List<String> possibleTranslations = new ArrayList<>();
-        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries(false));
         List<Dictionary> dictionaries;
         try {
             dictionaries = futureDictionaries.get();
@@ -71,7 +69,7 @@ public class LearningOperator {
      */
     static void markCorrectLearning(Context context) {
         LearningStateOperator learningStateOperator = new LearningStateOperator();
-        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries());
+        var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().getDictionaries(false));
         List<Dictionary> dictionaries;
         try {
             dictionaries = futureDictionaries.get();

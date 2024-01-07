@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
+@SuppressWarnings("SpellCheckingInspection")
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {

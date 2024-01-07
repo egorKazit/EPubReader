@@ -1,6 +1,5 @@
 package com.yk.contentviewer.maincontent;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -26,7 +24,7 @@ import lombok.SneakyThrows;
 /**
  * Class with implementation of page adapter
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerPagerAdapter extends FragmentStateAdapter {
 
     private final FragmentManager fragmentManager;
@@ -98,7 +96,6 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
             this.chapterNumber = chapterNumber;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
         @SneakyThrows
         @Nullable
         @Override

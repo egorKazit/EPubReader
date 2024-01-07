@@ -1,11 +1,8 @@
 package com.yk.contentviewer.maincontent;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 import android.widget.PopupMenu;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.http.WordSpeaker;
 import com.yk.common.service.dictionary.DictionaryService;
@@ -14,7 +11,7 @@ import com.yk.contentviewer.R;
 /**
  * Speech inflater
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerOnSpeechClickListener implements View.OnClickListener {
 
     private final Context context;

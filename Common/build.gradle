@@ -6,7 +6,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        minSdk 26
+        minSdk 31
         targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,18 +41,18 @@ dependencies {
     implementation "androidx.work:work-runtime:2.9.0"
     implementation 'com.google.mlkit:translate:17.0.2'
     //noinspection AnnotationProcessorOnCompilePath
-    implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.projectlombok:lombok:1.18.30'
     implementation 'com.github.smart-fun:XmlToJson:1.5.3'
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation "androidx.room:room-runtime:2.6.1"
-    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
-    implementation platform('com.google.cloud:libraries-bom:25.3.0')
-    implementation 'com.google.cloud:google-cloud-texttospeech'
+    implementation 'org.xerial:sqlite-jdbc:3.44.1.0'
+    implementation platform('com.google.cloud:libraries-bom:26.29.0')
+    implementation 'com.google.cloud:google-cloud-texttospeech:2.33.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.13.2'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
     annotationProcessor "androidx.room:room-compiler:2.6.1"
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

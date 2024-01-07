@@ -1,8 +1,5 @@
 package com.yk.common.persistance;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -18,7 +15,7 @@ import java.util.List;
 /**
  * Dictionary database access
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @Dao
 public abstract class DictionaryDao {
 
@@ -32,6 +29,15 @@ public abstract class DictionaryDao {
     public abstract List<Dictionary> getDictionaries();
 
     /**
+     * Method to select all dictionaries
+     *
+     * @return list of dictionaries
+     */
+    @Transaction
+    @Query("SELECT * FROM origin_word WHERE id = :id LIMIT 1")
+    public abstract Dictionary getDictionary(int id);
+
+    /**
      * Method to select a dictionary by origin word, source language and target language
      *
      * @return dictionary
@@ -41,7 +47,9 @@ public abstract class DictionaryDao {
     public abstract Dictionary getDictionaryByWord(String originWord, String sourceLanguage, String targetLanguage);
 
     @Transaction
-    @Query("SELECT * FROM origin_word WHERE origin_word LIKE :pattern")
+    @Query("SELECT DISTINCT wrd.* FROM  origin_word AS wrd LEFT JOIN word_translation trn ON wrd.id = trn.origin_word_id " +
+            "WHERE wrd.origin_word LIKE :pattern OR trn.translation LIKE :pattern")
+
     public abstract List<Dictionary> search(String pattern);
 
     /**
@@ -64,23 +72,6 @@ public abstract class DictionaryDao {
         wordDefinitions.forEach(wordDefinition -> wordDefinition.setOriginWordId(savedDictionary.getOriginWord().getId()));
         addWordDefinitions(wordDefinitions);
     }
-
-//    /**
-//     * Method to update translations
-//     */
-//    public DictionaryDao updateTranslations(OriginWord originWord, List<WordTranslation> wordTranslations) {
-//        wordTranslations.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
-//        addWordTranslations(wordTranslations);
-//        return this;
-//    }
-//
-//    /**
-//     * Method to update definitions
-//     */
-//    public void updateDefinitions(OriginWord originWord, List<WordDefinition> wordDefinitions) {
-//        wordDefinitions.forEach(wordTranslation -> wordTranslation.setOriginWordId(originWord.getId()));
-//        addWordDefinitions(wordDefinitions);
-//    }
 
     /**
      * Method to add origin word

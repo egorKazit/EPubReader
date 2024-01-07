@@ -14,11 +14,9 @@ import static com.yk.common.constants.Tags.ROOT_FILES;
 import static com.yk.common.constants.Tags.TITLE;
 import static com.yk.common.utils.JsonContentHelper.getContentInJson;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.Tags;
 import com.yk.common.context.ApplicationContext;
@@ -48,7 +46,7 @@ import lombok.Setter;
 // was partly copied from https://www.codeproject.com/Articles/592909/EPUB-Viewer-for-Android-with-Text-to-Speech
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class BookService {
 
     static final String META_CONTENT = "META-INF/container.xml";
@@ -105,6 +103,7 @@ public class BookService {
     public static InputStream getResourceAsStreamForSingleFile(String path, String rootDirectory, String resourceName)
             throws BookServiceException {
         try {
+            @SuppressWarnings("all")
             ZipFile bookZipFile = new ZipFile(path);
             ZipEntry contentZipEntry = bookZipFile.getEntry(new File(rootDirectory, resourceName).getPath());
             return bookZipFile.getInputStream(contentZipEntry);
@@ -175,11 +174,7 @@ public class BookService {
         return bookService;
     }
 
-    public String getPath() {
-        return book.getFilePath();
-    }
-
-    public String getTitle() throws BookServiceException {
+    public String getTitle() {
         return getStringByTag(TITLE);
     }
 
@@ -187,7 +182,7 @@ public class BookService {
         return getStringByTag(CREATOR);
     }
 
-    public String getLanguage() throws BookServiceException {
+    public String getLanguage() {
         return getStringByTag(LANGUAGE);
     }
 

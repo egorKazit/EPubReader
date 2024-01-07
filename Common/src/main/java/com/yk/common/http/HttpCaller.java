@@ -22,7 +22,7 @@ import okhttp3.Response;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class HttpCaller {
 
-    static Gson gson = new Gson();
+    static final Gson gson = new Gson();
 
     public static <T> T get(String url, String username, String password, Class<T> targetType) throws IOException {
         AtomicReference<IOException> throwableAtomicReference = new AtomicReference<>();

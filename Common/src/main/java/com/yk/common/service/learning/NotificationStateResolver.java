@@ -3,11 +3,9 @@ package com.yk.common.service.learning;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
@@ -30,7 +28,7 @@ import lombok.Setter;
 /**
  * Class to store notification id
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class NotificationStateResolver {
 
     private static final String LAST_NOTIFICATION_FILE = "lastNotification.txt";

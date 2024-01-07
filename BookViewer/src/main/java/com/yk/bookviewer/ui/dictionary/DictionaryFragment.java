@@ -1,6 +1,5 @@
 package com.yk.bookviewer.ui.dictionary;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -20,15 +18,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentDictionaryBinding;
+import com.yk.common.model.dictionary.Dictionary;
+import com.yk.common.service.dictionary.DictionaryService;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
+import lombok.Getter;
+import lombok.SneakyThrows;
 
 /**
  * Dictionary fragment.
  * Contains all translated words which has been saved on disk
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class DictionaryFragment extends Fragment {
 
     private FragmentDictionaryBinding binding;
+    private static String searchPhrase;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -40,6 +47,14 @@ public class DictionaryFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         binding.dictionaryList.setLayoutManager(linearLayoutManager);
         var dictionaryFragmentRecyclerViewAdapter = new DictionaryFragmentRecyclerViewAdapter(this);
+        if (searchPhrase != null && !searchPhrase.isEmpty()) {
+            var futureDictionaries = Executors.newSingleThreadExecutor().submit(() -> DictionaryService.getInstance().searchDictionaries(searchPhrase));
+            try {
+                dictionaryFragmentRecyclerViewAdapter.setDictionaries(futureDictionaries.get());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         binding.dictionaryList.setAdapter(dictionaryFragmentRecyclerViewAdapter);
         // add divider between items
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(),
@@ -55,6 +70,10 @@ public class DictionaryFragment extends Fragment {
                 var dictionarySearch = (SearchView) dictionarySearchViewItem.getActionView();
                 assert dictionarySearch != null;
                 dictionarySearch.setOnQueryTextListener(new DictionaryFragmentSearchMenuHandler(requireContext(), dictionaryFragmentRecyclerViewAdapter));
+                if (searchPhrase != null && !searchPhrase.isEmpty()) {
+                    dictionarySearch.onActionViewExpanded();
+                    dictionarySearch.setQuery(searchPhrase, true);
+                }
             }
 
             @Override
@@ -66,6 +85,11 @@ public class DictionaryFragment extends Fragment {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 return false;
             }
+
+            @Override
+            public void onMenuClosed(@NonNull Menu menu) {
+                MenuProvider.super.onMenuClosed(menu);
+            }
         }, this.getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         return root;
@@ -75,5 +99,11 @@ public class DictionaryFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        searchPhrase = DictionaryFragmentSearchMenuHandler.getSearchPhrase();
     }
 }

@@ -7,11 +7,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -27,7 +25,7 @@ import lombok.SneakyThrows;
  * Notification worker.
  * It creates and shows up new notification
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class NotificationWorker extends Worker {
 
     public static final int NOTIFICATION_ID = 666;
@@ -47,7 +45,7 @@ public class NotificationWorker extends Worker {
         if (!PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isLearningEnabled())
             return Result.success();
         // no action if dictionary is empty
-        if (DictionaryService.getInstance().getDictionaries().isEmpty())
+        if (DictionaryService.getInstance().getDictionaries(false).isEmpty())
             return Result.success();
         // get notification manager and notification channel
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

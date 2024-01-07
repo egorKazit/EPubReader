@@ -1,10 +1,8 @@
 package com.yk.bookviewer.ui.settings;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
@@ -18,7 +16,7 @@ import com.yk.common.utils.PreferenceHelper;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
     @Override

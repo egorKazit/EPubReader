@@ -2,13 +2,11 @@ package com.yk.contentviewer.maincontent;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.service.book.BookService;
@@ -25,7 +23,7 @@ import lombok.AllArgsConstructor;
 /**
  * Content viewer web client
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ContentViewerWebViewClient extends WebViewClient {
 

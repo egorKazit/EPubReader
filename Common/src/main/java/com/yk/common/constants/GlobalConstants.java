@@ -2,7 +2,7 @@ package com.yk.common.constants;
 
 public class GlobalConstants {
     public static final String BOOK_PATH = "BOOK_PATH";
-    public static final String ORIGIN_WORD_POSITION = "ORIGIN_WORD_POSITION";
+    public static final String ORIGIN_WORD_NAVIGATION = "ORIGIN_WORD_NAVIGATION";
 
     public static final String OUTCOME_FLAG = "OUTCOME_FLAG";
     public static final String OUTCOME_WORKER_CLASS_NAME = "OUTCOME_WORKER_CLASS_NAME";

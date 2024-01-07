@@ -3,6 +3,7 @@ package com.yk.common.constants;
 import lombok.Getter;
 
 @Getter
+@SuppressWarnings("SpellCheckingInspection")
 public enum Tags {
 
     CONTAINER("container"), ROOT_FILES("rootfiles"), ROOT_FILE("rootfile"), FULL_PATH("full-path"),

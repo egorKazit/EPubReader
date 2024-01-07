@@ -174,6 +174,7 @@ public class TableOfContent {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
+    @SuppressWarnings("SpellCheckingInspection")
     public static class JSonSpine {
         @SerializedName("idref")
         final String idRef;

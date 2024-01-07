@@ -1,10 +1,7 @@
 package com.yk.common.service.book;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
@@ -15,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class BookServiceHelper {
 
     //    private static final ThreadOperator threadOperator = ThreadOperator.getInstance(false);

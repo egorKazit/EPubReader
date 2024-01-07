@@ -16,6 +16,7 @@ import lombok.Setter;
  * It allows to set js scripts in web view and retrieves result of script
  */
 @Setter
+@SuppressWarnings("SpellCheckingInspection")
 class ContentViewerJavaScriptInteractor {
 
     private final WebView webView;

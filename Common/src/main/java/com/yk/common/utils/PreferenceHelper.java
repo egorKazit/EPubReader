@@ -2,9 +2,7 @@ package com.yk.common.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.yk.common.constants.ContentFont;
@@ -16,7 +14,6 @@ import java.util.Arrays;
  * Preference helper.
  * It allows to get/set all preference in application
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
 public class PreferenceHelper {
 
     private final static String LEARNING_ENABLED = "LEARNING_ENABLED";

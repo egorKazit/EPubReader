@@ -3,10 +3,7 @@ package com.yk.common.service.learning;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.utils.PreferenceHelper;
@@ -16,7 +13,7 @@ import java.util.Random;
 /**
  * Class to create pending intent
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class LearningPendingIntent {
     private final Intent intent;
     private final Context context;

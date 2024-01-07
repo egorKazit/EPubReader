@@ -3,7 +3,6 @@ package com.yk.fileexplorer;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +34,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         return new FileExplorerRecyclerViewHolder(view);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     @Override
     public void onBindViewHolder(@NonNull FileExplorerRecyclerViewHolder holder, int position) {
 
@@ -80,7 +78,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     public void handleClick(View view, FileExplorerItem fileExplorerItem) {
         if (fileExplorerItem.isFile()) {
             Intent intent = new Intent();

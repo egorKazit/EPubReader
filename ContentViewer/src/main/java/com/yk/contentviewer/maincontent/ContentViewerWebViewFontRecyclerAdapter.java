@@ -1,14 +1,12 @@
 package com.yk.contentviewer.maincontent;
 
 import android.graphics.Typeface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -18,7 +16,7 @@ import com.yk.contentviewer.R;
 
 import java.util.List;
 
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
 
     private final List<ContentFont> fontData = List.of(ContentFont.values());

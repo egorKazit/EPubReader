@@ -2,9 +2,6 @@ package com.yk.common.service.dictionary;
 
 
 import android.content.Context;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.http.WordOperatorException;
@@ -39,7 +36,6 @@ public final class LanguageService {
         return LanguageServiceHolder.INSTANCE.languageService;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void init(Context context) {
         languages = new ArrayList<>();
         var languageDao = ApplicationContext.getContext()
@@ -56,7 +52,7 @@ public final class LanguageService {
                     return null;
                 }
                 languagesLocal.removeIf(languageEntry -> languageEntry.getName() == null);
-                languageDao.addLanguages(languagesLocal.toArray(Language[]::new));
+                languageDao.addLanguages(languagesLocal.toArray(new Language[0]));
             }
             return languagesLocal;
         });

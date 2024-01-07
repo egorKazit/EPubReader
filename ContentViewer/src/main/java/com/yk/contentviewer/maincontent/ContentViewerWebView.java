@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,7 +16,6 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
 
@@ -26,7 +24,6 @@ import com.yk.common.model.book.TableOfContent;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.dictionary.LanguageService;
-import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.R;
 
@@ -45,7 +42,7 @@ import lombok.SneakyThrows;
  * It represents whole book.
  * Each chapter is separate page in page viewer
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerWebView extends WebView {
 
     final static String INTERNAL_BOOK_PROTOCOL = "qk-e-book-file";
@@ -130,8 +127,11 @@ public class ContentViewerWebView extends WebView {
         contentViewerWebViewResourceGetter = new ContentViewerWebViewResourceGetter((Activity) this.getContext());
         setBackgroundColor(Color.TRANSPARENT);
 
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) && PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode()) {
-            WebSettingsCompat.setForceDark(getSettings(), WebSettingsCompat.FORCE_DARK_ON);
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+            try {
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(getSettings(), true);
+            } catch (Exception ignored) {
+            }
         }
 
         requestFocus();
@@ -164,12 +164,11 @@ public class ContentViewerWebView extends WebView {
         ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(String.format("Progress: %s page of %s pages", pageNumber, pagesCount));
     }
 
-    public void setTextSize(int textSize) throws BookServiceException {
+    public void setTextSize(int textSize) {
         getSettings().setTextZoom(textSize);
         bookService.setTextSize(textSize);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     void uploadChapter(int chapterPosition, int scrollPosition) throws BookServiceException {
         this.chapterNumber = chapterPosition;
         verticalPosition = scrollPosition;
@@ -185,7 +184,6 @@ public class ContentViewerWebView extends WebView {
         else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     void addIntersections() {
 
         contentViewerJavaScriptInteractor.

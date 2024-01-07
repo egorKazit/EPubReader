@@ -2,7 +2,6 @@ package com.yk.bookviewer.ui.home;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -34,13 +32,13 @@ import java.util.Objects;
  * New book can be added by "add" button. Once it's pressed, new activity is started to explore file systems.
  * Existing book can be open by clicking on book cover or name. The implementation is done in @BookRecyclerViewAdapter class
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class BookFragment extends Fragment {
 
     private FragmentBookBinding binding;
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +68,11 @@ public class BookFragment extends Fragment {
         // Upload books in a separate thread
         new Thread(() -> {
             BookPool.uploadBooks();
-            requireActivity().runOnUiThread(() -> Objects.requireNonNull(binding.bookList.getAdapter()).notifyDataSetChanged());
+            requireActivity().runOnUiThread(() -> {
+                if (binding == null)
+                    return;
+                Objects.requireNonNull(binding.bookList.getAdapter()).notifyDataSetChanged();
+            });
         }).start();
         // set on scroll adapter
         binding.bookList.addOnScrollListener(new BookFragmentOnScrollListener(binding.addBook));
@@ -80,7 +82,7 @@ public class BookFragment extends Fragment {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    @RequiresApi(api = Build.VERSION_CODES.S)
+
     private void loadBook(String bookPath) {
         try {
             boolean[] isNewBook = {false};

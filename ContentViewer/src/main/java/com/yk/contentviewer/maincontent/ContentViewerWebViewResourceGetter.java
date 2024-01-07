@@ -2,13 +2,11 @@ package com.yk.contentviewer.maincontent;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Xml;
 import android.webkit.WebResourceResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.ContentFont;
 import com.yk.common.model.book.TableOfContent;
@@ -26,7 +24,7 @@ import java.nio.file.Paths;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ContentViewerWebViewResourceGetter {
 

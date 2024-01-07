@@ -3,13 +3,11 @@ package com.yk.contentviewer.maincontent;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.os.Build;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.http.WordOperatorException;
@@ -30,7 +28,7 @@ import lombok.SneakyThrows;
 /**
  * Class as one place for all JS handlers
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @AllArgsConstructor
 public class ContentViewerJSHandler {
 
@@ -43,7 +41,6 @@ public class ContentViewerJSHandler {
      *
      * @param originalWord original word
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void handleSelectedWord(@NonNull String originalWord) {
         if (activity.findViewById(R.id.contentViewerTranslatedWord).getVisibility() != View.VISIBLE) {
             return;
@@ -65,7 +62,6 @@ public class ContentViewerJSHandler {
      *
      * @param originPhrase origin phrase
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SetTextI18n")
     public void handleContextOfSelectedWord(@NonNull String originPhrase) {
         // set translation text
@@ -92,7 +88,6 @@ public class ContentViewerJSHandler {
      *
      * @param originalPhrase original phrase
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void handleSelectedPhrase(@NonNull String originalPhrase) {
         String originTextTrim = originalPhrase.trim();
         if (!originTextTrim.isEmpty() && !originTextTrim.contains(" ")) {

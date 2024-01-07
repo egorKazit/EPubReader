@@ -24,14 +24,6 @@ public interface LanguageDao {
     List<Language> getAllLanguages();
 
     /**
-     * Method to select a language by name
-     *
-     * @return book
-     */
-    @Query("SELECT * FROM languages where name = :name")
-    Language getBookByName(String name);
-
-    /**
      * Method to add new book
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)

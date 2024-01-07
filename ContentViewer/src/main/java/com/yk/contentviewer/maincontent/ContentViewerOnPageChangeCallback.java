@@ -1,12 +1,8 @@
 package com.yk.contentviewer.maincontent;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.service.book.BookService;
-import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
@@ -17,7 +13,7 @@ import lombok.SneakyThrows;
 /**
  * Class to react on page loading
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
 
     private static final float thresholdOffset = 0.5f;
@@ -35,7 +31,8 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
      * @param retriever retriever function
      * @param viewId    view
      */
-    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) throws BookServiceException {
+    @SneakyThrows
+    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) {
         this.retriever = retriever;
         this.viewId = viewId;
         this.bookService = BookService.getBookService();

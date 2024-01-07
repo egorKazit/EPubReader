@@ -1,13 +1,9 @@
 package com.yk.contentviewer.maincontent;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 import android.widget.PopupMenu;
 
-import androidx.annotation.RequiresApi;
-
-import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.service.dictionary.DictionaryService;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +15,7 @@ public class ContentViewerOnTranslationClickListener implements View.OnClickList
 
     private final Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     @Override
     public void onClick(View v) {
         PopupMenu popup = new PopupMenu(context, v);

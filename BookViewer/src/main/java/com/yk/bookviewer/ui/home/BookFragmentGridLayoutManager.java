@@ -2,11 +2,12 @@ package com.yk.bookviewer.ui.home;
 
 import android.content.Context;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Objects;
 
 /**
  * Extension of GridLayoutManager.
@@ -23,8 +24,7 @@ class BookFragmentGridLayoutManager extends GridLayoutManager {
     @Override
     public boolean checkLayoutParams(RecyclerView.LayoutParams lp) {
         // get rotation
-        final int rotation = ((WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        final int rotation = Objects.requireNonNull(context.getDisplay()).getRotation();
         // set 2x2 for rotation 0/180 or 4x1 for rotation 90/270
         switch (rotation) {
             case Surface.ROTATION_0:
