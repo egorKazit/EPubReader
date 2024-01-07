@@ -1,6 +1,5 @@
 package com.yk.bookviewer.ui.dictionary;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.yk.bookviewer.R;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
  * It's the next step after a dictionary fragment and can be reached only from the dictionary fragment.
  * The fragment contains additional information as list of definitions
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
 public class DictionaryDefinitionFragment extends Fragment {
 
     private Dictionary dictionary;
@@ -41,12 +38,12 @@ public class DictionaryDefinitionFragment extends Fragment {
 
         // get dictionary from a position. The position is provided from arguments
         var futureDictionary = Executors.newSingleThreadExecutor()
-                .submit(() -> DictionaryService.getInstance().getDictionaries().get(getArguments().getInt(GlobalConstants.ORIGIN_WORD_POSITION)));
+                .submit(() -> DictionaryService.getInstance().getDictionary(getArguments().getInt(GlobalConstants.ORIGIN_WORD_NAVIGATION)));
         try {
             dictionary = futureDictionary.get();
         } catch (ExecutionException | InterruptedException exception) {
             Toaster.make(requireContext(), "Can not load definitions", exception);
-            this.requireActivity().onBackPressed();
+            this.requireActivity().getOnBackPressedDispatcher().onBackPressed();
         }
         // inflate view and put data in
         View rootView = inflater.inflate(R.layout.fragment_definitions, container, false);

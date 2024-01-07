@@ -1,9 +1,5 @@
 package com.yk.common.service.book;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
 
@@ -18,7 +14,7 @@ import lombok.NoArgsConstructor;
  * Book pool.
  * It contains already loaded book and updates it on adding or deleting
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookPool {
 

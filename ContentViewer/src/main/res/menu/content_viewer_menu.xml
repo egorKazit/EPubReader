@@ -25,7 +25,9 @@
         android:id="@+id/targetLanguageValue"
         android:title=""
         app:showAsAction="ifRoom|withText">
-        <menu></menu>
+        <menu>
+            <item android:title="@string/placeholder" />
+        </menu>
     </item>
 
 </menu>

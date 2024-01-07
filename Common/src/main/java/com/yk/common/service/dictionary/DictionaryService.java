@@ -1,9 +1,6 @@
 package com.yk.common.service.dictionary;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.context.ApplicationContext;
@@ -11,6 +8,7 @@ import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.model.dictionary.WordTranslation;
+import com.yk.common.persistance.DictionaryDao;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 
@@ -27,7 +25,6 @@ import lombok.NoArgsConstructor;
  * Dictionary service
  */
 @Getter
-@RequiresApi(api = Build.VERSION_CODES.S)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DictionaryService {
 
@@ -54,19 +51,36 @@ public final class DictionaryService {
     }
 
     /**
-     * Method to get list of all dictionaries
+     * Method to get list of all sorted alphabetically dictionaries
      *
      * @return list of all dictionaries
      */
     public List<Dictionary> getDictionaries() {
-        return ApplicationContext.getContext()
-                .getAppDatabaseAbstract()
-                .dictionaryDao()
-                .getDictionaries().stream().sorted((firstDictionary, secondDictionary) ->
-                        firstDictionary.getOriginWord().getOriginWord().compareToIgnoreCase(secondDictionary.getOriginWord().getOriginWord()))
-                .collect(Collectors.toList());
+        return getDictionaries(true);
     }
 
+    /**
+     * Method to get list of all dictionaries
+     *
+     * @param isSortedAlphabetic is dictionaries need to be sorted alphabetically
+     * @return list of all dictionaries
+     */
+    public List<Dictionary> getDictionaries(boolean isSortedAlphabetic) {
+        var dictionaries = ApplicationContext.getContext()
+                .getAppDatabaseAbstract()
+                .dictionaryDao()
+                .getDictionaries();
+        return isSortedAlphabetic ? dictionaries.stream().sorted((firstDictionary, secondDictionary) ->
+                        firstDictionary.getOriginWord().getOriginWord().compareToIgnoreCase(secondDictionary.getOriginWord().getOriginWord()))
+                .collect(Collectors.toList()) : dictionaries;
+    }
+
+    /**
+     * Method to search dictionaries based on provided pattern
+     *
+     * @param pattern pattern
+     * @return dictionaries for the same pattern
+     */
     public List<Dictionary> searchDictionaries(String pattern) {
         return ApplicationContext.getContext()
                 .getAppDatabaseAbstract()
@@ -82,7 +96,7 @@ public final class DictionaryService {
      * @param originWord origin word
      * @return dictionary
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @NonNull
     public Dictionary getDictionary(String originWord) {
         try {
             var dictionaryDao = ApplicationContext.getContext()
@@ -114,10 +128,22 @@ public final class DictionaryService {
         }
     }
 
+    /**
+     * Method to get dictionary by origin word
+     *
+     * @param id dictionary id
+     * @return dictionary
+     */
+    @NonNull
+    public Dictionary getDictionary(int id) {
+        return ApplicationContext.getContext()
+                .getAppDatabaseAbstract()
+                .dictionaryDao().getDictionary(id);
+    }
+
     @NonNull
     @Contract(pure = true)
-    @RequiresApi(api = Build.VERSION_CODES.S)
-    public static String getMainTranslation(Dictionary dictionary) {
+    public static String getMainTranslation(@NonNull Dictionary dictionary) {
         return dictionary.getTranslations().stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN_TRANSLATION))
                 .findFirst().orElseGet(() -> new WordTranslation(0, 0, MAIN_TRANSLATION, "")).getTranslation();
     }

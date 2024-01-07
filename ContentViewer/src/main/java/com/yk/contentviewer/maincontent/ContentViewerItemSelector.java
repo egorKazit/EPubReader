@@ -1,13 +1,10 @@
 package com.yk.contentviewer.maincontent;
 
 import android.app.Activity;
-import android.os.Build;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -21,7 +18,7 @@ import lombok.AllArgsConstructor;
 /**
  * Class show/hide translation of context and text sizer
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @AllArgsConstructor
 public class ContentViewerItemSelector {
 
@@ -31,16 +28,14 @@ public class ContentViewerItemSelector {
      * Method to hide or show translation context
      *
      * @param item menu item
-     * @return true if state is changed
      */
-    public boolean onTranslationContextCall(MenuItem item) {
+    public void onTranslationContextCall(MenuItem item) {
         if (item.isChecked()) {
             activity.findViewById(R.id.contentViewerTranslatedContext).setVisibility(View.GONE);
         } else {
             activity.findViewById(R.id.contentViewerTranslatedContext).setVisibility(View.VISIBLE);
         }
         item.setChecked(!item.isChecked());
-        return true;
     }
 
     /**
@@ -48,9 +43,8 @@ public class ContentViewerItemSelector {
      *
      * @param showProgressBar           progress bar function
      * @param cancelTimerForProgressBar cancel progress bar function
-     * @return true by default
      */
-    public boolean onSizerCall(Runnable showProgressBar, Runnable cancelTimerForProgressBar) throws BookServiceException {
+    public void onSizerCall(Runnable showProgressBar, Runnable cancelTimerForProgressBar) throws BookServiceException {
         SeekBar seekBar = activity.findViewById(R.id.contentViewerItemSize);
         if (BookService.getBookService().getTextSize() != 0)
             seekBar.setProgress(BookService.getBookService().getTextSize());
@@ -78,19 +72,16 @@ public class ContentViewerItemSelector {
                 .onStopTrackingWrapper(showProgressBar)
                 .build());
         showProgressBar.run();
-        return true;
     }
 
     /**
      * Method to hide or show translation context
      *
      * @param item menu item
-     * @return true if state is changed
      */
-    public boolean onNightModeCall(MenuItem item) {
+    public void onNightModeCall(MenuItem item) {
         PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.enableNightMode(item.isChecked());
         item.setChecked(!item.isChecked());
-        return true;
     }
 
 }

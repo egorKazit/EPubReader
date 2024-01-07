@@ -2,7 +2,6 @@ package com.yk.contentviewer.tableofcontent;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,17 +9,18 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
-
 import com.yk.common.model.book.TableOfContent;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.contentviewer.R;
 
-@RequiresApi(api = Build.VERSION_CODES.S)
+import lombok.Setter;
+
+
 public class TableOfContentExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     private final TableOfContent tableOfContent;
+    @Setter
     private TableOfContent.Chapter chapter;
 
     public TableOfContentExpandableListViewAdapter(TableOfContent tableOfContent) {

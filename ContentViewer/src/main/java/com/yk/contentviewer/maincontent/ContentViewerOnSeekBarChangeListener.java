@@ -1,9 +1,6 @@
 package com.yk.contentviewer.maincontent;
 
-import android.os.Build;
 import android.widget.SeekBar;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.function.BiConsumer;
 
@@ -17,7 +14,7 @@ import lombok.NonNull;
  */
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
     @NonNull

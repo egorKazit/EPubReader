@@ -5,21 +5,21 @@ import static com.yk.common.service.learning.LearningOperator.markCorrectLearnin
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.yk.common.constants.GlobalConstants;
 
+import java.util.Objects;
+
 /**
  * Answer worker.
  * It gets answer and handle it
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class AnswerWorker extends Worker {
 
     private final Context context;
@@ -49,7 +49,7 @@ public class AnswerWorker extends Worker {
             if(learningEntry == null)
                 return;
             // check answer
-            if (getLearningEntry(context).getCorrectTranslation().equals(outcomeMessage)) {
+            if (Objects.requireNonNull(getLearningEntry(context)).getCorrectTranslation().equals(outcomeMessage)) {
                 Toast.makeText(context, "Correct", Toast.LENGTH_LONG).show();
                 markCorrectLearning(getApplicationContext());
             } else {

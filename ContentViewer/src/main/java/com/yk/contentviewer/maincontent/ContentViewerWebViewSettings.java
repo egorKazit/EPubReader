@@ -14,8 +14,6 @@ public class ContentViewerWebViewSettings {
         contentViewerWebView.getSettings().setJavaScriptEnabled(true);
         contentViewerWebView.getSettings().setAllowFileAccess(true);
         contentViewerWebView.getSettings().setAllowContentAccess(true);
-        contentViewerWebView.getSettings().setAllowFileAccessFromFileURLs(true);
-        contentViewerWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         contentViewerWebView.getSettings().setLoadWithOverviewMode(true);
         contentViewerWebView.getSettings().setUseWideViewPort(true);
         contentViewerWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);

@@ -8,6 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("SpellCheckingInspection")
 public enum ContentFont {
     DEFAULT("0", "Default", null),
     SABON("1", "Sabon", "sabon.ttf"),

@@ -1,16 +1,12 @@
 package com.yk.contentviewer.maincontent;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.util.DisplayMetrics;
 import android.view.View;
-
-import androidx.annotation.RequiresApi;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yk.common.service.book.BookService;
@@ -29,7 +25,6 @@ import lombok.NoArgsConstructor;
  * It's going to be called on picture click in a book
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@RequiresApi(api = Build.VERSION_CODES.S)
 public final class ContentViewerImageDialog {
 
     private static double INITIAL_HEIGHT;
@@ -44,8 +39,7 @@ public final class ContentViewerImageDialog {
         float aspectRation = (float) imageBitmap.getWidth() / imageBitmap.getHeight();
         PhotoView imageView = dialog.findViewById(R.id.contentViewerZoomedImage);
         imageView.setImageBitmap(imageBitmap);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        var displayMetrics = Resources.getSystem().getDisplayMetrics();
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         if (aspectRation > 1) {

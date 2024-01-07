@@ -1,8 +1,5 @@
 package com.yk.fileexplorer;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -21,7 +18,7 @@ public final class FileExplorerListHolder {
     private File currentFolder;
     private final List<FileExplorerItem> files = new ArrayList<>();
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     FileExplorerListHolder(File currentFolder, FileExplorer fileExplorer) {
         this.currentFolder = currentFolder;
         this.fileExplorer = fileExplorer;
@@ -35,19 +32,19 @@ public final class FileExplorerListHolder {
         }).start();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     void up() {
         currentFolder = currentFolder.getParentFile();
         load();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     void openFolder(String targetFolderName) {
         currentFolder = new File(currentFolder, targetFolderName);
         load();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     private void load() {
 
         files.clear();

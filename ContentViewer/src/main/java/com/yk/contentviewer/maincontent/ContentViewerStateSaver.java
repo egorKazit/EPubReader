@@ -1,9 +1,5 @@
 package com.yk.contentviewer.maincontent;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -19,7 +15,7 @@ import lombok.NoArgsConstructor;
 /**
  * Content view state saver
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentViewerStateSaver {
 

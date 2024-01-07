@@ -1,8 +1,5 @@
 package com.yk.common.persistance;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
@@ -16,7 +13,7 @@ import com.yk.common.model.dictionary.WordTranslation;
 /**
  * DAO Abstract class
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @Database(entities = {Book.class, OriginWord.class, WordTranslation.class, WordDefinition.class, Language.class}, version = 1
 )
 @TypeConverters({DateConverter.class})

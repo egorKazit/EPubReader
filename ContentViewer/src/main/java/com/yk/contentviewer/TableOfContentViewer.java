@@ -1,11 +1,9 @@
 package com.yk.contentviewer;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.ExpandableListView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.yk.common.service.book.BookService;
@@ -16,7 +14,7 @@ import com.yk.contentviewer.tableofcontent.TableOfContentExpandableListViewAdapt
 /**
  * Table of content viewer
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class TableOfContentViewer extends AppCompatActivity {
 
     @Override

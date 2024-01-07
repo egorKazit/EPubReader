@@ -1,7 +1,6 @@
 package com.yk.bookviewer.ui.home;
 
 import android.content.Intent;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -30,7 +28,7 @@ import lombok.NoArgsConstructor;
  * Recycler view adapter to get list of loaded books.
  * Events to open the book are set in the view holder
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentRecyclerViewAdapter.BookViewHolder> {
 

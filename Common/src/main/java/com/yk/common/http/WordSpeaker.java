@@ -1,12 +1,9 @@
 package com.yk.common.http;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.service.book.BookService;
@@ -20,7 +17,7 @@ import java.util.Locale;
  * Word speaker.
  * It allows to pronounce some words
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class WordSpeaker {
 
     private static TextToSpeech textToSpeech = null;

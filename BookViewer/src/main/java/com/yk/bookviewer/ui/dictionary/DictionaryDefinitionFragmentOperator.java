@@ -2,14 +2,12 @@ package com.yk.bookviewer.ui.dictionary;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.yk.bookviewer.R;
 import com.yk.common.constants.PartOfSpeech;
@@ -24,7 +22,6 @@ import lombok.AllArgsConstructor;
  * Dictionary Translate Operator.
  * It gets all definitions and inflates in "definitions" section
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class DictionaryDefinitionFragmentOperator {
 

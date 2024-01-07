@@ -2,9 +2,7 @@ package com.yk.common.service.learning;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -22,7 +20,7 @@ import lombok.AllArgsConstructor;
  * Work, initial delay and data for work should be provided as constructor parameter
  */
 @AllArgsConstructor
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @SuppressLint("RestrictedApi")
 public class GenericUniqueJobScheduler {
 

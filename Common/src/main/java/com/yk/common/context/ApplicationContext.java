@@ -1,9 +1,6 @@
 package com.yk.common.context;
 
 import android.app.Application;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.persistance.AppDatabaseAbstract;
 import com.yk.common.persistance.AppDatabaseFactory;
@@ -13,7 +10,7 @@ import lombok.Getter;
 /**
  * Application context
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ApplicationContext extends Application {
 
     @Getter

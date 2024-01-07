@@ -1,8 +1,5 @@
 package com.yk.common.model.book;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -18,7 +15,7 @@ import lombok.Setter;
 /**
  * Book definition
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

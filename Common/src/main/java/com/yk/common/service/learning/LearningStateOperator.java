@@ -2,9 +2,6 @@ package com.yk.common.service.learning;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,7 +9,7 @@ import lombok.NoArgsConstructor;
 /**
  * Class to handle learning position
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class LearningStateOperator {
 

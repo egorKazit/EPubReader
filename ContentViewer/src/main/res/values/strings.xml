@@ -17,4 +17,5 @@
     <string name="content_background">Content Background</string>
     <string name="font_left_arrow">Font Left Arrow</string>
     <string name="font_right_arrow">Font Right Arrow</string>
+    <string name="placeholder">Placeholder</string>
 </resources>

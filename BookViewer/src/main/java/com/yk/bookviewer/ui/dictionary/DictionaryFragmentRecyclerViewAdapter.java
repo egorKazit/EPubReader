@@ -1,6 +1,5 @@
 package com.yk.bookviewer.ui.dictionary;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,17 +23,19 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Dictionary fragment recycler view adapter.
  * It inflates a dictionary item layout and set event listeners
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DictionaryFragmentRecyclerViewAdapter.DictionaryFragmentViewHolder> {
 
     private final Fragment parentFragment;
     @Setter(AccessLevel.PACKAGE)
+    @Getter(AccessLevel.PACKAGE)
     private List<Dictionary> dictionaries;
 
     DictionaryFragmentRecyclerViewAdapter(Fragment parentFragment) {
@@ -88,7 +88,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         }
         // set put data for navigation
         Bundle bundle = new Bundle();
-        bundle.putInt(GlobalConstants.ORIGIN_WORD_POSITION, position);
+        bundle.putInt(GlobalConstants.ORIGIN_WORD_NAVIGATION, dictionaries.get(position).getOriginWord().getId());
         // navigate via action by navigation controller
         NavHostFragment.findNavController(parentFragment)
                 .navigate(R.id.action_navigate_dictionary_to_definition, bundle);

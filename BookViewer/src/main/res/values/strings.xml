@@ -23,4 +23,5 @@
     <string name="viewer_background">Viewer Background</string>
     <string name="translations">Translations</string>
     <string name="definitions">Definitions</string>
+    <string name="search">Search</string>
 </resources>

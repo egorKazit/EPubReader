@@ -3,7 +3,6 @@ package com.yk.contentviewer;
 import static com.yk.contentviewer.maincontent.ContentViewerLanguageOptionMenu.prepareLanguageOptionMenu;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -57,7 +55,7 @@ import lombok.SneakyThrows;
 /**
  * Activity to open book and provide ability to translate some parts of text
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewer extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
@@ -65,8 +63,7 @@ public class ContentViewer extends AppCompatActivity {
     private final Map<Integer, Timer> timers = new HashMap<>();
     private final Map<Integer, Boolean> menuState = new HashMap<>();
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    @SneakyThrows
+    //    @SneakyThrows
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,8 +144,8 @@ public class ContentViewer extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onDestroy() {
+        super.onDestroy();
         ContentViewerStateSaver.getInstance()
                 .startContentSaver(((ContentViewerWebView) findViewById(R.id.contentViewerItemContentItem)).getVerticalPosition(), true);
     }
@@ -184,7 +181,6 @@ public class ContentViewer extends AppCompatActivity {
         return super.onMenuOpened(featureId, menu);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean returnValue = super.onPrepareOptionsMenu(menu);
@@ -199,15 +195,16 @@ public class ContentViewer extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.darkMode) {
-            var valueOut = contentViewerItemSelector.onNightModeCall(item);
+            contentViewerItemSelector.onNightModeCall(item);
             menuState.put(R.id.darkMode, item.isChecked());
-            return valueOut;
+            return true;
         } else if (itemId == R.id.translateContext) {
-            var valueOut = contentViewerItemSelector.onTranslationContextCall(item);
+            contentViewerItemSelector.onTranslationContextCall(item);
             menuState.put(R.id.translateContext, item.isChecked());
-            return valueOut;
+            return true;
         } else if (itemId == R.id.callSizer) {
-            return contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+            contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+            return true;
         } else if (itemId == R.id.textFont) {
             findViewById(R.id.contentViewerFontHolder).setVisibility(View.VISIBLE);
             startTimerForShownElement(R.id.contentViewerFontHolder);

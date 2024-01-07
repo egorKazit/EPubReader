@@ -1,6 +1,5 @@
 package com.yk.contentviewer.maincontent;
 
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -8,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.model.dictionary.Language;
 import com.yk.common.service.book.BookService;
@@ -23,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Language option menu
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class ContentViewerLanguageOptionMenu {
 
     /**
@@ -32,13 +30,15 @@ public class ContentViewerLanguageOptionMenu {
      * @param menu                option menu
      * @param translateWordLayout translated word view
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static void prepareLanguageOptionMenu(@NonNull Menu menu, ViewGroup translateWordLayout,
                                                  List<View> viewToReactOnLanguageChange,
                                                  List<View> leftViews) {
         // find menu and create sub menu
         MenuItem menuItem = menu.findItem(R.id.targetLanguageValue);
         SubMenu subMenu = menuItem.getSubMenu();
+        if (subMenu == null)
+            return;
+        subMenu.clear();
         AtomicInteger index = new AtomicInteger();
         List<Language> languages;
         String sourceLanguage;
@@ -50,8 +50,6 @@ public class ContentViewerLanguageOptionMenu {
             Toaster.make(translateWordLayout.getContext(), "Error on table of content loading", exception);
             return;
         }
-        if (subMenu == null)
-            return;
         // inflate all languages
         languages.forEach(language -> subMenu.add(0, index.getAndIncrement(), Menu.NONE, language.getName())
                 .setOnMenuItemClickListener(item -> {

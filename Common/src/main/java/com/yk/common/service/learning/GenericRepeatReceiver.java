@@ -3,12 +3,10 @@ package com.yk.common.service.learning;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.work.Worker;
 
 import com.yk.common.constants.GlobalConstants;
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
  * Broadcast receiver.
  * It reschedule the provided job(if flag is set) and accept some consumer (if provided)
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
+
 public class GenericRepeatReceiver extends BroadcastReceiver {
 
     /**

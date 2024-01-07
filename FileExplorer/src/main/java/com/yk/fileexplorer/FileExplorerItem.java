@@ -2,10 +2,7 @@ package com.yk.fileexplorer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -23,7 +20,7 @@ public class FileExplorerItem {
     private Bitmap bitmap;
     private String title;
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    
     public FileExplorerItem(String fileName, String filePath, boolean isFile) {
         this.fileName = fileName;
         this.filePath = filePath;
