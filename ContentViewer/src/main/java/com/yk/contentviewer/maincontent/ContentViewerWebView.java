@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 /**
  * Content web view.
@@ -177,11 +176,15 @@ public class ContentViewerWebView extends WebView {
         this.addIntersections();
     }
 
-    @SneakyThrows
     private WebResourceResponse onRequest(@NonNull Uri uri) {
-        if (BookService.getBookService().isEntryPresented(Objects.requireNonNull(uri.getPath()).substring(1)))
-            return contentViewerWebViewResourceGetter.onBookRequest(uri);
-        else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
+        try {
+            if (BookService.getBookService().isEntryPresented(Objects.requireNonNull(uri.getPath()).substring(1)))
+                return contentViewerWebViewResourceGetter.onBookRequest(uri);
+            else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
+        } catch (BookServiceException e) {
+            Toaster.make(this.getContext(), "Can no load the book", e);
+            throw new RuntimeException(e);
+        }
     }
 
     void addIntersections() {
@@ -232,7 +235,6 @@ public class ContentViewerWebView extends WebView {
             return super.onScaleBegin(detector);
         }
 
-        @SneakyThrows
         @Override
         public boolean onScale(@NotNull ScaleGestureDetector detector) {
             var targetTextSize = (int) (ContentViewerWebView.this.getSettings().getTextZoom()

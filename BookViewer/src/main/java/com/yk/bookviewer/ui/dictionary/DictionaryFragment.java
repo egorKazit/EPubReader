@@ -9,23 +9,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentDictionaryBinding;
-import com.yk.common.model.dictionary.Dictionary;
+import com.yk.common.context.FloatingActionButtonOnScrollListener;
 import com.yk.common.service.dictionary.DictionaryService;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-
-import lombok.Getter;
-import lombok.SneakyThrows;
 
 /**
  * Dictionary fragment.
@@ -93,6 +95,19 @@ public class DictionaryFragment extends Fragment {
         }, this.getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
+        var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+        binding.dictionaryList.addOnScrollListener(new FloatingActionButtonOnScrollListener(bottomNavigationView, floatingActionButton));
+        floatingActionButton.setOnClickListener(v -> {
+            if (!Objects.equals(Objects.requireNonNull(NavHostFragment.findNavController(this).getCurrentDestination()).getId(), R.id.navigation_home))
+                NavHostFragment.findNavController(this).navigate(R.id.navigation_home);
+        });
+        floatingActionButton.setImageResource(R.drawable.ic_library_foreground);
     }
 
     @Override

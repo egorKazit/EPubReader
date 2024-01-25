@@ -36,7 +36,7 @@ public interface BookDao {
      * Method to add new book
      */
     @Insert
-    void addNewBook(Book book);
+    long addNewBook(Book book);
 
     /**
      * Method to update book
@@ -47,7 +47,10 @@ public interface BookDao {
     /**
      * Method to delete book
      */
-    @Delete
+    @Delete(entity = Book.class)
     void deleteBook(Book book);
+
+    @Query("DELETE FROM book WHERE id = :id")
+    void deleteBookById(int id);
 
 }

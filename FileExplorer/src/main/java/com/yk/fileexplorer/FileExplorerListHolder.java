@@ -18,7 +18,7 @@ public final class FileExplorerListHolder {
     private File currentFolder;
     private final List<FileExplorerItem> files = new ArrayList<>();
 
-    
+
     FileExplorerListHolder(File currentFolder, FileExplorer fileExplorer) {
         this.currentFolder = currentFolder;
         this.fileExplorer = fileExplorer;
@@ -32,32 +32,33 @@ public final class FileExplorerListHolder {
         }).start();
     }
 
-    
+
     void up() {
         currentFolder = currentFolder.getParentFile();
         load();
     }
 
-    
+
     void openFolder(String targetFolderName) {
         currentFolder = new File(currentFolder, targetFolderName);
         load();
     }
 
-    
+
     private void load() {
 
         files.clear();
 
-        Arrays.stream(Objects.requireNonNull(currentFolder.listFiles()))
-                .filter(file -> (file.isFile() && file.getName().toUpperCase().endsWith(".EPUB")) || !file.isFile())
-                .sorted((file, second) -> {
-                    if (!file.isFile() && second.isFile())
-                        return -1;
-                    if (file.isFile() && !second.isFile())
-                        return 1;
-                    return Long.compare(file.lastModified(), second.lastModified());
-                }).forEach(file -> files.add(new FileExplorerItem(file.getName(), file.getAbsolutePath(), file.isFile())));
+        if (currentFolder.listFiles() != null)
+            Arrays.stream(currentFolder.listFiles())
+                    .filter(file -> (file.isFile() && file.getName().toUpperCase().endsWith(".EPUB")) || !file.isFile())
+                    .sorted((file, second) -> {
+                        if (!file.isFile() && second.isFile())
+                            return -1;
+                        if (file.isFile() && !second.isFile())
+                            return 1;
+                        return Long.compare(file.lastModified(), second.lastModified());
+                    }).forEach(file -> files.add(new FileExplorerItem(file.getName(), file.getAbsolutePath(), file.isFile())));
 
         if (!currentFolder.getAbsolutePath().equals("/") && currentFolder.getParentFile() != null && currentFolder.getParentFile().listFiles() != null) {
             FileExplorerItem fileExplorerItem = new FileExplorerItem("..", null, false);

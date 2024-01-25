@@ -19,8 +19,6 @@ import com.yk.common.model.dictionary.LearningEntry;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.utils.PreferenceHelper;
 
-import lombok.SneakyThrows;
-
 /**
  * Notification worker.
  * It creates and shows up new notification
@@ -37,7 +35,6 @@ public class NotificationWorker extends Worker {
         this.context = context;
     }
 
-    @SneakyThrows
     @NonNull
     @Override
     public Result doWork() {

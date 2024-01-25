@@ -12,11 +12,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentBookBinding;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.context.ActivityResultLauncherWrapper;
+import com.yk.common.context.FloatingActionButtonOnScrollListener;
 import com.yk.common.model.book.Book;
 import com.yk.common.service.book.BookPool;
 import com.yk.common.service.book.BookService;
@@ -26,6 +32,9 @@ import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
+
+import lombok.Getter;
 
 /**
  * Fragment to observe all books.
@@ -66,23 +75,29 @@ public class BookFragment extends Fragment {
         binding.bookList.setLayoutManager(gridLayoutManager);
         binding.bookList.setAdapter(new BookFragmentRecyclerViewAdapter());
         // Upload books in a separate thread
-        new Thread(() -> {
+        Executors.newSingleThreadExecutor().submit(() -> {
             BookPool.uploadBooks();
             requireActivity().runOnUiThread(() -> {
                 if (binding == null)
                     return;
                 Objects.requireNonNull(binding.bookList.getAdapter()).notifyDataSetChanged();
             });
-        }).start();
-        // set on scroll adapter
-        binding.bookList.addOnScrollListener(new BookFragmentOnScrollListener(binding.addBook));
-        binding.addBook.setOnClickListener(new BookFragmentOnClickListener(intentActivityResultLauncher::launch));
+        });
 
         return root;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
+        var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+        binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(bottomNavigationView, floatingActionButton));
+        floatingActionButton.setOnClickListener(new BookFragmentOnClickListener(intentActivityResultLauncher::launch));
+        floatingActionButton.setImageResource(R.drawable.ic_settings_foreground);
+    }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void loadBook(String bookPath) {
         try {
             boolean[] isNewBook = {false};

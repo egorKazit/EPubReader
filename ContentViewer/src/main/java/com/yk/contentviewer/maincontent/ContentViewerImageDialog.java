@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -53,7 +55,7 @@ public final class ContentViewerImageDialog {
         dialog.show();
     }
 
-    private static void setSize(View view) {
+    private static void setSize(@NonNull View view) {
         view.getLayoutParams().height += (int) INITIAL_HEIGHT;
         view.getLayoutParams().width += (int) INITIAL_WIDTH;
     }

@@ -3,12 +3,11 @@ package com.yk.contentviewer.maincontent;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.service.book.BookService;
+import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
 import java.util.function.Function;
-
-import lombok.SneakyThrows;
 
 /**
  * Class to react on page loading
@@ -31,8 +30,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
      * @param retriever retriever function
      * @param viewId    view
      */
-    @SneakyThrows
-    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) {
+    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) throws BookServiceException {
         this.retriever = retriever;
         this.viewId = viewId;
         this.bookService = BookService.getBookService();
@@ -56,7 +54,7 @@ public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCa
 
     }
 
-    @SneakyThrows
+
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);

@@ -8,7 +8,6 @@ import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.model.dictionary.WordTranslation;
-import com.yk.common.persistance.DictionaryDao;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 

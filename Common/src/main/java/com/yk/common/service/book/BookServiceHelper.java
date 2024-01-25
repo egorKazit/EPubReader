@@ -3,22 +3,27 @@ package com.yk.common.service.book;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
+import com.yk.common.persistance.AppDatabaseFactory;
+import com.yk.common.utils.Toaster;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class BookServiceHelper {
 
-    //    private static final ThreadOperator threadOperator = ThreadOperator.getInstance(false);
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public static void updateLatestBookPath(Context context, String bookPath) {
+    public static void updateLatestBookPath(@NonNull Context context, @NonNull String bookPath) {
         try {
             FileOutputStream fileOutputStream = context.openFileOutput("lastBook.txt", Context.MODE_PRIVATE);
             fileOutputStream.write(bookPath.getBytes());
@@ -31,7 +36,11 @@ public class BookServiceHelper {
     }
 
     static void createPersistenceBook(BookService bookService) {
-        executorService.submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(bookService.getBook()));
+        executorService.submit(() -> {
+            var id = ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().addNewBook(bookService.getBook());
+            bookService.getBook().setId((int) id);
+            return true;
+        });
     }
 
     public static void updatePersistenceBook(BookService bookService) {
@@ -43,12 +52,13 @@ public class BookServiceHelper {
     }
 
     static Book uploadBookFromDatabase(String path) throws BookServiceException {
-        var futureBook = Executors.newSingleThreadExecutor().submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(path));
+        var futureBook = executorService.submit(() -> ApplicationContext.getContext().getAppDatabaseAbstract().bookDao().getBookByPath(path));
         try {
             return futureBook.get();
         } catch (ExecutionException | InterruptedException e) {
             throw new BookServiceException("Can not load book", e);
         }
     }
+
 
 }
