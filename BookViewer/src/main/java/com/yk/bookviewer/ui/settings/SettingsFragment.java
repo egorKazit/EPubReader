@@ -8,9 +8,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentSettingsBinding;
+
+import java.util.Objects;
 
 /**
  * Settings fragment.
@@ -44,4 +48,14 @@ public class SettingsFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+        floatingActionButton.setOnClickListener(v -> {
+            if (!Objects.equals(Objects.requireNonNull(NavHostFragment.findNavController(this).getCurrentDestination()).getId(), R.id.navigation_home))
+                NavHostFragment.findNavController(this).navigate(R.id.navigation_home);
+        });
+        floatingActionButton.setImageResource(R.drawable.ic_library_foreground);
+    }
 }

@@ -27,25 +27,28 @@ public abstract class HttpCaller {
     public static <T> T get(String url, String username, String password, Class<T> targetType) throws IOException {
         AtomicReference<IOException> throwableAtomicReference = new AtomicReference<>();
         // call request synchronously
-        var futureLanguagesInJson = Executors.newSingleThreadExecutor().submit(() -> {
+        var futureLanguages = Executors.newSingleThreadExecutor().submit(() -> {
             try {
                 // set user/password
                 String credential = Credentials.basic(username, password);
                 Call call = new OkHttpClient().newCall(new Request.Builder().url(url).get().header(HttpHeaders.AUTHORIZATION, credential).build());
                 // make it and handle response
-                Response response = call.execute();
-                return new BufferedReader(new InputStreamReader(response.body().byteStream()))
-                        .lines().collect(Collectors.joining());
+                try (Response response = call.execute()) {
+                    if (response.body() != null) {
+                        return new BufferedReader(new InputStreamReader(response.body().byteStream()))
+                                .lines().collect(Collectors.joining());
+                    } else return "";
+                }
             } catch (IOException e) {
                 throwableAtomicReference.set(e);
                 return "";
             }
         });
         try {
-            var languagesInJson = futureLanguagesInJson.get();
+            var languages = futureLanguages.get();
             if (throwableAtomicReference.get() != null)
                 throw throwableAtomicReference.get();
-            return gson.fromJson(languagesInJson, targetType);
+            return gson.fromJson(languages, targetType);
         } catch (ExecutionException | InterruptedException e) {
             throw new IOException(e);
         }

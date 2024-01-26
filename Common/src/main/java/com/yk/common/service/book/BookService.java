@@ -1,31 +1,17 @@
 package com.yk.common.service.book;
 
-import static com.yk.common.constants.Tags.CONTAINER;
-import static com.yk.common.constants.Tags.CONTENT;
-import static com.yk.common.constants.Tags.CREATOR;
-import static com.yk.common.constants.Tags.FULL_PATH;
-import static com.yk.common.constants.Tags.LANGUAGE;
-import static com.yk.common.constants.Tags.META;
-import static com.yk.common.constants.Tags.METADATA;
-import static com.yk.common.constants.Tags.NAME;
-import static com.yk.common.constants.Tags.PACKAGE;
-import static com.yk.common.constants.Tags.ROOT_FILE;
-import static com.yk.common.constants.Tags.ROOT_FILES;
-import static com.yk.common.constants.Tags.TITLE;
-import static com.yk.common.utils.JsonContentHelper.getContentInJson;
+import static com.yk.common.utils.XmlContentHelper.getXmlContentFromInputStream;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.yk.common.constants.Tags;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
+import com.yk.common.model.xml.Container;
+import com.yk.common.model.xml.NavigationControl;
+import com.yk.common.model.xml.Package;
 import com.yk.common.model.book.TableOfContent;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,9 +47,8 @@ public class BookService {
     private final ZipFile bookZipFile;
     @Getter
     private final String rootDirectory;
-    private final JSONObject contentFileHeader;
-    private final JSONObject contentFileZipEntryInJson;
-    private final Object meta;
+    private final Container container;
+    private final Package xmlPackage;
     private TableOfContent tableOfContent;
 
 
@@ -114,43 +99,47 @@ public class BookService {
     }
 
     public static BookService buildFromPath(String path) throws BookServiceException {
+        // start builder
         BookService.BookServiceBuilder bookServiceBuilder = BookService.builder();
         ZipFile bookZipFile;
         try {
+            // load file
             bookZipFile = new ZipFile(path);
         } catch (IOException ioException) {
             Log.e("BookService", "Error on book zip reading");
             throw new BookServiceException("Error on book zip reading", ioException);
         }
+        // set zip file
         bookServiceBuilder.bookZipFile(bookZipFile);
+        // get meta content entry
         ZipEntry contentZipEntry = bookZipFile.getEntry(META_CONTENT);
         if (contentZipEntry == null) {
             throw new BookServiceException("No content entry");
         }
-        String fullPathToContentFile;
+
+        Container container;
         try {
-            JSONObject contentInJson = getContentInJson(bookZipFile.getInputStream(contentZipEntry));
-            fullPathToContentFile = contentInJson.getJSONObject(CONTAINER.getTag()).getJSONObject(ROOT_FILES.getTag()).getJSONObject(ROOT_FILE.getTag()).getString(FULL_PATH.getTag());
+
+            // parse and set container
+            container = getXmlContentFromInputStream(bookZipFile.getInputStream(contentZipEntry), Container.class);
+            bookServiceBuilder.container(container);
 
             // read content file
-            ZipEntry contentFileZipEntry = bookZipFile.getEntry(fullPathToContentFile);
+            ZipEntry contentFileZipEntry = bookZipFile.getEntry(container.getRootFiles().getRootFile().getFullPath());
             if (contentFileZipEntry == null) {
                 throw new BookServiceException("No content entry");
             }
-            JSONObject contentFileZipEntryInJson = getContentInJson(bookZipFile.getInputStream(contentFileZipEntry));
-            bookServiceBuilder.contentFileZipEntryInJson(contentFileZipEntryInJson);
-            JSONObject contentFilePackageHeader = contentFileZipEntryInJson.getJSONObject(PACKAGE.getTag());
-            JSONObject contentFileHeader = contentFilePackageHeader.getJSONObject(METADATA.getTag());
-            bookServiceBuilder.contentFileHeader(contentFileHeader);
-            bookServiceBuilder.meta(contentFileHeader.get(META.getTag()));
-        } catch (IOException | JSONException exception) {
+
+            Package aPackage = getXmlContentFromInputStream(bookZipFile.getInputStream(contentFileZipEntry), Package.class);
+            bookServiceBuilder.xmlPackage(aPackage);
+        } catch (Exception exception) {
             Log.e("BookService", "Error on content building");
             throw new BookServiceException("Error on content building", exception);
         }
         // build table of content
-        int indexOfLastSlash = fullPathToContentFile.lastIndexOf("/");
+        int indexOfLastSlash = container.getRootFiles().getRootFile().getFullPath().lastIndexOf("/");
         if (indexOfLastSlash != -1) {
-            bookServiceBuilder.rootDirectory(fullPathToContentFile.substring(0, indexOfLastSlash + 1));
+            bookServiceBuilder.rootDirectory(container.getRootFiles().getRootFile().getFullPath().substring(0, indexOfLastSlash + 1));
         } else {
             bookServiceBuilder.rootDirectory("");
         }
@@ -175,25 +164,15 @@ public class BookService {
     }
 
     public String getTitle() {
-        return getStringByTag(TITLE);
+        return xmlPackage.getMetadata().getTitle();
     }
 
     String getCreator() {
-        return getStringByTag(CREATOR);
+        return String.join(" & ", xmlPackage.getMetadata().getCreators());
     }
 
     public String getLanguage() {
-        return getStringByTag(LANGUAGE);
-    }
-
-    @NonNull
-    private String getStringByTag(Tags tag) {
-        try {
-            return contentFileHeader.getString(tag.getTag());
-        } catch (JSONException jsonException) {
-            Log.e("BookService", "Error on getting value for tag " + tag.getTag());
-        }
-        return "";
+        return xmlPackage.getMetadata().getLanguage();
     }
 
     public int getCurrentChapterNumber() {
@@ -232,34 +211,19 @@ public class BookService {
         ZipEntry tableOfContentZipEntry = bookZipFile.stream().filter(zipEntry -> zipEntry.getName().startsWith(rootDirectory)
                 && zipEntry.getName().endsWith(".ncx")).findFirst().orElseThrow(() -> new BookServiceException("Incorrect configuration of File"));
         try {
-            JSONObject tableOfContentInJson = getContentInJson(bookZipFile.getInputStream(tableOfContentZipEntry));
-            tableOfContent = TableOfContent.fromJson(tableOfContentInJson, contentFileZipEntryInJson, getCoverId());
+            var navigationControl = getXmlContentFromInputStream(bookZipFile.getInputStream(tableOfContentZipEntry), NavigationControl.class);
+            tableOfContent = TableOfContent.fromNavigationControl(navigationControl, xmlPackage, getCoverId());
             return tableOfContent;
-        } catch (IOException | JSONException exception) {
+        } catch (Exception exception) {
             throw new BookServiceException("Table of content can not be found", exception);
         }
     }
 
     @NonNull
-    private String getCoverId() throws BookServiceException {
-        try {
-            if (meta instanceof JSONArray) {
-                for (int index = 0; index < ((JSONArray) meta).length(); index++) {
-                    if (((JSONObject) ((JSONArray) meta).get(index)).has(NAME.getTag())
-                            && ((JSONObject) ((JSONArray) meta).get(index)).getString(NAME.getTag()).equals("cover")) {
-                        return ((JSONObject) ((JSONArray) meta).get(index)).getString(CONTENT.getTag());
-                    }
-                }
-            } else if (meta instanceof JSONObject) {
-                if (((JSONObject) meta).has(NAME.getTag())
-                        && ((JSONObject) meta).getString(NAME.getTag()).equals("cover")) {
-                    return ((JSONObject) meta).getString(CONTENT.getTag());
-                }
-            }
-        } catch (JSONException jsonException) {
-            throw new BookServiceException("Cover can not be read", jsonException);
-        }
-        return "";
+    private String getCoverId() {
+        return xmlPackage.getMetadata().getMeta().stream().filter(meta -> "cover".equals(meta.getName()))
+                .findFirst().orElseGet(Package.Meta::new).getContent();
+
     }
 
 }

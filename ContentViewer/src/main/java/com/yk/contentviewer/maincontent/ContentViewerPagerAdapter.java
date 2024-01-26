@@ -19,8 +19,6 @@ import com.yk.contentviewer.R;
 
 import java.util.Objects;
 
-import lombok.SneakyThrows;
-
 /**
  * Class with implementation of page adapter
  */
@@ -96,16 +94,20 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
             this.chapterNumber = chapterNumber;
         }
 
-        @SneakyThrows
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.item_content_view, container, false);
             ContentViewerWebView contentViewerWebView = rootView.findViewById(R.id.contentViewerItemContentItem);
-            int chapterPosition =
-                    chapterNumber == BookService.getBookService().getCurrentChapterNumber() ?
-                            BookService.getBookService().getCurrentChapterPosition() : 0;
-            contentViewerWebView.uploadChapter(chapterNumber, chapterPosition);
+            try {
+                int chapterPosition =
+                        chapterNumber == BookService.getBookService().getCurrentChapterNumber() ?
+                                BookService.getBookService().getCurrentChapterPosition() : 0;
+                contentViewerWebView.uploadChapter(chapterNumber, chapterPosition);
+            } catch (BookServiceException e) {
+                Toaster.make(requireContext(), "Can not start", e);
+                requireActivity().finish();
+            }
             return rootView;
         }
 

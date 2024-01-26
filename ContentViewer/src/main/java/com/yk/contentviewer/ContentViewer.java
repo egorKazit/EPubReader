@@ -50,8 +50,6 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import lombok.SneakyThrows;
-
 /**
  * Activity to open book and provide ability to translate some parts of text
  */
@@ -63,7 +61,6 @@ public class ContentViewer extends AppCompatActivity {
     private final Map<Integer, Timer> timers = new HashMap<>();
     private final Map<Integer, Boolean> menuState = new HashMap<>();
 
-    //    @SneakyThrows
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +77,11 @@ public class ContentViewer extends AppCompatActivity {
         // set zoom change animation
         contentViewPager.setPageTransformer(new ZoomOutPageTransformer());
         // move to the end of chapter if it goes to previous page
-        contentViewPager.registerOnPageChangeCallback(new ContentViewerOnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
+        try {
+            contentViewPager.registerOnPageChangeCallback(new ContentViewerOnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
+        } catch (BookServiceException e) {
+            throw new RuntimeException(e);
+        }
         try {
             // set current chapter
             contentViewPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
@@ -190,7 +191,6 @@ public class ContentViewer extends AppCompatActivity {
         return returnValue;
     }
 
-    @SneakyThrows
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
@@ -203,7 +203,11 @@ public class ContentViewer extends AppCompatActivity {
             menuState.put(R.id.translateContext, item.isChecked());
             return true;
         } else if (itemId == R.id.callSizer) {
-            contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+            try {
+                contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+            } catch (BookServiceException e) {
+                Toaster.make(getApplicationContext(), "Can not load", e);
+            }
             return true;
         } else if (itemId == R.id.textFont) {
             findViewById(R.id.contentViewerFontHolder).setVisibility(View.VISIBLE);

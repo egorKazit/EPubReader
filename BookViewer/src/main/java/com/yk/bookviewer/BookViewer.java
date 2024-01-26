@@ -9,9 +9,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.databinding.ActivityBookViewerBinding;
 import com.yk.common.service.learning.LearningOperator;
 import com.yk.common.utils.PreferenceHelper;
+
+import java.util.Objects;
 
 public class BookViewer extends AppCompatActivity {
 
@@ -41,6 +44,12 @@ public class BookViewer extends AppCompatActivity {
         if (PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+
+        var floatingActionButton = (FloatingActionButton) findViewById(R.id.library);
+        floatingActionButton.setOnClickListener(v -> {
+            if (!Objects.equals(Objects.requireNonNull(navController.getCurrentDestination()).getId(), R.id.navigation_home))
+                navController.navigate(R.id.navigation_home);
+        });
     }
 
     @Override

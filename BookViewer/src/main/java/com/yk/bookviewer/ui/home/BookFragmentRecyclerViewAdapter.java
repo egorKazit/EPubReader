@@ -52,10 +52,11 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                 Glide.with(holder.itemView.getContext())
                         .load(ByteStreamsKt.readBytes(BookService
                                 .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
-                        .centerCrop()
-                        .fitCenter()
                         .placeholder(R.mipmap.ic_default_book_cover_foreground)
                         .error(R.mipmap.ic_default_book_cover_foreground)
+//                        .centerCrop()
+                        .fitCenter()
+                        .override(1000,1000)
                         .into(holder.bookImage);
             } catch (BookServiceException bookServiceException) {
                 Toaster.make(holder.itemView.getContext(), String.format("Cover for %s can not be read", book.getTitle()), bookServiceException);

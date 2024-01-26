@@ -16,14 +16,16 @@ import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
+import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.R;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 
 /**
  * Class as one place for all JS handlers
@@ -127,9 +129,12 @@ public class ContentViewerJSHandler {
      * @param imageUrl image url
      */
     @SuppressLint("ClickableViewAccessibility")
-    @SneakyThrows
     public void handleSelectedImage(@NonNull String imageUrl) {
-        ContentViewerImageDialog.openImageDialog(activity, imageUrl);
+        try {
+            ContentViewerImageDialog.openImageDialog(activity, imageUrl);
+        } catch (URISyntaxException | BookServiceException | IOException e) {
+            Toaster.make(activity.getApplicationContext(), "Can not load image", e);
+        }
     }
 
 }
