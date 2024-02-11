@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.yk.common.R;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
 import com.yk.common.persistance.AppDatabaseFactory;
@@ -25,13 +26,13 @@ public class BookServiceHelper {
 
     public static void updateLatestBookPath(@NonNull Context context, @NonNull String bookPath) {
         try {
-            FileOutputStream fileOutputStream = context.openFileOutput("lastBook.txt", Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = context.openFileOutput(BookService.LAST_BOOK_TXT, Context.MODE_PRIVATE);
             fileOutputStream.write(bookPath.getBytes());
             fileOutputStream.flush();
             fileOutputStream.close();
         } catch (IOException e) {
             // it's important, but not critical, so exception is not rethrown
-            Log.e("BookService", "Error on latest book path update");
+            Log.e(BookService.SERVICE_TAG, ApplicationContext.getContext().getString(R.string.error_on_book_update));
         }
     }
 
@@ -56,7 +57,7 @@ public class BookServiceHelper {
         try {
             return futureBook.get();
         } catch (ExecutionException | InterruptedException e) {
-            throw new BookServiceException("Can not load book", e);
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_load_book), e);
         }
     }
 

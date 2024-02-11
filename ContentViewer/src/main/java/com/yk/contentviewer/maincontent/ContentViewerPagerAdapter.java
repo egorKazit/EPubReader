@@ -50,7 +50,7 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
             return BookService.getBookService().getTableOfContent().getSpines().size();
         } catch (BookServiceException bookServiceException) {
             Toaster.make(Objects.requireNonNull(fragmentManager.getPrimaryNavigationFragment()).requireContext(),
-                    "Error on book loading", bookServiceException);
+                    R.string.error_on_book_loading, bookServiceException);
         }
         return 0;
     }
@@ -105,7 +105,7 @@ public class ContentViewerPagerAdapter extends FragmentStateAdapter {
                                 BookService.getBookService().getCurrentChapterPosition() : 0;
                 contentViewerWebView.uploadChapter(chapterNumber, chapterPosition);
             } catch (BookServiceException e) {
-                Toaster.make(requireContext(), "Can not start", e);
+                Toaster.make(requireContext(), R.string.error_on_book_loading, e);
                 requireActivity().finish();
             }
             return rootView;

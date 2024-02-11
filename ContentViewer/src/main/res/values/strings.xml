@@ -5,7 +5,7 @@
     <string name="string_to_translate">String to translate</string>
     <string name="context_to_translate">Context to Translate</string>
     <string name="add_to_dictionary_by_default">Add to Dictionary by Default</string>
-    <string name="call_size_bar">Call Size Bar</string>
+    <string name="call_size_bar">Change Font Size</string>
     <string name="translate">Translate</string>
     <string name="language">Language</string>
     <string name="play">Play</string>
@@ -18,4 +18,15 @@
     <string name="font_left_arrow">Font Left Arrow</string>
     <string name="font_right_arrow">Font Right Arrow</string>
     <string name="placeholder">Placeholder</string>
+    <string name="error_on_script_loading">Error on script loading</string>
+    <string name="no_translation">No translation</string>
+    <string name="translate_button">Translation</string>
+    <string name="close_button">Close</string>
+    <string name="can_not_load_image">Can not load image</string>
+    <string name="error_on_content_loading">Error on table of content loading</string>
+    <string name="error_on_book_loading">Error on book loading</string>
+    <string name="error_on_state_loading">Error on state loading</string>
+    <string name="progress">Progress: %d page of %d pages</string>
+    <string name="error_on_loading">Error on loading</string>
+    <string name="error_toc_loading">Error on table of content loading: </string>
 </resources>

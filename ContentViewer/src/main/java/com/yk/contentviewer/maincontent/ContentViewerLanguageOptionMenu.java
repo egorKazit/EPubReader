@@ -47,7 +47,7 @@ public class ContentViewerLanguageOptionMenu {
             languages = LanguageService.getInstance().getLanguages();
             sourceLanguage = BookService.getBookService().getLanguage();
         } catch (BookServiceException exception) {
-            Toaster.make(translateWordLayout.getContext(), "Error on table of content loading", exception);
+            Toaster.make(translateWordLayout.getContext(), R.string.error_on_content_loading, exception);
             return;
         }
         // inflate all languages

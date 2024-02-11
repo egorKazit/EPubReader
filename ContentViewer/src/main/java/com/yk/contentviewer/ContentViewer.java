@@ -86,7 +86,7 @@ public class ContentViewer extends AppCompatActivity {
             // set current chapter
             contentViewPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
         } catch (BookServiceException serviceException) {
-            Toaster.make(getApplicationContext(), "Book can not be loaded", serviceException);
+            Toaster.make(getApplicationContext(), R.string.error_on_book_loading, serviceException);
         }
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -134,7 +134,7 @@ public class ContentViewer extends AppCompatActivity {
                                     try {
                                         contentViewPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
                                     } catch (BookServiceException bookServiceException) {
-                                        Toaster.make(getApplicationContext(), "Error on loading", bookServiceException);
+                                        Toaster.make(getApplicationContext(), R.string.error_on_loading, bookServiceException);
                                     }
                                 },
                                 intent -> {
@@ -206,7 +206,7 @@ public class ContentViewer extends AppCompatActivity {
             try {
                 contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
             } catch (BookServiceException e) {
-                Toaster.make(getApplicationContext(), "Can not load", e);
+                Toaster.make(getApplicationContext(), R.string.error_on_loading, e);
             }
             return true;
         } else if (itemId == R.id.textFont) {
@@ -234,7 +234,7 @@ public class ContentViewer extends AppCompatActivity {
                     try {
                         BookServiceHelper.updatePersistenceBook(BookService.getBookService());
                     } catch (BookServiceException bookServiceException) {
-                        Toaster.make(getApplicationContext(), "Error on update", bookServiceException);
+                        Toaster.make(getApplicationContext(), R.string.error_on_loading, bookServiceException);
                     }
                 });
             }

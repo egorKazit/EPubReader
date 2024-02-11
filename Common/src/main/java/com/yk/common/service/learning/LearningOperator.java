@@ -27,7 +27,7 @@ public class LearningOperator {
 
     public void startLearning() {
         if (PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isLearningEnabled() && !NotificationStateResolver.isSchedulerRunning(context))
-            new GenericUniqueJobScheduler(context, NotificationWorker.class, 0).schedule("LearningNotification");
+            new GenericUniqueJobScheduler(context, NotificationWorker.class, 0).schedule(GenericRepeatReceiver.NOTIFICATION_NAME);
     }
 
     /**

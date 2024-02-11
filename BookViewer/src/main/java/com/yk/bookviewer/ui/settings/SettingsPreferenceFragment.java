@@ -19,10 +19,15 @@ import java.util.stream.Collectors;
 
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
+    public static final String LEARNING = "learning";
+    public static final String LEARNING_DELAY = "learning_delay";
+    public static final String NIGHT_MODE = "nightMode";
+    public static final String FONT = "font";
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
-        SwitchPreferenceCompat learningSwitch = findPreference("learning");
+        SwitchPreferenceCompat learningSwitch = findPreference(LEARNING);
         if (learningSwitch != null) {
             learningSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
                 PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setLearningEnabled((Boolean) newValue);
@@ -35,7 +40,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
             });
             learningSwitch.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isLearningEnabled());
         }
-        ListPreference learningIntervalList = findPreference("learning_delay");
+        ListPreference learningIntervalList = findPreference(LEARNING_DELAY);
         if (learningIntervalList != null) {
             learningIntervalList.setOnPreferenceChangeListener((preference, newValue) -> {
                 PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setLearningInterval(Integer.parseInt((String) newValue));
@@ -43,7 +48,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
             });
         }
 
-        SwitchPreferenceCompat darkModeSwitch = findPreference("nightMode");
+        SwitchPreferenceCompat darkModeSwitch = findPreference(NIGHT_MODE);
         if (darkModeSwitch != null) {
             darkModeSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
                 var newValueInCorrectType = (Boolean) newValue;
@@ -54,7 +59,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
             darkModeSwitch.setChecked(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.isNightMode());
         }
 
-        ListPreference fontSettings = findPreference("font");
+        ListPreference fontSettings = findPreference(FONT);
         if (fontSettings != null) {
             CharSequence[] entries = Arrays
                     .stream(ContentFont.values()).map(contentFont -> (CharSequence) contentFont.getFontName())

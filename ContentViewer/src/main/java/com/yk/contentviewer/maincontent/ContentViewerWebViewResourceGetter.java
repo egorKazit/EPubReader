@@ -15,6 +15,7 @@ import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.InputStreamWrapper;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +59,7 @@ public class ContentViewerWebViewResourceGetter {
                     inputStream
             );
         } catch (IOException | BookServiceException e) {
-            Toaster.make(activity, "Error on load", e);
+            Toaster.make(activity, R.string.error_on_loading, e);
         }
         return null;
     }

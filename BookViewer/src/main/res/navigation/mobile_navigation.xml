@@ -6,12 +6,6 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.yk.bookviewer.ui.home.BookFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_book" />
-
-    <fragment
         android:id="@+id/navigation_dictionary"
         android:name="com.yk.bookviewer.ui.dictionary.DictionaryFragment"
         android:label="@string/title_dictionary"
@@ -26,6 +20,12 @@
         android:name="com.yk.bookviewer.ui.dictionary.DictionaryDefinitionFragment"
         android:label="@string/title_definition"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.yk.bookviewer.ui.home.BookFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_book" />
 
     <fragment
         android:id="@+id/navigation_settings"

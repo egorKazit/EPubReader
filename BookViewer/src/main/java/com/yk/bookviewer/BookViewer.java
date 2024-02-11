@@ -2,6 +2,7 @@ package com.yk.bookviewer;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
@@ -49,6 +50,18 @@ public class BookViewer extends AppCompatActivity {
         floatingActionButton.setOnClickListener(v -> {
             if (!Objects.equals(Objects.requireNonNull(navController.getCurrentDestination()).getId(), R.id.navigation_home))
                 navController.navigate(R.id.navigation_home);
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                var currentDestination = navController.getCurrentDestination();
+                if (currentDestination == null) return;
+                if (currentDestination.getId() != R.id.navigation_definition) {
+                    finish();
+                } else {
+                    navController.navigateUp();
+                }
+            }
         });
     }
 

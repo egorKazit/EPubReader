@@ -13,6 +13,7 @@ import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.utils.ParentMethodCaller;
 import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.R;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -38,7 +39,7 @@ public class ContentViewerWebViewClient extends WebViewClient {
                 ParentMethodCaller.callConsumerOnParent(view, ViewPager2.class,
                         (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), BookService.getBookService().getChapterByHRef(request.getUrl().getPath()));
             } catch (BookServiceException bookServiceException) {
-                Toaster.make(contentViewerWebView.getContext(), "Book can not be loaded", bookServiceException);
+                Toaster.make(contentViewerWebView.getContext(), R.string.error_on_book_loading, bookServiceException);
             }
             return super.shouldOverrideUrlLoading(view, request);
         } else {

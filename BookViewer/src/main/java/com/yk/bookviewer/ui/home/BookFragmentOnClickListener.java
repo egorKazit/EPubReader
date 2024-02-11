@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class BookFragmentOnClickListener implements View.OnClickListener {
 
+    public static final String PACKAGE = "package";
     private final Consumer<Intent> launcher;
 
     @Override
@@ -29,7 +30,7 @@ public class BookFragmentOnClickListener implements View.OnClickListener {
         } else {
             //request for the permission in old way
             Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            Uri uri = Uri.fromParts("package", v.getContext().getPackageName(), null);
+            Uri uri = Uri.fromParts(PACKAGE, v.getContext().getPackageName(), null);
             intent.setData(uri);
             v.getContext().startActivity(intent);
         }

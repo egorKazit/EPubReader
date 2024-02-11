@@ -19,7 +19,7 @@
 
         <ListPreference
             app:key="font"
-            app:title="Choose font" />
+            app:title="@string/choose_font" />
 
     </PreferenceCategory>
 

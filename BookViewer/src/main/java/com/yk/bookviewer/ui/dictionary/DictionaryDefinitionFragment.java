@@ -42,7 +42,7 @@ public class DictionaryDefinitionFragment extends Fragment {
         try {
             dictionary = futureDictionary.get();
         } catch (ExecutionException | InterruptedException exception) {
-            Toaster.make(requireContext(), "Can not load definitions", exception);
+            Toaster.make(requireContext(), R.string.can_not_load_definitions, exception);
             this.requireActivity().getOnBackPressedDispatcher().onBackPressed();
         }
         // inflate view and put data in

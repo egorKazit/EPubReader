@@ -54,15 +54,14 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                                 .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
                         .placeholder(R.mipmap.ic_default_book_cover_foreground)
                         .error(R.mipmap.ic_default_book_cover_foreground)
-//                        .centerCrop()
                         .fitCenter()
-                        .override(1000,1000)
+                        .override(1000, 1000)
                         .into(holder.bookImage);
             } catch (BookServiceException bookServiceException) {
-                Toaster.make(holder.itemView.getContext(), String.format("Cover for %s can not be read", book.getTitle()), bookServiceException);
+                Toaster.make(holder.itemView.getContext(), String.format(holder.itemView.getContext().getString(R.string.can_not_load_cover),
+                        book.getTitle()), bookServiceException);
             }
         } else
-
             holder.bookImage.setImageResource(R.mipmap.ic_default_book_cover_foreground);
 
     }
@@ -102,7 +101,8 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                 BookService.initFromPath(book.getFilePath());
                 itemView.getContext().startActivity(intent);
             } catch (BookServiceException bookServiceException) {
-                Toaster.make(bookName.getContext(), String.format("Cover for %s can not be loaded", book.getTitle()), bookServiceException);
+                Toaster.make(bookName.getContext(), String.format(itemView.getContext().getString(R.string.can_not_load_cover), book.getTitle()),
+                        bookServiceException);
             }
         }
 

@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.yk.common.R;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -12,6 +13,9 @@ import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
 
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Word speaker.
@@ -21,6 +25,7 @@ import java.util.Locale;
 public class WordSpeaker {
 
     private static TextToSpeech textToSpeech = null;
+    private static final ExecutorService speaker = Executors.newSingleThreadExecutor();
 
     /**
      * initialization of textToSpeech
@@ -40,14 +45,14 @@ public class WordSpeaker {
      * The phrase is not coming in from outside, but is taken from dictionary pool
      */
     public static void speakSourcePhrase() {
-        new Thread(() -> {
+        speaker.submit(() -> {
             try {
                 speakPhrase(DictionaryService.getInstance().getLastOriginWord(), BookService.getBookService().getLanguage());
             } catch (BookServiceException e) {
                 Log.e("WordSpeaker", "Error on speech");
-                Toast.makeText(ApplicationContext.getContext(), "Error on speech", Toast.LENGTH_LONG).show();
+                Toast.makeText(ApplicationContext.getContext(), ApplicationContext.getContext().getString(R.string.error_on_speech), Toast.LENGTH_LONG).show();
             }
-        }).start();
+        });
     }
 
     /**
@@ -55,8 +60,8 @@ public class WordSpeaker {
      * The phrase is not coming in from outside, but is taken from dictionary pool
      */
     public static void speakTargetPhrase() {
-        new Thread(() -> speakPhrase(DictionaryService.getMainTranslation(DictionaryService.getInstance().getLastTranslatedDictionary()),
-                LanguageService.getInstance().getLanguage())).start();
+        speaker.submit(() -> speakPhrase(DictionaryService.getMainTranslation(DictionaryService.getInstance().getLastTranslatedDictionary()),
+                LanguageService.getInstance().getLanguage()));
     }
 
     /**

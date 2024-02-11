@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.appcompat.widget.SearchView;
 
+import com.yk.bookviewer.R;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.utils.Toaster;
@@ -58,7 +59,7 @@ public class DictionaryFragmentSearchMenuHandler implements SearchView.OnQueryTe
                 adapter.notifyItemRangeInserted(0, dictionaries.size());
             }
         } catch (ExecutionException | InterruptedException exception) {
-            Toaster.make(context, "Can not load translations", exception);
+            Toaster.make(context, R.string.can_not_load_translations, exception);
             adapter.setDictionaries(new ArrayList<>());
         }
         searchPhrase = newText;

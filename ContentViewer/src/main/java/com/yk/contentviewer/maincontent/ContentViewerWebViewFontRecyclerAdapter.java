@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
 
+    public static final String FONTS = "fonts/";
     private final List<ContentFont> fontData = List.of(ContentFont.values());
     private int index;
     private final int size = (fontData.size());
@@ -46,8 +47,7 @@ public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapte
         ContentFont contentFont = fontData.get(realIndex);
         holder.textView.setText(contentFont.getFontName());
         if (contentFont.getFontTechnicalName() != null) {
-//            Typeface type = Typeface.createFromAsset(holder.textView.getContext().getAssets(), "fonts/" + contentFont.getFontTechnicalName());
-            Typeface type = new Typeface.Builder(holder.textView.getContext().getAssets(), "fonts/" + contentFont.getFontTechnicalName())
+            Typeface type = new Typeface.Builder(holder.textView.getContext().getAssets(), FONTS + contentFont.getFontTechnicalName())
                     .setWeight(500)
                     .build();
             holder.textView.setTypeface(type);

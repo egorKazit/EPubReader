@@ -23,20 +23,17 @@ public class TableOfContent {
 
     private final LinkedList<Chapter> chapterTree = new LinkedList<>();
     private final LinkedList<Spine> spines = new LinkedList<>();
-    private String cover;
 
     public static TableOfContent fromNavigationControl(@NonNull NavigationControl navigationControl,
-                                                       @NonNull Package xmlPackage,
-                                                       @NonNull String coverId) {
+                                                       @NonNull Package xmlPackage) {
         TableOfContent tableOfContent = new TableOfContent();
-        setSpineAndCover(xmlPackage, tableOfContent, coverId);
+        setSpineAndCover(xmlPackage, tableOfContent);
         setChapterTree(navigationControl, tableOfContent);
         return tableOfContent;
     }
 
     private static void setSpineAndCover(@NonNull Package xmlPackage,
-                                         @NonNull TableOfContent tableOfContent,
-                                         String coverId) {
+                                         @NonNull TableOfContent tableOfContent) {
         xmlPackage.getSpine().getItemRef()
                 .forEach(itemRef -> {
                     Optional<Package.Item> itemOptional = xmlPackage.getManifest().getItem().stream()
@@ -47,10 +44,6 @@ public class TableOfContent {
                             .mediaType(item.getMediaType()));
                     tableOfContent.spines.add(spineBuilder.build());
                 });
-        if (coverId != null) {
-            Optional<Package.Item> itemOptional = xmlPackage.getManifest().getItem().stream().filter(item -> item.getId().equals(coverId)).findAny();
-            itemOptional.ifPresent(item -> tableOfContent.cover = item.getHref());
-        }
     }
 
     private static void setChapterTree(NavigationControl navigationControl,

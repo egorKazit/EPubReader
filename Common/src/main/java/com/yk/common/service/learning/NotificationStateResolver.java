@@ -32,6 +32,7 @@ import lombok.Setter;
 public class NotificationStateResolver {
 
     private static final String LAST_NOTIFICATION_FILE = "lastNotification.txt";
+    private static final String SERVICE_TAG = "NotificationStateResolver";
 
     /**
      * State checker.
@@ -53,7 +54,7 @@ public class NotificationStateResolver {
                         workInfo.get().getState() == WorkInfo.State.RUNNING || isNotificationRunning;
             }
         } catch (ExecutionException | InterruptedException exception) {
-            Log.e("Error", Objects.requireNonNull(exception.getMessage()));
+            Log.e(SERVICE_TAG, Objects.requireNonNull(exception.getMessage()));
             return false;
         }
     }
@@ -87,7 +88,7 @@ public class NotificationStateResolver {
                 String workUUID = bufferedReader.readLine();
                 stateBuilder.workUUID(UUID.fromString(workUUID));
             } catch (IOException ioException) {
-                Log.e("Error", Objects.requireNonNull(ioException.getMessage()));
+                Log.e(SERVICE_TAG, Objects.requireNonNull(ioException.getMessage()));
             }
             return stateBuilder.build();
         }
@@ -100,7 +101,7 @@ public class NotificationStateResolver {
                 outputStream.write(workUUID.toString().getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
             } catch (IOException ioException) {
-                Log.e("Error", Objects.requireNonNull(ioException.getMessage()));
+                Log.e(SERVICE_TAG, Objects.requireNonNull(ioException.getMessage()));
             }
         }
 

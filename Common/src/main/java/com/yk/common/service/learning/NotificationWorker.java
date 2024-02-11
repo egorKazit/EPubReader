@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.yk.common.R;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.model.dictionary.LearningEntry;
 import com.yk.common.service.dictionary.DictionaryService;
@@ -27,6 +28,8 @@ import com.yk.common.utils.PreferenceHelper;
 public class NotificationWorker extends Worker {
 
     public static final int NOTIFICATION_ID = 666;
+    private static final String WORKER_NAME = "notificationWorker";
+    private static final String WORKER_DESCRIPTION = "NotificationWorker";
 
     private final Context context;
 
@@ -47,10 +50,10 @@ public class NotificationWorker extends Worker {
         // get notification manager and notification channel
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel notificationChannel = new NotificationChannel("1",
-                "notificationWorker",
+                WORKER_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT);
         // set notification channel description and update notification manager with notification channel
-        notificationChannel.setDescription("NotificationWorker");
+        notificationChannel.setDescription(WORKER_DESCRIPTION);
         notificationManager.createNotificationChannel(notificationChannel);
         // prepare content intent
         Intent headerIntent = new Intent();
@@ -64,7 +67,7 @@ public class NotificationWorker extends Worker {
         // start building
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, "1")
                 .setSmallIcon(androidx.core.R.drawable.notification_tile_bg)
-                .setContentTitle("Pick Translation")
+                .setContentTitle(context.getString(R.string.pick_translation))
                 .setContentText(learningEntry.getOriginWord())
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)

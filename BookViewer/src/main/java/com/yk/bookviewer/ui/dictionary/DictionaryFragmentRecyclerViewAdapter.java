@@ -44,7 +44,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         try {
             dictionaries = futureDictionaries.get();
         } catch (ExecutionException | InterruptedException exception) {
-            Toaster.make(parentFragment.requireActivity(), "Can not load translations", exception);
+            Toaster.make(parentFragment.requireActivity(), R.string.can_not_load_translations, exception);
             dictionaries = List.of();
         }
     }
@@ -83,7 +83,7 @@ public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         // check if navigation is possible -> definitions should be defined and exist(at least 1)
         if (dictionaries.get(position).getDefinitions() == null ||
                 dictionaries.get(position).getDefinitions().isEmpty()) {
-            Toaster.make(parentFragment.getContext(), "No definitions found", null);
+            Toaster.make(parentFragment.getContext(), R.string.no_definitions_found, null);
             return;
         }
         // set put data for navigation

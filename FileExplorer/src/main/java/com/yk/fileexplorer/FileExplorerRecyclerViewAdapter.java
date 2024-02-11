@@ -15,6 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.yk.common.constants.GlobalConstants;
+import com.yk.common.utils.Toaster;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.FileExplorerRecyclerViewHolder> {
 
@@ -34,7 +38,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         return new FileExplorerRecyclerViewHolder(view);
     }
 
-    
+
     @Override
     public void onBindViewHolder(@NonNull FileExplorerRecyclerViewHolder holder, int position) {
 
@@ -78,7 +82,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         }
     }
 
-    
+
     public void handleClick(View view, FileExplorerItem fileExplorerItem) {
         if (fileExplorerItem.isFile()) {
             Intent intent = new Intent();
@@ -90,18 +94,17 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         }
         notifyItemRangeRemoved(0, fileExplorerListHolder.getFiles().size());
         fileExplorer.getFileExplorerProgressHelper().show();
-        new Thread(() -> {
-            if (fileExplorerItem.getFileName().equals("..")) {
-                fileExplorerListHolder.up();
-            } else {
-                fileExplorerListHolder.openFolder(fileExplorerItem.getFileName());
-            }
-            fileExplorer.runOnUiThread(() -> {
-                fileExplorer.getFileExplorerProgressHelper().hide();
-                notifyItemRangeChanged(0, fileExplorerListHolder.getFiles().size());
+            Executors.newSingleThreadExecutor().submit(() -> {
+                if (fileExplorerItem.getFileName().equals("..")) {
+                    fileExplorerListHolder.up();
+                } else {
+                    fileExplorerListHolder.openFolder(fileExplorerItem.getFileName());
+                }
+                fileExplorer.runOnUiThread(() -> {
+                    fileExplorer.getFileExplorerProgressHelper().hide();
+                    notifyItemRangeChanged(0, fileExplorerListHolder.getFiles().size());
+                });
             });
-        }).start();
-
     }
 
 }

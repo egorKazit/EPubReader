@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.TableOfContent;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
@@ -112,12 +113,12 @@ public class TableOfContentNestedListAdapter extends RecyclerView.Adapter<TableO
             try {
                 BookService.getBookService().setCurrentChapterNumber(chapterTree.get(position).getSpineRefId());
             } catch (BookServiceException bookServiceException) {
-                Log.e(this.getClass().getName(), "Error at table of content loading: " + bookServiceException.getMessage());
+                Log.e(this.getClass().getName(), ApplicationContext.getContext().getString(R.string.error_toc_loading) + bookServiceException.getMessage());
             }
             try {
                 BookService.getBookService().setCurrentChapterPosition(0);
             } catch (BookServiceException bookServiceException) {
-                Log.e(this.getClass().getName(), "Error at table of content loading: " + bookServiceException.getMessage());
+                Log.e(this.getClass().getName(), ApplicationContext.getContext().getString(R.string.error_toc_loading) + bookServiceException.getMessage());
             }
             ((Activity) contentView.getContext()).setResult(Activity.RESULT_OK, intent);
             ((Activity) contentView.getContext()).finish();

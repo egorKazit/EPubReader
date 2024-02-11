@@ -24,4 +24,10 @@
     <string name="translations">Translations</string>
     <string name="definitions">Definitions</string>
     <string name="search">Search</string>
+    <string name="can_not_load_book">Can not load the book</string>
+    <string name="can_not_load_cover">Cover for %s can not be read</string>
+    <string name="can_not_load_definitions">Can not load definitions</string>
+    <string name="can_not_load_translations">Can not load translations</string>
+    <string name="no_definitions_found">No definitions found</string>
+    <string name="choose_font">Choose font</string>
 </resources>
