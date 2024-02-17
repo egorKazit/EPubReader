@@ -14,7 +14,7 @@ import java.util.Random;
  * Class to create pending intent
  */
 
-public class LearningPendingIntent {
+public final class LearningPendingIntent {
     private final Intent intent;
     private final Context context;
     private int counter = new Random().nextInt();

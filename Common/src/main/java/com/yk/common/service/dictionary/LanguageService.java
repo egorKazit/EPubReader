@@ -3,6 +3,7 @@ package com.yk.common.service.dictionary;
 
 import android.content.Context;
 
+import com.yk.common.R;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;
@@ -46,7 +47,7 @@ public final class LanguageService {
             var languagesLocal = languageDao.getAllLanguages();
             if (languagesLocal == null || languagesLocal.isEmpty()) {
                 try {
-                    languagesLocal = new ArrayList<>(WordTranslator.getLanguages());
+                    languagesLocal = new ArrayList<>(WordTranslator.getLanguages(context));
                 } catch (WordOperatorException exception) {
                     wordOperatorExceptionAtomicReference.set(exception);
                     return null;
@@ -59,7 +60,7 @@ public final class LanguageService {
         try {
             var languages = futureLanguages.get();
             if (wordOperatorExceptionAtomicReference.get() != null) {
-                Toaster.make(context, "Can not lead languages", wordOperatorExceptionAtomicReference.get());
+                Toaster.make(context, context.getString(R.string.no_lang_retrieved), wordOperatorExceptionAtomicReference.get());
                 return;
             }
             this.languages.addAll(languages);

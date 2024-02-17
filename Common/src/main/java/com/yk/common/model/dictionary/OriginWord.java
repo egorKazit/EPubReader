@@ -20,7 +20,7 @@ import lombok.Setter;
 @Entity(tableName = "origin_word", indices = {@Index(value = {"origin_word", "source_language", "target_language"}, unique = true)})
 @Getter
 @Setter
-public class OriginWord {
+public final class OriginWord {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "origin_word")

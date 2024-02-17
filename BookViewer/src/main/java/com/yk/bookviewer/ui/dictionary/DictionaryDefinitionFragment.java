@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * It's the next step after a dictionary fragment and can be reached only from the dictionary fragment.
  * The fragment contains additional information as list of definitions
  */
-public class DictionaryDefinitionFragment extends Fragment {
+public final class DictionaryDefinitionFragment extends Fragment {
 
     private Dictionary dictionary;
 
@@ -42,7 +42,7 @@ public class DictionaryDefinitionFragment extends Fragment {
         try {
             dictionary = futureDictionary.get();
         } catch (ExecutionException | InterruptedException exception) {
-            Toaster.make(requireContext(), "Can not load definitions", exception);
+            Toaster.make(requireContext(), R.string.can_not_load_definitions, exception);
             this.requireActivity().getOnBackPressedDispatcher().onBackPressed();
         }
         // inflate view and put data in

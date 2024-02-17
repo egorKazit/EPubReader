@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.yk.common.R;
 import com.yk.common.constants.GlobalConstants;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ import java.util.Objects;
  * It gets answer and handle it
  */
 
-public class AnswerWorker extends Worker {
+public final class AnswerWorker extends Worker {
 
     private final Context context;
     private final String outcomeMessage;
@@ -50,10 +51,10 @@ public class AnswerWorker extends Worker {
                 return;
             // check answer
             if (Objects.requireNonNull(getLearningEntry(context)).getCorrectTranslation().equals(outcomeMessage)) {
-                Toast.makeText(context, "Correct", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.correct, Toast.LENGTH_LONG).show();
                 markCorrectLearning(getApplicationContext());
             } else {
-                Toast.makeText(context, "Incorrect", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.incorrect, Toast.LENGTH_LONG).show();
             }
         });
         // set job status

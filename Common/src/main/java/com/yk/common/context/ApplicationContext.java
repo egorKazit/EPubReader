@@ -11,7 +11,7 @@ import lombok.Getter;
  * Application context
  */
 
-public class ApplicationContext extends Application {
+public final class ApplicationContext extends Application {
 
     @Getter
     private static ApplicationContext context;

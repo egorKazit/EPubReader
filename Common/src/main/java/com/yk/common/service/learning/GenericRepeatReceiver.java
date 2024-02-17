@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 
+import com.yk.common.R;
 import com.yk.common.constants.GlobalConstants;
 
 import java.util.Map;
@@ -20,7 +21,11 @@ import java.util.stream.Collectors;
  * It reschedule the provided job(if flag is set) and accept some consumer (if provided)
  */
 
-public class GenericRepeatReceiver extends BroadcastReceiver {
+public final class GenericRepeatReceiver extends BroadcastReceiver {
+
+    public final static String NOTIFICATION_NAME = "LearningNotification";
+    private final static String SERVICE_TAG = "GenericRepeatReceiver";
+    private final static String WORK_NAME = "LearningAnswer";
 
     /**
      * Process scheduler configuration
@@ -57,10 +62,11 @@ public class GenericRepeatReceiver extends BroadcastReceiver {
                     .collect(Collectors.toMap(bundle -> bundle, bundle -> getBundle(outcomeBundles, bundle)));
             try {
                 // get class by name and schedule new job to handle
-                Class<?> processorClass = Class.forName(outcomeProcessorClassName);
-                new GenericUniqueJobScheduler(context.getApplicationContext(), (Class<? extends Worker>) processorClass, 0, outcomesInMap).schedule("LearningAnswer");
+                Class<? extends Worker> processorClass = (Class<? extends Worker>) Class.forName(outcomeProcessorClassName);
+                new GenericUniqueJobScheduler(context.getApplicationContext(), processorClass, 0, outcomesInMap)
+                        .schedule(WORK_NAME);
             } catch (ClassNotFoundException e) {
-                Log.e("GenericRepeatReceiver", String.format("Error on work handling: %s", e.getMessage()), e);
+                Log.e(SERVICE_TAG, String.format(context.getString(R.string.error_on_work_handling), e.getMessage()), e);
             }
         }
     }
@@ -83,9 +89,9 @@ public class GenericRepeatReceiver extends BroadcastReceiver {
                 // get class by name and schedule new job
                 Class<?> workerClass = Class.forName(workerClassName);
                 new GenericUniqueJobScheduler(context.getApplicationContext(), (Class<? extends Worker>) workerClass,
-                        workerRepeatInterval).schedule("LearningNotification");
+                        workerRepeatInterval).schedule(NOTIFICATION_NAME);
             } catch (ClassNotFoundException e) {
-                Log.e("GenericRepeatReceiver", String.format("Error on work handling: %s", e.getMessage()), e);
+                Log.e(SERVICE_TAG, String.format(context.getString(R.string.error_on_work_handling), e.getMessage()), e);
             }
         }
     }

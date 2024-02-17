@@ -3,7 +3,7 @@ package com.yk.fileexplorer;
 
 import android.view.View;
 
-public class FileExplorerProgressHelper {
+public final class FileExplorerProgressHelper {
 
     private final FileExplorer fileExplorer;
 

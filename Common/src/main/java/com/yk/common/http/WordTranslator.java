@@ -1,5 +1,9 @@
 package com.yk.common.http;
 
+import android.content.Context;
+
+import com.yk.common.R;
+import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.dictionary.Dictionary;
 import com.yk.common.model.dictionary.Language;
 import com.yk.common.model.dictionary.OriginWord;
@@ -20,18 +24,24 @@ import lombok.Getter;
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class WordTranslator {
 
+    private static final String TRANSLATION_HOST = "https://translator.yk-general-one.cyou";
+    public static final String LANGUAGES_PATH = "/languages";
+    public static final String TRANSLATE_PATH = "/translate/%s-%s/%s";
+    public static final String USERNAME = "requestor";
+    public static final String PASSWORD = "1Word2LearnALot";
+
     /**
      * Method to get all available languages
      *
      * @return list of languages
      */
-    public static List<Language> getLanguages() throws WordOperatorException {
+    public static List<Language> getLanguages(Context context) throws WordOperatorException {
         // Start new thread to do a http call
         try {
-            return Arrays.asList(HttpCaller.get("http://54.93.100.178:3000/languages", "requestor", "1Word2LearnALot", Language[].class));
+            return Arrays.asList(HttpCaller.get(TRANSLATION_HOST + LANGUAGES_PATH, USERNAME, PASSWORD, Language[].class));
         } catch (IOException e) {
             // throw exception if any
-            throw new WordOperatorException("Languages can not be retrieved", e);
+            throw new WordOperatorException(context.getString(R.string.no_lang_retrieved), e);
         }
     }
 
@@ -44,9 +54,9 @@ public abstract class WordTranslator {
      */
     public static Dictionary resolveTranslation(String originText, String sourceLanguage, String targetLanguage) throws WordOperatorException {
         try {
-            var url = String.format("http://54.93.100.178:3000/translate/%s-%s/%s",
+            var url = String.format(TRANSLATION_HOST + TRANSLATE_PATH,
                     sourceLanguage, targetLanguage, originText);
-            var dictionaryFromServer = HttpCaller.get(url, "requestor", "1Word2LearnALot", DictionaryFromServer.class);
+            var dictionaryFromServer = HttpCaller.get(url, USERNAME, PASSWORD, DictionaryFromServer.class);
             if (dictionaryFromServer.translations == null)
                 dictionaryFromServer.translations = new ArrayList<>();
             dictionaryFromServer.translations.add(new WordTranslation(0, 0, "Main", dictionaryFromServer.translation));
@@ -55,7 +65,7 @@ public abstract class WordTranslator {
                     dictionaryFromServer.getDefinitions());
         } catch (IOException exception) {
             // throw exception if any
-            throw new WordOperatorException("Error on translation: server is not reachable", exception);
+            throw new WordOperatorException(ApplicationContext.getContext().getString(R.string.server_not_reachable), exception);
         }
     }
 

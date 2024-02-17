@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_on_speech">Ошибка про произведении</string>
+    <string name="no_lang_retrieved">Языки не могут быть получены</string>
+    <string name="server_not_reachable">Ошибка перевода: Сервис недоступен</string>
+    <string name="can_not_init_book_service">Ошибка инициализации сервиса книг</string>
+    <string name="can_not_retrieve_cover">Ошибка получения обложки</string>
+    <string name="can_not_read_book_file">Ошибка чтения файла</string>
+    <string name="can_not_read_book_zip_file">Ошибка чтения zip файла</string>
+    <string name="no_content_entry">Контент не найден</string>
+    <string name="can_not_build_content">Ошибка построения контента</string>
+    <string name="can_not_find_chapter">Глава не найдена</string>
+    <string name="incorrect_configuration">Неправильный файл конфигурации</string>
+    <string name="no_table_of_content">Содержание не может быть найдено</string>
+    <string name="can_not_load_book">Невозможно загрузить книгу</string>
+    <string name="error_on_book_update">Невозможно загрузить последнее состояние книги</string>
+    <string name="correct">Правильно</string>
+    <string name="incorrect">Непраильно</string>
+    <string name="error_on_work_handling">Ошибка сервиса: %s</string>
+    <string name="pick_translation">Выбереье перевод</string>
+</resources>

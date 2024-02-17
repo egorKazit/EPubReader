@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_on_speech">Error on speech</string>
+    <string name="no_lang_retrieved">Languages can not be retrieved</string>
+    <string name="server_not_reachable">Error on translation: server is not reachable</string>
+    <string name="can_not_init_book_service">Error on Book Service initialization</string>
+    <string name="can_not_retrieve_cover">Error on cover retrieval</string>
+    <string name="can_not_read_book_file">Error on single file reading</string>
+    <string name="can_not_read_book_zip_file">Error on book zip reading</string>
+    <string name="no_content_entry">No content entry</string>
+    <string name="can_not_build_content">Error on content building</string>
+    <string name="can_not_find_chapter">Chapter not found</string>
+    <string name="incorrect_configuration">Incorrect configuration of file</string>
+    <string name="no_table_of_content">Table of content can not be found</string>
+    <string name="can_not_load_book">Can not load book</string>
+    <string name="error_on_book_update">Error on latest book path update</string>
+    <string name="correct">Correct</string>
+    <string name="incorrect">Incorrect</string>
+    <string name="error_on_work_handling">Error on work handling: %s</string>
+    <string name="pick_translation">Pick Translation</string>
+</resources>

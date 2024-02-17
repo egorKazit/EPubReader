@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Root(name = "ncx", strict = false)
-public class NavigationControl {
+public final class NavigationControl {
 
     private Head head = new Head();
     @Element(name = "navMap", required = false)

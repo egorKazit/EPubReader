@@ -9,6 +9,7 @@ import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Root(name = "package", strict = false)
-public class Package {
+public final class Package {
 
     @Element(name = "spine")
     private Spine spine = new Spine();
@@ -26,6 +27,15 @@ public class Package {
     private Manifest manifest = new Manifest();
     @Element(name = "metadata")
     private Metadata metadata = new Metadata();
+
+    public String getCover() {
+        var coverId = metadata.getMeta().stream().filter(meta -> "cover".equals(meta.getName()))
+                .findFirst().orElseGet(Package.Meta::new).getContent();
+        if (coverId == null)
+            return null;
+        Optional<Item> itemOptional = manifest.getItem().stream().filter(item -> item.getId().equals(coverId)).findAny();
+        return itemOptional.map(Item::getHref).orElse(null);
+    }
 
     @NoArgsConstructor
     @Setter

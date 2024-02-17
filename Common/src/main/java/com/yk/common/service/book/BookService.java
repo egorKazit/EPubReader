@@ -1,17 +1,17 @@
 package com.yk.common.service.book;
 
+import static com.yk.common.model.book.TableOfContent.fromNavigationControl;
 import static com.yk.common.utils.XmlContentHelper.getXmlContentFromInputStream;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
+import com.yk.common.R;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
+import com.yk.common.model.book.TableOfContent;
 import com.yk.common.model.xml.Container;
 import com.yk.common.model.xml.NavigationControl;
 import com.yk.common.model.xml.Package;
-import com.yk.common.model.book.TableOfContent;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,20 +27,21 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 // was partly copied from https://www.codeproject.com/Articles/592909/EPUB-Viewer-for-Android-with-Text-to-Speech
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 
-public class BookService {
+public final class BookService {
 
     static final String META_CONTENT = "META-INF/container.xml";
+    public static final String LAST_BOOK_TXT = "lastBook.txt";
+    public static final String NCX = ".ncx";
+    public static final  String SERVICE_TAG = "BookService";
 
 
     private static BookService bookService = null;
 
-    @Setter(AccessLevel.PACKAGE)
     @Getter(AccessLevel.PACKAGE)
     private Book book;
     private final String path;
@@ -51,17 +52,16 @@ public class BookService {
     private final Package xmlPackage;
     private TableOfContent tableOfContent;
 
-
     public static BookService getBookService() throws BookServiceException {
         if (bookService != null) {
             return bookService;
         }
         try {
-            FileInputStream fileInputStream = ApplicationContext.getContext().openFileInput("lastBook.txt");
+            FileInputStream fileInputStream = ApplicationContext.getContext().openFileInput(LAST_BOOK_TXT);
             return initFromPath(new BufferedReader(new InputStreamReader(fileInputStream)).readLine());
         } catch (IOException ioException) {
-            Log.e("BookService", "Error on Book Service initialization");
-            throw new BookServiceException("Error on Book Service initialization", ioException);
+            Log.e(SERVICE_TAG, ApplicationContext.getContext().getString(R.string.can_not_init_book_service));
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_init_book_service), ioException);
         }
     }
 
@@ -75,13 +75,13 @@ public class BookService {
     }
 
     public InputStream getCover() throws BookServiceException {
-        if (getTableOfContent().getCover() == null)
+        if (xmlPackage.getCover() == null)
             return null;
         try {
-            return getResourceAsStream(getTableOfContent().getCover());
+            return getResourceAsStream(xmlPackage.getCover());
         } catch (IOException ioException) {
-            Log.e("BookService", "Error on cover retrieval");
-            throw new BookServiceException("Error on cover retrieval", ioException);
+            Log.e(SERVICE_TAG, ApplicationContext.getContext().getString(R.string.can_not_retrieve_cover));
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_retrieve_cover), ioException);
         }
     }
 
@@ -93,8 +93,8 @@ public class BookService {
             ZipEntry contentZipEntry = bookZipFile.getEntry(new File(rootDirectory, resourceName).getPath());
             return bookZipFile.getInputStream(contentZipEntry);
         } catch (IOException ioException) {
-            Log.e("BookService", "Error on single file reading");
-            throw new BookServiceException("Error on single file reading", ioException);
+            Log.e(SERVICE_TAG, ApplicationContext.getContext().getString(R.string.can_not_read_book_file));
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_read_book_file), ioException);
         }
     }
 
@@ -106,42 +106,41 @@ public class BookService {
             // load file
             bookZipFile = new ZipFile(path);
         } catch (IOException ioException) {
-            Log.e("BookService", "Error on book zip reading");
-            throw new BookServiceException("Error on book zip reading", ioException);
+            Log.e(SERVICE_TAG, ApplicationContext.getContext().getString(R.string.can_not_read_book_zip_file));
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_read_book_zip_file), ioException);
         }
         // set zip file
         bookServiceBuilder.bookZipFile(bookZipFile);
         // get meta content entry
         ZipEntry contentZipEntry = bookZipFile.getEntry(META_CONTENT);
         if (contentZipEntry == null) {
-            throw new BookServiceException("No content entry");
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.no_content_entry));
         }
 
-        Container container;
         try {
 
             // parse and set container
-            container = getXmlContentFromInputStream(bookZipFile.getInputStream(contentZipEntry), Container.class);
+            Container container = getXmlContentFromInputStream(bookZipFile.getInputStream(contentZipEntry), Container.class);
             bookServiceBuilder.container(container);
 
+            var fullPath = container.getRootFiles().getRootFile().getFullPath();
+
+            // build table of content
+            int indexOfLastSlash = fullPath.lastIndexOf("/");
+            bookServiceBuilder.rootDirectory(indexOfLastSlash != -1 ? fullPath.substring(0, indexOfLastSlash + 1) : "");
+
             // read content file
-            ZipEntry contentFileZipEntry = bookZipFile.getEntry(container.getRootFiles().getRootFile().getFullPath());
+            ZipEntry contentFileZipEntry = bookZipFile.getEntry(fullPath);
             if (contentFileZipEntry == null) {
-                throw new BookServiceException("No content entry");
+                throw new BookServiceException(ApplicationContext.getContext().getString(R.string.no_content_entry));
             }
 
-            Package aPackage = getXmlContentFromInputStream(bookZipFile.getInputStream(contentFileZipEntry), Package.class);
-            bookServiceBuilder.xmlPackage(aPackage);
+            Package xmlPackage = getXmlContentFromInputStream(bookZipFile.getInputStream(contentFileZipEntry), Package.class);
+            bookServiceBuilder.xmlPackage(xmlPackage);
+
         } catch (Exception exception) {
-            Log.e("BookService", "Error on content building");
-            throw new BookServiceException("Error on content building", exception);
-        }
-        // build table of content
-        int indexOfLastSlash = container.getRootFiles().getRootFile().getFullPath().lastIndexOf("/");
-        if (indexOfLastSlash != -1) {
-            bookServiceBuilder.rootDirectory(container.getRootFiles().getRootFile().getFullPath().substring(0, indexOfLastSlash + 1));
-        } else {
-            bookServiceBuilder.rootDirectory("");
+            Log.e(SERVICE_TAG, ApplicationContext.getContext().getString(R.string.can_not_build_content));
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_build_content), exception);
         }
         return bookServiceBuilder.build();
     }
@@ -154,7 +153,7 @@ public class BookService {
                     .filePath(path)
                     .rootPath(bookService.getRootDirectory())
                     .title(bookService.getTitle())
-                    .cover(bookService.getTableOfContent().getCover())
+                    .cover(bookService.xmlPackage.getCover())
                     .creator(bookService.getCreator())
                     .textSize(100)
                     .build();
@@ -185,7 +184,7 @@ public class BookService {
 
     public int getChapterByHRef(String href) throws BookServiceException {
         return tableOfContent.getSpines().stream().filter(chapter -> href.endsWith(chapter.getChapterRef()))
-                .findAny().orElseThrow(() -> new BookServiceException("Chapter not found"))
+                .findAny().orElseThrow(() -> new BookServiceException(ApplicationContext.getContext().getString(R.string.can_not_find_chapter)))
                 .getSpineId();
     }
 
@@ -209,21 +208,15 @@ public class BookService {
         if (tableOfContent != null)
             return tableOfContent;
         ZipEntry tableOfContentZipEntry = bookZipFile.stream().filter(zipEntry -> zipEntry.getName().startsWith(rootDirectory)
-                && zipEntry.getName().endsWith(".ncx")).findFirst().orElseThrow(() -> new BookServiceException("Incorrect configuration of File"));
+                        && zipEntry.getName().endsWith(NCX)).findFirst()
+                .orElseThrow(() -> new BookServiceException(ApplicationContext.getContext().getString(R.string.incorrect_configuration)));
         try {
             var navigationControl = getXmlContentFromInputStream(bookZipFile.getInputStream(tableOfContentZipEntry), NavigationControl.class);
-            tableOfContent = TableOfContent.fromNavigationControl(navigationControl, xmlPackage, getCoverId());
+            tableOfContent = fromNavigationControl(navigationControl, xmlPackage);
             return tableOfContent;
         } catch (Exception exception) {
-            throw new BookServiceException("Table of content can not be found", exception);
+            throw new BookServiceException(ApplicationContext.getContext().getString(R.string.no_table_of_content), exception);
         }
-    }
-
-    @NonNull
-    private String getCoverId() {
-        return xmlPackage.getMetadata().getMeta().stream().filter(meta -> "cover".equals(meta.getName()))
-                .findFirst().orElseGet(Package.Meta::new).getContent();
-
     }
 
 }

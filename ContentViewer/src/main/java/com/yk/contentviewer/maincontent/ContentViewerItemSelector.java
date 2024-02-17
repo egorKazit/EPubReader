@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor
-public class ContentViewerItemSelector {
+public final class ContentViewerItemSelector {
 
     private final Activity activity;
 

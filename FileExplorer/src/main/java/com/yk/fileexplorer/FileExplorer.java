@@ -12,7 +12,7 @@ import lombok.Getter;
 
 @Getter
 
-public class FileExplorer extends AppCompatActivity {
+public final class FileExplorer extends AppCompatActivity {
 
     private FileExplorerProgressHelper fileExplorerProgressHelper;
 

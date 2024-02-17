@@ -17,7 +17,7 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @Getter
-public class Dictionary {
+public final class Dictionary {
 
     @Embedded
     private final OriginWord originWord;

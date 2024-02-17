@@ -5,6 +5,7 @@ import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.R;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContentViewerStateSaver {
+public final class ContentViewerStateSaver {
 
     private static final int SCHEDULE_DURATION = 5000;
     private static final int IMMEDIATELY_SCHEDULE_DURATION = 5;
@@ -55,7 +56,7 @@ public class ContentViewerStateSaver {
                             .setCurrentChapterPosition(chapterNumber);
                     BookServiceHelper.updatePersistenceBook(BookService.getBookService());
                 } catch (BookServiceException bookServiceException) {
-                    Toaster.make(ApplicationContext.getContext(), "Error on state loading", bookServiceException);
+                    Toaster.make(ApplicationContext.getContext(), R.string.error_on_state_loading, bookServiceException);
                 }
             }
         }, immediateFlag ? IMMEDIATELY_SCHEDULE_DURATION : SCHEDULE_DURATION);

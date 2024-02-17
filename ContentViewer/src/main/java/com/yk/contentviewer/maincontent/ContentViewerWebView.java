@@ -42,9 +42,10 @@ import lombok.Getter;
  * Each chapter is separate page in page viewer
  */
 
-public class ContentViewerWebView extends WebView {
+public final class ContentViewerWebView extends WebView {
 
     final static String INTERNAL_BOOK_PROTOCOL = "qk-e-book-file";
+    public static final String LOCALHOST = "://localhost/";
 
     @Getter
     private int chapterNumber;
@@ -119,7 +120,7 @@ public class ContentViewerWebView extends WebView {
                 ((Activity) getContext()).findViewById(R.id.contentViewerTranslatedWord).setVisibility(GONE);
             }
         } catch (BookServiceException bookServiceException) {
-            Toaster.make(ApplicationContext.getContext(), "Error on script loading", bookServiceException);
+            Toaster.make(ApplicationContext.getContext(), R.string.error_on_script_loading, bookServiceException);
         }
 
         contentViewerJSHandler = new ContentViewerJSHandler((Activity) this.getContext());
@@ -160,7 +161,8 @@ public class ContentViewerWebView extends WebView {
         int pagesCount = (int) Math.ceil(allPageHeight * 1.0 / onePageHeight - 1);
         int pageNumber = (int) Math.ceil(verticalPosition * 1.0 / onePageHeight);
         pageNumber = Math.min(pageNumber, pagesCount);
-        ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition)).setText(String.format("Progress: %s page of %s pages", pageNumber, pagesCount));
+        ((TextView) ((Activity) getContext()).findViewById(R.id.contentViewerPosition))
+                .setText(String.format(ApplicationContext.getContext().getString(R.string.progress), pageNumber, pagesCount));
     }
 
     public void setTextSize(int textSize) {
@@ -172,7 +174,7 @@ public class ContentViewerWebView extends WebView {
         this.chapterNumber = chapterPosition;
         verticalPosition = scrollPosition;
         TableOfContent.Spine spine = bookService.getTableOfContent().getSpineById(chapterPosition);
-        loadUrl(INTERNAL_BOOK_PROTOCOL + "://localhost/" + spine.getChapterRef());
+        loadUrl(INTERNAL_BOOK_PROTOCOL + LOCALHOST + spine.getChapterRef());
         this.addIntersections();
     }
 
@@ -182,7 +184,7 @@ public class ContentViewerWebView extends WebView {
                 return contentViewerWebViewResourceGetter.onBookRequest(uri);
             else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
         } catch (BookServiceException e) {
-            Toaster.make(this.getContext(), "Can no load the book", e);
+            Toaster.make(this.getContext(), R.string.error_on_book_loading, e);
             throw new RuntimeException(e);
         }
     }
@@ -209,7 +211,6 @@ public class ContentViewerWebView extends WebView {
         contentViewerJavaScriptInteractor.setupScript(selectionScript);
         String javascript;
         try {
-            Log.w("", "Sized = " + BookService.getBookService().getTextSize());
             javascript = "var images = document.getElementsByTagName('img'); " +
                     "for (var i = 0; i < images.length; i++) {" +
                     "  var img = images[i];" +
@@ -225,7 +226,7 @@ public class ContentViewerWebView extends WebView {
         scrollTo(0, verticalPosition);
     }
 
-    public class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    public final class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         private float initialDistance;
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Book Viewer</string>
+    <string name="title_home">Библиотека</string>
+    <string name="title_dictionary">Словарь</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_definition">Определение</string>
+    <string name="add">Добавить</string>
+    <string name="book_image">Обложка</string>
+    <string name="open">Открыть</string>
+    <string name="delete">Удалить</string>
+    <string name="title_activity_settings">АктивностьНастройки</string>
+    <string name="learning_header">Обучение</string>
+    <string name="learning_title">Включить Обучение</string>
+    <string name="attachment_title">Скачать входящие приложения</string>
+    <string name="attachment_summary_on">1</string>
+    <string name="attachment_summary_off">2</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="viewer_background">Задний фон</string>
+    <string name="translations">Переводы</string>
+    <string name="definitions">Определение</string>
+    <string name="search">Поиск</string>
+    <string name="can_not_load_book">Не удалось загрузить</string>
+    <string name="can_not_load_cover">Не удалось заргузать обложку для %s</string>
+    <string name="can_not_load_definitions">Не удалось загрузить определения</string>
+    <string name="can_not_load_translations">Не удалось загрузить переводы</string>
+    <string name="no_definitions_found">Определение не найдено</string>
+    <string name="choose_font">Выбрать шрифт</string>
+</resources>

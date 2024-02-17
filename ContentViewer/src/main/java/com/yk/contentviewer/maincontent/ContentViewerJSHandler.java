@@ -32,8 +32,9 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor
-public class ContentViewerJSHandler {
+public final class ContentViewerJSHandler {
 
+    public static final String MAIN = "Main";
     private final Activity activity;
     private final ExecutorService wordTranslationThreadOperator = Executors.newFixedThreadPool(20);
     private final ExecutorService phraseTranslationThreadOperator = Executors.newFixedThreadPool(20);
@@ -75,9 +76,9 @@ public class ContentViewerJSHandler {
                 ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
                         .setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
                                         LanguageService.getInstance().getLanguage()).getTranslations()
-                                .stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals("Main"))
+                                .stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN))
                                 .findAny()
-                                .orElseThrow(() -> new WordOperatorException("No translation")).getTranslation());
+                                .orElseThrow(() -> new WordOperatorException(activity.getString(R.string.no_translation))).getTranslation());
             } catch (WordOperatorException | BookServiceException e) {
                 ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
                         .setText(GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage());
@@ -103,19 +104,19 @@ public class ContentViewerJSHandler {
             final AlertDialog alertDialog =
                     new AlertDialog.Builder(activity)
                             .setMessage(originTextTrim)
-                            .setPositiveButton("Translate", null)
-                            .setNegativeButton("Close", null).show();
+                            .setPositiveButton(R.string.translate_button, null)
+                            .setNegativeButton(R.string.close_button, null).show();
             Button translateButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
             translateButton.setOnClickListener(dialog -> {
                 try {
-                    alertDialog.setMessage(String.join("\n", originTextTrim,
+                    alertDialog.setMessage(String.join(System.lineSeparator(), originTextTrim,
                             WordTranslator.resolveTranslation(originalPhrase, BookService.getBookService().getLanguage(),
                                             LanguageService.getInstance().getLanguage())
-                                    .getTranslations().stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals("Main"))
+                                    .getTranslations().stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN))
                                     .findAny()
-                                    .orElseThrow(() -> new WordOperatorException("No translation")).getTranslation()));
+                                    .orElseThrow(() -> new WordOperatorException(activity.getString(R.string.no_translation))).getTranslation()));
                 } catch (WordOperatorException | BookServiceException e) {
-                    alertDialog.setMessage(String.join("\n", originTextTrim, GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage()));
+                    alertDialog.setMessage(String.join(System.lineSeparator(), originTextTrim, GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage()));
                 }
                 translateButton.setVisibility(View.GONE);
             });
@@ -133,7 +134,7 @@ public class ContentViewerJSHandler {
         try {
             ContentViewerImageDialog.openImageDialog(activity, imageUrl);
         } catch (URISyntaxException | BookServiceException | IOException e) {
-            Toaster.make(activity.getApplicationContext(), "Can not load image", e);
+            Toaster.make(activity.getApplicationContext(), R.string.can_not_load_image, e);
         }
     }
 

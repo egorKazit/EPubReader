@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class BookPool {
+public final class BookPool {
 
     private static final List<Book> BOOKS = new ArrayList<>();
 

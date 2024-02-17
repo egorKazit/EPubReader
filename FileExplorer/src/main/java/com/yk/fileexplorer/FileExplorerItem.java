@@ -12,7 +12,7 @@ import java.io.InputStream;
 import lombok.Getter;
 
 @Getter
-public class FileExplorerItem {
+public final class FileExplorerItem {
 
     private final String fileName;
     private final String filePath;

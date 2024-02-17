@@ -22,7 +22,7 @@ import lombok.Setter;
 @Entity(tableName = "book")
 @Getter
 @Setter
-public class Book {
+public final class Book {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "adding_date")

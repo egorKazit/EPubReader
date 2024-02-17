@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class LearningStateOperator {
+public final class LearningStateOperator {
 
     private final String WORD_POSITION_FILE = "learning.txt";
     private final String WORD_POSITION = "WORD_POSITION";

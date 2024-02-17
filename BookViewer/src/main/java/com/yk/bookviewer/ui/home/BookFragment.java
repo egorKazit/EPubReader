@@ -12,9 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,15 +32,13 @@ import com.yk.contentviewer.ContentViewer;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
-import lombok.Getter;
-
 /**
  * Fragment to observe all books.
  * New book can be added by "add" button. Once it's pressed, new activity is started to explore file systems.
  * Existing book can be open by clicking on book cover or name. The implementation is done in @BookRecyclerViewAdapter class
  */
 
-public class BookFragment extends Fragment {
+public final class BookFragment extends Fragment {
 
     private FragmentBookBinding binding;
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
@@ -92,9 +88,9 @@ public class BookFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
         var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
-        binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(bottomNavigationView, floatingActionButton));
+        binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(floatingActionButton));
         floatingActionButton.setOnClickListener(new BookFragmentOnClickListener(intentActivityResultLauncher::launch));
-        floatingActionButton.setImageResource(R.drawable.ic_settings_foreground);
+        floatingActionButton.setImageResource(R.drawable.ic_add_book_foreground);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -110,7 +106,7 @@ public class BookFragment extends Fragment {
             BookService.initFromPath(book.getFilePath());
             requireContext().startActivity(intent);
         } catch (BookServiceException bookServiceException) {
-            Toaster.make(getContext(), "Can not load book", null);
+            Toaster.make(getContext(), R.string.can_not_load_book, null);
         }
     }
 

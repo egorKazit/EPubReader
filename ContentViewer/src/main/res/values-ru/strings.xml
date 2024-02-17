@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_pager">ContentPager</string>
+    <string name="table_of_content">Содержание</string>
+    <string name="string_to_translate">Строка для перевода</string>
+    <string name="context_to_translate">Контекст для перевода</string>
+    <string name="add_to_dictionary_by_default">Добавить к словарю</string>
+    <string name="call_size_bar">Изменить размер шрифта</string>
+    <string name="translate">Перевести</string>
+    <string name="language">Язык</string>
+    <string name="play">Воспроизвести</string>
+    <string name="source">Источник</string>
+    <string name="target">Перевод</string>
+    <string name="zoomed_image">Картинка</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="text_font">Шрифт</string>
+    <string name="content_background">Задний план</string>
+    <string name="font_left_arrow">Стрелка влево</string>
+    <string name="font_right_arrow">Стрелка вправо</string>
+    <string name="placeholder">для заролнения</string>
+    <string name="error_on_script_loading">Ощибка при загрузке скрипта</string>
+    <string name="no_translation">Нет перевода</string>
+    <string name="translate_button">Перевод</string>
+    <string name="close_button">Закрыть</string>
+    <string name="can_not_load_image">Невозможно загрузать картинку</string>
+    <string name="error_on_content_loading">Ощибка при загрузке контента</string>
+    <string name="error_on_book_loading">Ощибка при загрузке книги</string>
+    <string name="error_on_state_loading">Ощибка при загрузке состояния</string>
+    <string name="progress">Прогресс: страница %d из %d</string>
+    <string name="error_on_loading">Ощибка при загрузке</string>
+    <string name="error_toc_loading">Ощибка при загрузке содержания</string>
+</resources>

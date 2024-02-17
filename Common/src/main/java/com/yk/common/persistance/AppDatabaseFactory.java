@@ -8,10 +8,12 @@ import androidx.room.Room;
  * Dao factory
  */
 
-public class AppDatabaseFactory {
+public final class AppDatabaseFactory {
+
+    public static final String BOOKS = "books";
 
     public static AppDatabaseAbstract getFromContext(Context context) {
         return Room.databaseBuilder(context,
-                AppDatabaseAbstract.class, "books").build();
+                AppDatabaseAbstract.class, BOOKS).build();
     }
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
  * Contains all translated words which has been saved on disk
  */
 
-public class DictionaryFragment extends Fragment {
+public final class DictionaryFragment extends Fragment {
 
     private FragmentDictionaryBinding binding;
     private static String searchPhrase;
@@ -102,7 +102,7 @@ public class DictionaryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
         var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
-        binding.dictionaryList.addOnScrollListener(new FloatingActionButtonOnScrollListener(bottomNavigationView, floatingActionButton));
+        binding.dictionaryList.addOnScrollListener(new FloatingActionButtonOnScrollListener(floatingActionButton));
         floatingActionButton.setOnClickListener(v -> {
             if (!Objects.equals(Objects.requireNonNull(NavHostFragment.findNavController(this).getCurrentDestination()).getId(), R.id.navigation_home))
                 NavHostFragment.findNavController(this).navigate(R.id.navigation_home);

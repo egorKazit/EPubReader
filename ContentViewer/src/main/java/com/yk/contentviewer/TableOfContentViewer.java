@@ -16,7 +16,7 @@ import lombok.SneakyThrows;
  * Table of content viewer
  */
 
-public class TableOfContentViewer extends AppCompatActivity {
+public final class TableOfContentViewer extends AppCompatActivity {
 
     @SneakyThrows
     @Override

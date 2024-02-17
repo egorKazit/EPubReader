@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 
 @SuppressLint("RestrictedApi")
-public class GenericUniqueJobScheduler {
+public final class GenericUniqueJobScheduler {
 
     private final Context context;
     private final Class<? extends Worker> workerClass;
