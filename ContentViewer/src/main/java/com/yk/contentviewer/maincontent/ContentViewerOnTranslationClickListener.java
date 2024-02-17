@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ContentViewerOnTranslationClickListener implements View.OnClickListener {
+public final class ContentViewerOnTranslationClickListener implements View.OnClickListener {
 
     private final Context context;
 

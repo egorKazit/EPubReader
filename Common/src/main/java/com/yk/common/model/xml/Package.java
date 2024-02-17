@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Root(name = "package", strict = false)
-public class Package {
+public final class Package {
 
     @Element(name = "spine")
     private Spine spine = new Spine();

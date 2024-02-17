@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * It reschedule the provided job(if flag is set) and accept some consumer (if provided)
  */
 
-public class GenericRepeatReceiver extends BroadcastReceiver {
+public final class GenericRepeatReceiver extends BroadcastReceiver {
 
     public final static String NOTIFICATION_NAME = "LearningNotification";
     private final static String SERVICE_TAG = "GenericRepeatReceiver";

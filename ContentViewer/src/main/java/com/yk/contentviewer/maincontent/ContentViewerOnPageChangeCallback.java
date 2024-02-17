@@ -13,7 +13,7 @@ import java.util.function.Function;
  * Class to react on page loading
  */
 
-public class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
+public final class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
 
     private static final float thresholdOffset = 0.5f;
     private static final int thresholdOffsetPixels = 1;

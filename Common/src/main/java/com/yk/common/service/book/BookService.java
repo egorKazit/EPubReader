@@ -32,7 +32,7 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 
-public class BookService {
+public final class BookService {
 
     static final String META_CONTENT = "META-INF/container.xml";
     public static final String LAST_BOOK_TXT = "lastBook.txt";

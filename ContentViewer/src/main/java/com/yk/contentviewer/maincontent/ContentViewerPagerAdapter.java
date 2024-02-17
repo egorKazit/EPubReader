@@ -23,7 +23,7 @@ import java.util.Objects;
  * Class with implementation of page adapter
  */
 
-public class ContentViewerPagerAdapter extends FragmentStateAdapter {
+public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
 
     private final FragmentManager fragmentManager;
 

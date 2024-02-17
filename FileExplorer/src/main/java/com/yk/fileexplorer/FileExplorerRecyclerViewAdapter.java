@@ -15,12 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.yk.common.constants.GlobalConstants;
-import com.yk.common.utils.Toaster;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.FileExplorerRecyclerViewHolder> {
+public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.FileExplorerRecyclerViewHolder> {
 
     private final FileExplorerListHolder fileExplorerListHolder;
     private FileExplorer fileExplorer;

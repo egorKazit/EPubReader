@@ -17,7 +17,7 @@ import lombok.Setter;
 @Entity(tableName = "languages")
 @Getter
 @Setter
-public class Language {
+public final class Language {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "language")

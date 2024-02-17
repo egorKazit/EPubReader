@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
  * On click listener for book explorer
  */
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-public class BookFragmentOnClickListener implements View.OnClickListener {
+public final class BookFragmentOnClickListener implements View.OnClickListener {
 
     public static final String PACKAGE = "package";
     private final Consumer<Intent> launcher;

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TableOfContentNestedListAdapter extends RecyclerView.Adapter<TableOfContentNestedListAdapter.NestedViewHolder> {
+public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<TableOfContentNestedListAdapter.NestedViewHolder> {
 
     private static final int ITEM_WITH_CHILDREN = 1;
     private static final int ITEM_WITHOUT_CHILDREN = 0;

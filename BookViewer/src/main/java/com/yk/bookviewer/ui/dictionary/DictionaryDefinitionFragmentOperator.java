@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
  * It gets all definitions and inflates in "definitions" section
  */
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class DictionaryDefinitionFragmentOperator {
+public final class DictionaryDefinitionFragmentOperator {
 
     private final Activity activity;
 

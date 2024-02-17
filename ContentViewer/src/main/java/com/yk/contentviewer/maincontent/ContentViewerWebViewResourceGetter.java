@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class ContentViewerWebViewResourceGetter {
+public final class ContentViewerWebViewResourceGetter {
 
     private final Activity activity;
 

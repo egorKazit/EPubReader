@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
  * Existing book can be open by clicking on book cover or name. The implementation is done in @BookRecyclerViewAdapter class
  */
 
-public class BookFragment extends Fragment {
+public final class BookFragment extends Fragment {
 
     private FragmentBookBinding binding;
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;

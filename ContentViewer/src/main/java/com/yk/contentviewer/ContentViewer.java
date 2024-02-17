@@ -54,7 +54,7 @@ import java.util.TimerTask;
  * Activity to open book and provide ability to translate some parts of text
  */
 
-public class ContentViewer extends AppCompatActivity {
+public final class ContentViewer extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
     private ContentViewerItemSelector contentViewerItemSelector;

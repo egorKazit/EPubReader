@@ -29,7 +29,7 @@ import lombok.Setter;
  * Class to store notification id
  */
 
-public class NotificationStateResolver {
+public final class NotificationStateResolver {
 
     private static final String LAST_NOTIFICATION_FILE = "lastNotification.txt";
     private static final String SERVICE_TAG = "NotificationStateResolver";

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
+public final class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
     public static final String LEARNING = "learning";
     public static final String LEARNING_DELAY = "learning_delay";

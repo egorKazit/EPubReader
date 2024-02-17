@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity(tableName = "word_definition")
 @Getter
 @Setter
-public class WordDefinition {
+public final class WordDefinition {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "origin_word_id")

@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 /**
  * Parent method caller
  */
-public class ParentMethodCaller {
+public final class ParentMethodCaller {
 
     /**
      * It recursively goes to parent until parent does not match @{parentClass}

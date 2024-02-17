@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor
-public class ContentViewerJSHandler {
+public final class ContentViewerJSHandler {
 
     public static final String MAIN = "Main";
     private final Activity activity;

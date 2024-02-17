@@ -1,6 +1,6 @@
 package com.yk.common.http;
 
-public class WordOperatorException extends Exception {
+public final class WordOperatorException extends Exception {
     WordOperatorException(String message, Throwable throwable) {
         super(message, throwable);
     }

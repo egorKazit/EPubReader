@@ -17,7 +17,7 @@ import com.yk.common.utils.PreferenceHelper;
 
 import java.util.Objects;
 
-public class BookViewer extends AppCompatActivity {
+public final class BookViewer extends AppCompatActivity {
 
     @SuppressWarnings("FieldCanBeLocal")
     private ActivityBookViewerBinding binding;

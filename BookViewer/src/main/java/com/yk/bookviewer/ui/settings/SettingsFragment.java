@@ -21,7 +21,7 @@ import java.util.Objects;
  * It constants all configuration that are necessary for application
  */
 
-public class SettingsFragment extends Fragment {
+public final class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
 

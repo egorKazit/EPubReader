@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Preference helper.
  * It allows to get/set all preference in application
  */
-public class PreferenceHelper {
+public final class PreferenceHelper {
 
     private final static String LEARNING_ENABLED = "LEARNING_ENABLED";
     private final static String LEARNING_INTERVAL = "LEARNING_INTERVAL";

@@ -25,7 +25,7 @@ import com.yk.common.utils.PreferenceHelper;
  * It creates and shows up new notification
  */
 
-public class NotificationWorker extends Worker {
+public final class NotificationWorker extends Worker {
 
     public static final int NOTIFICATION_ID = 666;
     private static final String WORKER_NAME = "notificationWorker";

@@ -12,7 +12,7 @@ import com.yk.contentviewer.R;
  * Speech inflater
  */
 
-public class ContentViewerOnSpeechClickListener implements View.OnClickListener {
+public final class ContentViewerOnSpeechClickListener implements View.OnClickListener {
 
     private final Context context;
 

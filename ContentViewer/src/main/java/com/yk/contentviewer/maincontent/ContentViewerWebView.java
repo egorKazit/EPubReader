@@ -42,7 +42,7 @@ import lombok.Getter;
  * Each chapter is separate page in page viewer
  */
 
-public class ContentViewerWebView extends WebView {
+public final class ContentViewerWebView extends WebView {
 
     final static String INTERNAL_BOOK_PROTOCOL = "qk-e-book-file";
     public static final String LOCALHOST = "://localhost/";
@@ -226,7 +226,7 @@ public class ContentViewerWebView extends WebView {
         scrollTo(0, verticalPosition);
     }
 
-    public class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    public final class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         private float initialDistance;
 

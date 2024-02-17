@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Language option menu
  */
 
-public class ContentViewerLanguageOptionMenu {
+public final class ContentViewerLanguageOptionMenu {
 
     /**
      * Method to prepare option menu

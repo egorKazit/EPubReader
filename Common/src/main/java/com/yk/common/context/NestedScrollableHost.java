@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 /**
  * Nested scroll controller
  */
-public class NestedScrollableHost extends FrameLayout {
+public final class NestedScrollableHost extends FrameLayout {
 
     private ViewPager2 parentViewPager;
     private int touchSlop = 0;

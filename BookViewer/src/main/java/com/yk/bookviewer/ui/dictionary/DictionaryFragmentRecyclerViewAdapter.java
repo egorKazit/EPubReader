@@ -31,7 +31,7 @@ import lombok.Setter;
  * It inflates a dictionary item layout and set event listeners
  */
 
-public class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DictionaryFragmentRecyclerViewAdapter.DictionaryFragmentViewHolder> {
+public final class DictionaryFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DictionaryFragmentRecyclerViewAdapter.DictionaryFragmentViewHolder> {
 
     private final Fragment parentFragment;
     @Setter(AccessLevel.PACKAGE)

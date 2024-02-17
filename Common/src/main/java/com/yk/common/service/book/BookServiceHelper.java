@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class BookServiceHelper {
+public final class BookServiceHelper {
 
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 

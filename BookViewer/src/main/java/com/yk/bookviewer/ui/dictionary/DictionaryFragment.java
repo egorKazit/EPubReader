@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
  * Contains all translated words which has been saved on disk
  */
 
-public class DictionaryFragment extends Fragment {
+public final class DictionaryFragment extends Fragment {
 
     private FragmentDictionaryBinding binding;
     private static String searchPhrase;

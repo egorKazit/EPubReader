@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContentViewerWebViewSettings {
+public final class ContentViewerWebViewSettings {
 
     @SuppressLint("SetJavaScriptEnabled")
     static void initSettings(ContentViewerWebView contentViewerWebView) {

@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class ContentViewerWebViewClient extends WebViewClient {
+public final class ContentViewerWebViewClient extends WebViewClient {
 
     private final ContentViewerWebView contentViewerWebView;
     private final Function<Uri, WebResourceResponse> onRequestFunction;

@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 
-public class LearningOperator {
+public final class LearningOperator {
     private final Context context;
 
     public void startLearning() {

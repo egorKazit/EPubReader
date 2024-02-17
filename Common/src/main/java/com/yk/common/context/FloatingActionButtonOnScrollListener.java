@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class FloatingActionButtonOnScrollListener extends RecyclerView.OnScrollListener {
+public final class FloatingActionButtonOnScrollListener extends RecyclerView.OnScrollListener {
     private final FloatingActionButton floatingActionButton;
 
     public FloatingActionButtonOnScrollListener(@NonNull FloatingActionButton floatingActionButton) {

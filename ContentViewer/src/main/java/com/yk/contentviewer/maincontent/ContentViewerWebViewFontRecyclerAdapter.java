@@ -17,7 +17,7 @@ import com.yk.contentviewer.R;
 import java.util.List;
 
 
-public class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
+public final class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
 
     public static final String FONTS = "fonts/";
     private final List<ContentFont> fontData = List.of(ContentFont.values());

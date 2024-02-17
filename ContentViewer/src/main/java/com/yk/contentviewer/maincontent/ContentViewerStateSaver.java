@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContentViewerStateSaver {
+public final class ContentViewerStateSaver {
 
     private static final int SCHEDULE_DURATION = 5000;
     private static final int IMMEDIATELY_SCHEDULE_DURATION = 5;

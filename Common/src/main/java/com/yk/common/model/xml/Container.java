@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Root(name = "container", strict = false)
-public class Container {
+public final class Container {
 
     @Element(name = "rootfiles", required = false)
     private RootFiles rootFiles = new RootFiles();

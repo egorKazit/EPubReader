@@ -10,7 +10,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LearningEntry {
+public final class LearningEntry {
     private final String originWord;
     private final String correctTranslation;
     private final List<String> possibleTranslations;

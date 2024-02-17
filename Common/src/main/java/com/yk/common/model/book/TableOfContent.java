@@ -19,7 +19,7 @@ import lombok.NonNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TableOfContent {
+public final class TableOfContent {
 
     private final LinkedList<Chapter> chapterTree = new LinkedList<>();
     private final LinkedList<Spine> spines = new LinkedList<>();

@@ -6,7 +6,7 @@ import android.widget.Toast;
 /**
  * Class to prepare toast with exception and show it
  */
-public class Toaster {
+public final class Toaster {
     /**
      * Method to make a toast
      *

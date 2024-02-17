@@ -21,7 +21,7 @@ import java.util.Objects;
  * It gets answer and handle it
  */
 
-public class AnswerWorker extends Worker {
+public final class AnswerWorker extends Worker {
 
     private final Context context;
     private final String outcomeMessage;

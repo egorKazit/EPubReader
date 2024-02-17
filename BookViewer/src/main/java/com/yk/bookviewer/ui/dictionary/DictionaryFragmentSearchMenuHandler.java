@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 
 import lombok.Getter;
 
-public class DictionaryFragmentSearchMenuHandler implements SearchView.OnQueryTextListener {
+public final class DictionaryFragmentSearchMenuHandler implements SearchView.OnQueryTextListener {
 
     @Getter
     private static String searchPhrase;

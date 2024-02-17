@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * It allows to pronounce some words
  */
 
-public class WordSpeaker {
+public final class WordSpeaker {
 
     private static TextToSpeech textToSpeech = null;
     private static final ExecutorService speaker = Executors.newSingleThreadExecutor();
