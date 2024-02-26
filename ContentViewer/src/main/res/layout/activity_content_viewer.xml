@@ -60,6 +60,18 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_speech_play_foreground" />
 
+                <ProgressBar
+                    android:id="@+id/contentViewerTranslationProgressBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
+                    app:layout_constraintHorizontal_weight="8"
+                    app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:indeterminateTint="#FF03DAC5"/>
+
                 <TextView
                     android:id="@+id/contentViewerTranslatedWord"
                     android:layout_width="0dp"

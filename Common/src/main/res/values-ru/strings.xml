@@ -17,5 +17,5 @@
     <string name="correct">Правильно</string>
     <string name="incorrect">Непраильно</string>
     <string name="error_on_work_handling">Ошибка сервиса: %s</string>
-    <string name="pick_translation">Выбереье перевод</string>
+    <string name="pick_translation">Выберете перевод</string>
 </resources>

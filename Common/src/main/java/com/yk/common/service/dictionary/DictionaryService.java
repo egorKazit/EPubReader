@@ -2,6 +2,7 @@ package com.yk.common.service.dictionary;
 
 import androidx.annotation.NonNull;
 
+import com.yk.common.R;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.http.WordOperatorException;
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 public final class DictionaryService {
 
     private String lastOriginWord;
+    private boolean isLastRequestSuccess;
     private Dictionary lastTranslatedDictionary;
     public final static String MAIN_TRANSLATION = "Main";
 
@@ -47,6 +49,7 @@ public final class DictionaryService {
     public synchronized void init() {
         lastOriginWord = null;
         lastTranslatedDictionary = null;
+        isLastRequestSuccess = false;
     }
 
     /**
@@ -98,6 +101,7 @@ public final class DictionaryService {
     @NonNull
     public Dictionary getDictionary(String originWord) {
         try {
+            lastOriginWord = originWord;
             var dictionaryDao = ApplicationContext.getContext()
                     .getAppDatabaseAbstract()
                     .dictionaryDao();
@@ -115,15 +119,14 @@ public final class DictionaryService {
                         dictionary.getTranslations(),
                         dictionary.getDefinitions() != null ? dictionary.getDefinitions() : List.of());
             }
-            lastOriginWord = originWord;
             lastTranslatedDictionary = dictionary;
+            isLastRequestSuccess = true;
             // return dictionary
             return dictionary;
         } catch (BookServiceException | WordOperatorException exception) {
+            isLastRequestSuccess = false;
             return new Dictionary(null,
-                    List.of(new WordTranslation(0, 0, MAIN_TRANSLATION,
-                            GlobalConstants.ERROR_ON_TRANSLATE + exception.getMessage())),
-                    null);
+                    List.of(new WordTranslation(0, 0, MAIN_TRANSLATION, exception.getMessage())), null);
         }
     }
 

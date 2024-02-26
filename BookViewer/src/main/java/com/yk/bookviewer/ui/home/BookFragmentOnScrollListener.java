@@ -15,16 +15,16 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 class BookFragmentOnScrollListener extends RecyclerView.OnScrollListener {
 
-    private final FloatingActionButton addBook;
+    private final FloatingActionButton addBookButton;
 
     @Override
     public void onScrolled(@NonNull RecyclerView recyclerView, int asd, int dy) {
-        if (dy < 0 && !addBook.isShown())
+        if (dy < 0 && !addBookButton.isShown())
             // if scroll down -> show the button
-            addBook.show();
-        else if (dy > 0 && addBook.isShown())
+            addBookButton.show();
+        else if (dy > 0 && addBookButton.isShown())
             // if scroll up -> hide the button
-            addBook.hide();
+            addBookButton.hide();
     }
 
 }
