@@ -30,4 +30,5 @@
     <string name="can_not_load_translations">Can not load translations</string>
     <string name="no_definitions_found">No definitions found</string>
     <string name="choose_font">Choose font</string>
+    <string name="learning_notification">Learning Notification</string>
 </resources>

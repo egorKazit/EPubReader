@@ -22,15 +22,17 @@ import com.yk.contentviewer.ContentViewer;
 
 import kotlin.io.ByteStreamsKt;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 /**
  * Recycler view adapter to get list of loaded books.
  * Events to open the book are set in the view holder
  */
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentRecyclerViewAdapter.BookViewHolder> {
+
+    private final Runnable onLessBookRunner;
 
     @NonNull
     @Override
@@ -113,6 +115,9 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
             // remove from pool and notify about changes
             BookPool.removeBook(getLayoutPosition());
             notifyItemRemoved(getLayoutPosition());
+            if (BookPool.getSize() <= 4) {
+                onLessBookRunner.run();
+            }
         }
     }
 }

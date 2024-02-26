@@ -8,16 +8,12 @@ import androidx.annotation.NonNull;
 import com.yk.common.R;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.model.book.Book;
-import com.yk.common.persistance.AppDatabaseFactory;
-import com.yk.common.utils.Toaster;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public final class BookServiceHelper {

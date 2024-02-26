@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="every_20_min">Каждые 20 минут</string>
+    <string name="every_40_min">Каждые 40 минут</string>
+    <string name="every_hour">Каждый час</string>
+    <string name="every_2_hour">Каждые 2 часа</string>
+</resources>

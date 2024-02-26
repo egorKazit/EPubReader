@@ -13,6 +13,4 @@ public final class GlobalConstants {
     public static final String SCHEDULER_WORKER_CLASS_NAME = "SCHEDULER_WORKER_CLASS_NAME";
     public static final String SCHEDULER_WORKER_REPEAT_INTERVAL = "SCHEDULER_WORKER_REPEAT_INTERVAL";
 
-    public static final String ERROR_ON_TRANSLATE = "Error during translation ";
-
 }

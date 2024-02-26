@@ -5,11 +5,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.yk.common.constants.GlobalConstants;
 import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;
 import com.yk.common.service.book.BookService;
@@ -48,16 +48,7 @@ public final class ContentViewerJSHandler {
         if (activity.findViewById(R.id.contentViewerTranslatedWord).getVisibility() != View.VISIBLE) {
             return;
         }
-        // set translation text
-        wordTranslationThreadOperator.submit(() -> {
-            var dictionary = DictionaryService.getInstance().getDictionary(originalWord.toLowerCase(Locale.ROOT));
-            String translation = DictionaryService.getMainTranslation(dictionary);
-            activity.runOnUiThread(() -> {
-                var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
-                translatedWord.setText(String.format("%s - %s", originalWord.toLowerCase(Locale.ROOT), translation));
-                translatedWord.setSelected(true);
-            });
-        });
+        translateWithProgressBar(originalWord);
     }
 
     /**
@@ -72,16 +63,15 @@ public final class ContentViewerJSHandler {
             return;
         }
         phraseTranslationThreadOperator.submit(() -> {
+            var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
             try {
-                ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
-                        .setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
-                                        LanguageService.getInstance().getLanguage()).getTranslations()
-                                .stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN))
-                                .findAny()
-                                .orElseThrow(() -> new WordOperatorException(activity.getString(R.string.no_translation))).getTranslation());
+                translatedWord.setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
+                                LanguageService.getInstance().getLanguage()).getTranslations()
+                        .stream().filter(wordTranslation -> wordTranslation.getPartOfSpeech().equals(MAIN))
+                        .findAny()
+                        .orElseThrow(() -> new WordOperatorException(activity.getString(R.string.no_translation))).getTranslation());
             } catch (WordOperatorException | BookServiceException e) {
-                ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext))
-                        .setText(GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage());
+                translatedWord.setText(e.getMessage());
             }
         });
     }
@@ -94,12 +84,7 @@ public final class ContentViewerJSHandler {
     public void handleSelectedPhrase(@NonNull String originalPhrase) {
         String originTextTrim = originalPhrase.trim();
         if (!originTextTrim.isEmpty() && !originTextTrim.contains(" ")) {
-            // set translation text
-            wordTranslationThreadOperator.submit(() ->
-                    ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
-                            .setText(DictionaryService.getMainTranslation(DictionaryService.getInstance().getDictionary(originalPhrase))));
-            new Thread(() -> ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord))
-                    .setText(DictionaryService.getMainTranslation(DictionaryService.getInstance().getDictionary(originalPhrase)))).start();
+            translateWithProgressBar(originalPhrase);
         } else {
             final AlertDialog alertDialog =
                     new AlertDialog.Builder(activity)
@@ -116,7 +101,7 @@ public final class ContentViewerJSHandler {
                                     .findAny()
                                     .orElseThrow(() -> new WordOperatorException(activity.getString(R.string.no_translation))).getTranslation()));
                 } catch (WordOperatorException | BookServiceException e) {
-                    alertDialog.setMessage(String.join(System.lineSeparator(), originTextTrim, GlobalConstants.ERROR_ON_TRANSLATE + e.getMessage()));
+                    alertDialog.setMessage(String.join(System.lineSeparator(), originTextTrim, e.getMessage()));
                 }
                 translateButton.setVisibility(View.GONE);
             });
@@ -136,6 +121,27 @@ public final class ContentViewerJSHandler {
         } catch (URISyntaxException | BookServiceException | IOException e) {
             Toaster.make(activity.getApplicationContext(), R.string.can_not_load_image, e);
         }
+    }
+
+    private void translateWithProgressBar(String original) {
+        var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
+        var translationProgressBar = (ProgressBar) activity.findViewById(R.id.contentViewerTranslationProgressBar);
+        activity.runOnUiThread(() -> {
+            translatedWord.setText("");
+            translatedWord.setVisibility(View.INVISIBLE);
+            translationProgressBar.setVisibility(View.VISIBLE);
+        });
+        // set translation text
+        wordTranslationThreadOperator.submit(() -> {
+            var dictionary = DictionaryService.getInstance().getDictionary(original.toLowerCase(Locale.ROOT));
+            String translation = DictionaryService.getMainTranslation(dictionary);
+            activity.runOnUiThread(() -> {
+                translationProgressBar.setVisibility(View.INVISIBLE);
+                translatedWord.setText(String.format("%s - %s", original.toLowerCase(Locale.ROOT), translation));
+                translatedWord.setSelected(true);
+                translatedWord.setVisibility(View.VISIBLE);
+            });
+        });
     }
 
 }

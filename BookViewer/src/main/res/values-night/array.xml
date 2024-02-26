@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="every_20_min">Every 20 minutes</string>
+    <string name="every_40_min">Every 40 minutes</string>
+    <string name="every_hour">Every hour</string>
+    <string name="every_2_hour">Every 2 hours</string>
+</resources>

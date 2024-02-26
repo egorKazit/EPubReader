@@ -11,7 +11,7 @@
             app:entries="@array/delay_entries"
             app:entryValues="@array/delay_values"
             app:key="learning_delay"
-            app:title="Learning Notification" />
+            app:title="@string/learning_notification" />
 
         <SwitchPreferenceCompat
             app:key="nightMode"

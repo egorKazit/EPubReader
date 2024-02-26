@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentBookBinding;
@@ -69,7 +69,12 @@ public final class BookFragment extends Fragment {
         // Set grid layout and recycler view adapter
         GridLayoutManager gridLayoutManager = new BookFragmentGridLayoutManager(getContext());
         binding.bookList.setLayoutManager(gridLayoutManager);
-        binding.bookList.setAdapter(new BookFragmentRecyclerViewAdapter());
+        binding.bookList.setAdapter(new BookFragmentRecyclerViewAdapter(() -> {
+            var bottomAppBar = (BottomAppBar) requireView().getRootView().findViewById(R.id.nav_view_bar);
+            var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+            floatingActionButton.show();
+            bottomAppBar.performShow();
+        }));
         // Upload books in a separate thread
         Executors.newSingleThreadExecutor().submit(() -> {
             BookPool.uploadBooks();
@@ -86,7 +91,6 @@ public final class BookFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
         var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
         binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(floatingActionButton));
         floatingActionButton.setOnClickListener(new BookFragmentOnClickListener(intentActivityResultLauncher::launch));
