@@ -23,7 +23,6 @@ import com.yk.contentviewer.ContentViewer;
 import kotlin.io.ByteStreamsKt;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * Recycler view adapter to get list of loaded books.

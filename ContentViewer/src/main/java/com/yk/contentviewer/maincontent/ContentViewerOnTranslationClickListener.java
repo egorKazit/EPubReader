@@ -7,9 +7,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.yk.common.service.dictionary.DictionaryService;
-import com.yk.contentviewer.R;
 
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -3,7 +3,6 @@ package com.yk.common.context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public final class FloatingActionButtonOnScrollListener extends RecyclerView.OnScrollListener {

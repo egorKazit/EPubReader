@@ -2,8 +2,6 @@ package com.yk.common.service.dictionary;
 
 import androidx.annotation.NonNull;
 
-import com.yk.common.R;
-import com.yk.common.constants.GlobalConstants;
 import com.yk.common.context.ApplicationContext;
 import com.yk.common.http.WordOperatorException;
 import com.yk.common.http.WordTranslator;

@@ -2,14 +2,11 @@ package com.yk.fileexplorer;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yk.common.utils.Toaster;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
