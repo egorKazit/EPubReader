@@ -68,8 +68,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
                     app:layout_constraintHorizontal_weight="8"
-                    app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
                     app:layout_constraintTop_toTopOf="parent"
+                    style="?android:attr/progressBarStyleSmall"
                     android:indeterminateTint="#FF03DAC5"/>
 
                 <TextView

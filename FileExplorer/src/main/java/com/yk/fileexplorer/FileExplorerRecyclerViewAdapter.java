@@ -1,6 +1,7 @@
 package com.yk.fileexplorer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -22,9 +23,11 @@ public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<
 
     private final FileExplorerListHolder fileExplorerListHolder;
     private FileExplorer fileExplorer;
+    private final Context context;
 
-    FileExplorerRecyclerViewAdapter(FileExplorerListHolder fileExplorerListHolder) {
+    FileExplorerRecyclerViewAdapter(FileExplorerListHolder fileExplorerListHolder, Context context) {
         this.fileExplorerListHolder = fileExplorerListHolder;
+        this.context = context;
     }
 
     @NonNull
@@ -58,9 +61,9 @@ public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<
                 .fitCenter()
                 .into(holder.fileImage);
 
-        holder.itemView.setOnClickListener(view -> handleClick(view, fileExplorerItem));
-        holder.itemView.setOnClickListener(view -> handleClick(view, fileExplorerItem));
-        holder.itemView.setOnClickListener(view -> handleClick(view, fileExplorerItem));
+        holder.itemView.setOnClickListener(view -> handleClick(fileExplorerItem));
+        holder.itemView.setOnClickListener(view -> handleClick(fileExplorerItem));
+        holder.itemView.setOnClickListener(view -> handleClick(fileExplorerItem));
     }
 
     @Override
@@ -81,28 +84,45 @@ public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<
     }
 
 
-    public void handleClick(View view, FileExplorerItem fileExplorerItem) {
+    public void handleClick(FileExplorerItem fileExplorerItem) {
         if (fileExplorerItem.isFile()) {
             Intent intent = new Intent();
             intent.putExtra(GlobalConstants.BOOK_PATH, fileExplorerItem.getFilePath());
-            Activity activity = (Activity) view.getContext();
+            Activity activity = (Activity) context;
             activity.setResult(Activity.RESULT_OK, intent);
             activity.finish();
             return;
         }
         notifyItemRangeRemoved(0, fileExplorerListHolder.getFiles().size());
         fileExplorer.getFileExplorerProgressHelper().show();
-            Executors.newSingleThreadExecutor().submit(() -> {
-                if (fileExplorerItem.getFileName().equals("..")) {
-                    fileExplorerListHolder.up();
-                } else {
-                    fileExplorerListHolder.openFolder(fileExplorerItem.getFileName());
-                }
-                fileExplorer.runOnUiThread(() -> {
-                    fileExplorer.getFileExplorerProgressHelper().hide();
-                    notifyItemRangeChanged(0, fileExplorerListHolder.getFiles().size());
-                });
+        Executors.newSingleThreadExecutor().submit(() -> {
+            if (fileExplorerItem.getFileName().equals("..")) {
+                fileExplorerListHolder.up();
+            } else {
+                fileExplorerListHolder.openFolder(fileExplorerItem.getFileName());
+            }
+            fileExplorer.runOnUiThread(() -> {
+                fileExplorer.getFileExplorerProgressHelper().hide();
+                notifyItemRangeChanged(0, fileExplorerListHolder.getFiles().size());
             });
+        });
+    }
+
+    public void back() {
+        notifyItemRangeRemoved(0, fileExplorerListHolder.getFiles().size());
+        if (!fileExplorerListHolder.back()) {
+            Activity activity = (Activity) context;
+            activity.finish();
+            return;
+        }
+        fileExplorer.getFileExplorerProgressHelper().show();
+        Executors.newSingleThreadExecutor().submit(() -> {
+            fileExplorerListHolder.load();
+            fileExplorer.runOnUiThread(() -> {
+                fileExplorer.getFileExplorerProgressHelper().hide();
+                notifyItemRangeChanged(0, fileExplorerListHolder.getFiles().size());
+            });
+        });
     }
 
 }

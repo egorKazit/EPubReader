@@ -127,8 +127,8 @@ public final class ContentViewerJSHandler {
         var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
         var translationProgressBar = (ProgressBar) activity.findViewById(R.id.contentViewerTranslationProgressBar);
         activity.runOnUiThread(() -> {
-            translatedWord.setText("");
-            translatedWord.setVisibility(View.INVISIBLE);
+//            translatedWord.setText("");
+//            translatedWord.setVisibility(View.INVISIBLE);
             translationProgressBar.setVisibility(View.VISIBLE);
         });
         // set translation text
