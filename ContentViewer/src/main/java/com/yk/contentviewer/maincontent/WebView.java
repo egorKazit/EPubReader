@@ -1,6 +1,6 @@
 package com.yk.contentviewer.maincontent;
 
-import static com.yk.contentviewer.maincontent.ContentViewerWebViewSettings.initSettings;
+import static com.yk.contentviewer.maincontent.WebViewSettings.initSettings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,7 +40,7 @@ import lombok.Getter;
  * Each chapter is separate page in page viewer
  */
 
-public final class ContentViewerWebView extends WebView {
+public final class WebView extends android.webkit.WebView {
 
     final static String INTERNAL_BOOK_PROTOCOL = "qk-e-book-file";
     public static final String LOCALHOST = "://localhost/";
@@ -52,19 +51,19 @@ public final class ContentViewerWebView extends WebView {
     private int verticalPosition = 0;
     private BookService bookService;
     @Getter
-    private ContentViewerJSHandler contentViewerJSHandler;
+    private JavaScriptHandler JavaScriptHandler;
     private int allPageHeight = 0;
     private int onePageHeight = 0;
-    private ContentViewerWebViewResourceGetter contentViewerWebViewResourceGetter;
+    private WebViewResourceGetter webViewResourceGetter;
     private final ScaleGestureDetector scaleGestureDetector;
-    private final ContentViewerJavaScriptInteractor contentViewerJavaScriptInteractor = new ContentViewerJavaScriptInteractor(this);
+    private final JavaScriptInteractor javaScriptInteractor = new JavaScriptInteractor(this);
 
     /**
      * Constructor with context
      *
      * @param context context
      */
-    public ContentViewerWebView(Context context) {
+    public WebView(Context context) {
         super(context);
         init();
         scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
@@ -76,7 +75,7 @@ public final class ContentViewerWebView extends WebView {
      * @param context context
      * @param attrs   attributes
      */
-    public ContentViewerWebView(@NonNull Context context, AttributeSet attrs) {
+    public WebView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
         scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
@@ -89,7 +88,7 @@ public final class ContentViewerWebView extends WebView {
      * @param attrs    attributes
      * @param defStyle style
      */
-    public ContentViewerWebView(@NonNull Context context, AttributeSet attrs, int defStyle) {
+    public WebView(@NonNull Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
         scaleGestureDetector = new ScaleGestureDetector(context, new ContentViewerWebViewScaleListener());
@@ -122,8 +121,8 @@ public final class ContentViewerWebView extends WebView {
             Toaster.make(ApplicationContext.getContext(), R.string.error_on_script_loading, bookServiceException);
         }
 
-        contentViewerJSHandler = new ContentViewerJSHandler((Activity) this.getContext());
-        contentViewerWebViewResourceGetter = new ContentViewerWebViewResourceGetter((Activity) this.getContext());
+        JavaScriptHandler = new JavaScriptHandler((Activity) this.getContext());
+        webViewResourceGetter = new WebViewResourceGetter((Activity) this.getContext());
         setBackgroundColor(Color.TRANSPARENT);
 
         if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
@@ -135,15 +134,16 @@ public final class ContentViewerWebView extends WebView {
 
         requestFocus();
         initSettings(this);
-        setWebViewClient(new ContentViewerWebViewClient(this, this::onRequest));
+        setWebViewClient(new WebViewClient(this, this::onRequest));
 
         setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             verticalPosition = scrollY;
-            if (verticalPosition > 0) {
-                setContentPosition();
-            }
-            ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(verticalPosition > 0 ? VISIBLE : INVISIBLE);
-            ContentViewerStateSaver.getInstance().startContentSaver(verticalPosition);
+//            if (verticalPosition > 0) {
+//                setContentPosition();
+//            }
+            setContentPosition();
+//            ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(verticalPosition > 0 ? VISIBLE : INVISIBLE);
+            StateSaver.getInstance().startContentSaver(verticalPosition);
         });
     }
 
@@ -180,8 +180,8 @@ public final class ContentViewerWebView extends WebView {
     private WebResourceResponse onRequest(@NonNull Uri uri) {
         try {
             if (BookService.getBookService().isEntryPresented(Objects.requireNonNull(uri.getPath()).substring(1)))
-                return contentViewerWebViewResourceGetter.onBookRequest(uri);
-            else return contentViewerWebViewResourceGetter.onInternalFileRequest(uri);
+                return webViewResourceGetter.onBookRequest(uri);
+            else return webViewResourceGetter.onInternalFileRequest(uri);
         } catch (BookServiceException e) {
             Toaster.make(this.getContext(), R.string.error_on_book_loading, e);
             throw new RuntimeException(e);
@@ -190,24 +190,24 @@ public final class ContentViewerWebView extends WebView {
 
     void addIntersections() {
 
-        contentViewerJavaScriptInteractor.
-                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_WORD_INTERFACE,
-                        contentViewerJSHandler::handleSelectedWord);
-        contentViewerJavaScriptInteractor.
-                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_SELECT_PHRASE_INTERFACE,
-                        contentViewerJSHandler::handleSelectedPhrase);
-        contentViewerJavaScriptInteractor.
-                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_PHRASE_INTERFACE,
-                        contentViewerJSHandler::handleContextOfSelectedWord);
-        contentViewerJavaScriptInteractor.
-                addInteraction(ContentViewerJavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_IMAGE_INTERFACE,
-                        contentViewerJSHandler::handleSelectedImage);
+        javaScriptInteractor.
+                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_WORD_INTERFACE,
+                        JavaScriptHandler::handleSelectedWord);
+        javaScriptInteractor.
+                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_SELECT_PHRASE_INTERFACE,
+                        JavaScriptHandler::handleSelectedPhrase);
+        javaScriptInteractor.
+                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_PHRASE_INTERFACE,
+                        JavaScriptHandler::handleContextOfSelectedWord);
+        javaScriptInteractor.
+                addInteraction(JavaScriptInteractor.JavascriptInterfaceTag.JAVASCRIPT_CLICK_IMAGE_INTERFACE,
+                        JavaScriptHandler::handleSelectedImage);
     }
 
     void setScripts() {
         String selectionScript = new BufferedReader(new InputStreamReader(this.getResources().openRawResource(R.raw.selection)))
                 .lines().collect(Collectors.joining());
-        contentViewerJavaScriptInteractor.setupScript(selectionScript);
+        javaScriptInteractor.setupScript(selectionScript);
         String javascript;
         try {
             javascript = "var images = document.getElementsByTagName('img'); " +
@@ -237,10 +237,10 @@ public final class ContentViewerWebView extends WebView {
 
         @Override
         public boolean onScale(@NotNull ScaleGestureDetector detector) {
-            var targetTextSize = (int) (ContentViewerWebView.this.getSettings().getTextZoom()
+            var targetTextSize = (int) (WebView.this.getSettings().getTextZoom()
                     * (1 + (detector.getCurrentSpan() - initialDistance) / initialDistance * .05));
             targetTextSize = Math.min(Math.max(targetTextSize, 100), 500);
-            ContentViewerWebView.this.setTextSize(targetTextSize);
+            WebView.this.setTextSize(targetTextSize);
             return super.onScale(detector);
         }
     }

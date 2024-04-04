@@ -1,6 +1,7 @@
 package com.yk.contentviewer.maincontent;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import java.util.Objects;
  * Class with implementation of page adapter
  */
 
-public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
+public final class PagerAdapter extends FragmentStateAdapter {
 
     private final FragmentManager fragmentManager;
 
@@ -33,7 +34,7 @@ public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
      * @param fragmentManager fragment manager
      * @param lifecycle       lifecycle
      */
-    public ContentViewerPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public PagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
         this.fragmentManager = fragmentManager;
     }
@@ -59,10 +60,10 @@ public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
         fragmentManager.getFragments().forEach(fragment -> {
             if (fragment.getView() == null)
                 return;
-            ContentViewerWebView contentViewerWebView = fragment.getView().findViewById(R.id.contentViewerItemContentItem);
-            if (contentViewerWebView == null)
+            WebView webView = fragment.getView().findViewById(R.id.contentViewerItemContentItem);
+            if (webView == null)
                 return;
-            contentViewerWebView.reload();
+            webView.reload();
         });
     }
 
@@ -73,6 +74,7 @@ public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
     public static class ContentFragment extends Fragment {
 
         private final int chapterNumber;
+        private  WebView webView;
 
         /**
          * Constructor without parameters.
@@ -98,12 +100,12 @@ public final class ContentViewerPagerAdapter extends FragmentStateAdapter {
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.item_content_view, container, false);
-            ContentViewerWebView contentViewerWebView = rootView.findViewById(R.id.contentViewerItemContentItem);
+            WebView webView = rootView.findViewById(R.id.contentViewerItemContentItem);
             try {
                 int chapterPosition =
                         chapterNumber == BookService.getBookService().getCurrentChapterNumber() ?
                                 BookService.getBookService().getCurrentChapterPosition() : 0;
-                contentViewerWebView.uploadChapter(chapterNumber, chapterPosition);
+                webView.uploadChapter(chapterNumber, chapterPosition);
             } catch (BookServiceException e) {
                 Toaster.make(requireContext(), R.string.error_on_book_loading, e);
                 requireActivity().finish();

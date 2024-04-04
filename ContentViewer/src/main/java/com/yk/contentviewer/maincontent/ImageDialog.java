@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
  * It's going to be called on picture click in a book
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContentViewerImageDialog {
+public final class ImageDialog {
 
     private static double INITIAL_HEIGHT;
     private static double INITIAL_WIDTH;

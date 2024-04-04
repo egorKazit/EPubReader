@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContentViewerStateSaver {
+public final class StateSaver {
 
     private static final int SCHEDULE_DURATION = 5000;
     private static final int IMMEDIATELY_SCHEDULE_DURATION = 5;
-    private static ContentViewerStateSaver contentViewerStateSaver;
+    private static StateSaver stateSaver;
     private Timer saveTimer;
 
     /**
@@ -30,11 +30,11 @@ public final class ContentViewerStateSaver {
      *
      * @return instance of class
      */
-    public static ContentViewerStateSaver getInstance() {
-        if (contentViewerStateSaver == null) {
-            contentViewerStateSaver = new ContentViewerStateSaver();
+    public static StateSaver getInstance() {
+        if (stateSaver == null) {
+            stateSaver = new StateSaver();
         }
-        return contentViewerStateSaver;
+        return stateSaver;
     }
 
     /**

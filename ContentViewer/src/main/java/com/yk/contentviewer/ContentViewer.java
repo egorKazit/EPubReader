@@ -1,8 +1,9 @@
 package com.yk.contentviewer;
 
-import static com.yk.contentviewer.maincontent.ContentViewerLanguageOptionMenu.prepareLanguageOptionMenu;
+import static com.yk.contentviewer.maincontent.LanguageOptionMenu.prepareLanguageOptionMenu;
 
 import android.content.Intent;
+import android.gesture.GestureOverlayView;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,14 +33,15 @@ import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
-import com.yk.contentviewer.maincontent.ContentViewerItemSelector;
-import com.yk.contentviewer.maincontent.ContentViewerOnPageChangeCallback;
-import com.yk.contentviewer.maincontent.ContentViewerOnSpeechClickListener;
-import com.yk.contentviewer.maincontent.ContentViewerOnTranslationClickListener;
-import com.yk.contentviewer.maincontent.ContentViewerPagerAdapter;
-import com.yk.contentviewer.maincontent.ContentViewerStateSaver;
-import com.yk.contentviewer.maincontent.ContentViewerWebView;
-import com.yk.contentviewer.maincontent.ContentViewerWebViewFontRecyclerAdapter;
+import com.yk.contentviewer.maincontent.ItemSelector;
+import com.yk.contentviewer.maincontent.OnGestureListener;
+import com.yk.contentviewer.maincontent.OnPageChangeCallback;
+import com.yk.contentviewer.maincontent.OnSpeechClickListener;
+import com.yk.contentviewer.maincontent.OnTranslationClickListener;
+import com.yk.contentviewer.maincontent.PagerAdapter;
+import com.yk.contentviewer.maincontent.StateSaver;
+import com.yk.contentviewer.maincontent.WebView;
+import com.yk.contentviewer.maincontent.WebViewFontRecyclerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +59,7 @@ import java.util.TimerTask;
 public final class ContentViewer extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
-    private ContentViewerItemSelector contentViewerItemSelector;
+    private ItemSelector itemSelector;
     private final Map<Integer, Timer> timers = new HashMap<>();
     private final Map<Integer, Boolean> menuState = new HashMap<>();
 
@@ -71,14 +73,15 @@ public final class ContentViewer extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ViewPager2 contentViewPager = findViewById(R.id.contentViewerChapterPager);
+        contentViewPager.setUserInputEnabled(false);
         // create and set adapter
-        ContentViewerPagerAdapter contentViewerPagerAdapter = new ContentViewerPagerAdapter(getSupportFragmentManager(), getLifecycle());
-        contentViewPager.setAdapter(contentViewerPagerAdapter);
+        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), getLifecycle());
+        contentViewPager.setAdapter(pagerAdapter);
         // set zoom change animation
         contentViewPager.setPageTransformer(new ZoomOutPageTransformer());
         // move to the end of chapter if it goes to previous page
         try {
-            contentViewPager.registerOnPageChangeCallback(new ContentViewerOnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
+            contentViewPager.registerOnPageChangeCallback(new OnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
         } catch (BookServiceException e) {
             throw new RuntimeException(e);
         }
@@ -89,25 +92,28 @@ public final class ContentViewer extends AppCompatActivity {
             Toaster.make(getApplicationContext(), R.string.error_on_book_loading, serviceException);
         }
 
+        GestureOverlayView touchOverlay = findViewById(R.id.touchOverlay);
+        touchOverlay.addOnGestureListener(new OnGestureListener(contentViewPager));
+
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             findViewById(R.id.contentViewerBackground).setVisibility(View.GONE);
         }
 
         RecyclerView recyclerViewFont = findViewById(R.id.contentViewerFont);
         recyclerViewFont.setLayoutManager(new GridLayoutManager(this, 3));
-        ContentViewerWebViewFontRecyclerAdapter contentViewerWebViewFontRecyclerAdapter =
-                new ContentViewerWebViewFontRecyclerAdapter()
+        WebViewFontRecyclerAdapter webViewFontRecyclerAdapter =
+                new WebViewFontRecyclerAdapter()
                         .setRunnableBeforeAction(() -> cancelTimerForShownElement(R.id.contentViewerFontHolder))
                         .setRunnableAfterAction(() -> startTimerForShownElement(R.id.contentViewerFontHolder));
-        recyclerViewFont.setAdapter(contentViewerWebViewFontRecyclerAdapter);
+        recyclerViewFont.setAdapter(webViewFontRecyclerAdapter);
         findViewById(R.id.contentViewerFontLeft).setOnClickListener(v -> {
             cancelTimerForShownElement(R.id.contentViewerFontHolder);
-            contentViewerWebViewFontRecyclerAdapter.left();
+            webViewFontRecyclerAdapter.left();
             startTimerForShownElement(R.id.contentViewerFontHolder);
         });
         findViewById(R.id.contentViewerFontRight).setOnClickListener(v -> {
             cancelTimerForShownElement(R.id.contentViewerFontHolder);
-            contentViewerWebViewFontRecyclerAdapter.right();
+            webViewFontRecyclerAdapter.right();
             startTimerForShownElement(R.id.contentViewerFontHolder);
         });
 
@@ -119,11 +125,11 @@ public final class ContentViewer extends AppCompatActivity {
 
         // handle on speech click
         ImageView speechImage = findViewById(R.id.contentViewerSoundPlay);
-        speechImage.setOnClickListener(new ContentViewerOnSpeechClickListener(this));
+        speechImage.setOnClickListener(new OnSpeechClickListener(this));
 
         // handle on speech click
         TextView textView = findViewById(R.id.contentViewerTranslatedWord);
-        textView.setOnClickListener(new ContentViewerOnTranslationClickListener(this));
+        textView.setOnClickListener(new OnTranslationClickListener(this));
 
         // register activity result
         intentActivityResultLauncher =
@@ -140,15 +146,15 @@ public final class ContentViewer extends AppCompatActivity {
                                 intent -> {
                                 });
 
-        contentViewerItemSelector = new ContentViewerItemSelector(this);
+        itemSelector = new ItemSelector(this);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ContentViewerStateSaver.getInstance()
-                .startContentSaver(((ContentViewerWebView) findViewById(R.id.contentViewerItemContentItem)).getVerticalPosition(), true);
+        StateSaver.getInstance()
+                .startContentSaver(((WebView) findViewById(R.id.contentViewerItemContentItem)).getVerticalPosition(), true);
     }
 
     @Override
@@ -163,7 +169,7 @@ public final class ContentViewer extends AppCompatActivity {
             if (localValue == null)
                 localValue = false;
             if (localValue)
-                contentViewerItemSelector.onTranslationContextCall(menu.findItem(R.id.translateContext));
+                itemSelector.onTranslationContextCall(menu.findItem(R.id.translateContext));
         }
         return true;
     }
@@ -195,16 +201,16 @@ public final class ContentViewer extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.darkMode) {
-            contentViewerItemSelector.onNightModeCall(item);
+            itemSelector.onNightModeCall(item);
             menuState.put(R.id.darkMode, item.isChecked());
             return true;
         } else if (itemId == R.id.translateContext) {
-            contentViewerItemSelector.onTranslationContextCall(item);
+            itemSelector.onTranslationContextCall(item);
             menuState.put(R.id.translateContext, item.isChecked());
             return true;
         } else if (itemId == R.id.callSizer) {
             try {
-                contentViewerItemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+                itemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
             } catch (BookServiceException e) {
                 Toaster.make(getApplicationContext(), R.string.error_on_loading, e);
             }

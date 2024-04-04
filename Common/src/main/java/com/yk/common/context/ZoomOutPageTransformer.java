@@ -1,5 +1,7 @@
 package com.yk.common.context;
 
+import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.viewpager2.widget.ViewPager2;
@@ -8,6 +10,8 @@ import androidx.viewpager2.widget.ViewPager2;
 public final class ZoomOutPageTransformer implements ViewPager2.PageTransformer {
     private static final float MIN_SCALE = 0.85f;
     private static final float MIN_ALPHA = 0.5f;
+    static boolean isTransformation = false;
+    private Pair<Integer, Integer> chaptersPair;
 
     @Override
     public void transformPage(View view, float position) {

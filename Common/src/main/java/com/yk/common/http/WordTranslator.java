@@ -26,7 +26,7 @@ public abstract class WordTranslator {
 
     private static final String TRANSLATION_HOST = "https://translator.yk-general-one.cyou";
     public static final String LANGUAGES_PATH = "/languages";
-    public static final String TRANSLATE_PATH = "/translate/%s-%s/%s";
+    public static final String TRANSLATE_PATH = "/translate/%s/%s/%s";
     public static final String USERNAME = "requestor";
     public static final String PASSWORD = "1Word2LearnALot";
 
