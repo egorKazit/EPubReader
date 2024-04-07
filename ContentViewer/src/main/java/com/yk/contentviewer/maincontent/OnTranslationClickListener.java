@@ -8,13 +8,12 @@ import android.widget.TextView;
 
 import com.yk.common.service.dictionary.DictionaryService;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public final class ContentViewerOnTranslationClickListener implements View.OnClickListener {
+public final class OnTranslationClickListener implements View.OnClickListener {
 
     private final Context context;
 
@@ -36,11 +35,11 @@ public final class ContentViewerOnTranslationClickListener implements View.OnCli
                             popup.dismiss();
                             return true;
                         });
-                        popup.getMenu().getItem(index.getAndIncrement()).setEnabled(false);
+                        popup.getMenu().getItem(index.getAndIncrement()).setEnabled(true);
                     });
             popup.show();
         } else {
-            Executors.newSingleThreadExecutor().submit(() -> {
+            ThreadHolder.wordTranslationThreadOperator.submit(() -> {
                 var dictionary = DictionaryService.getInstance().getDictionary(DictionaryService.getInstance().getLastOriginWord());
                 String translation = DictionaryService.getMainTranslation(dictionary);
                 ((Activity) v.getContext()).runOnUiThread(() -> {

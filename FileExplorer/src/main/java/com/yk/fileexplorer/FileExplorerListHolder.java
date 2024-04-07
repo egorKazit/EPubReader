@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -17,12 +18,12 @@ import lombok.Getter;
 public final class FileExplorerListHolder {
 
     private final FileExplorer fileExplorer;
-    private File currentFolder;
     private final List<FileExplorerItem> files = new ArrayList<>();
+    private final Stack<File> folderStack = new Stack<>();
 
 
     FileExplorerListHolder(File currentFolder, FileExplorer fileExplorer) {
-        this.currentFolder = currentFolder;
+        folderStack.add(currentFolder);
         this.fileExplorer = fileExplorer;
         Executors.newSingleThreadExecutor().submit(() -> {
             this.load();
@@ -36,20 +37,26 @@ public final class FileExplorerListHolder {
 
 
     void up() {
-        currentFolder = currentFolder.getParentFile();
+        folderStack.add(folderStack.peek().getParentFile());
         load();
     }
 
 
     void openFolder(String targetFolderName) {
-        currentFolder = new File(currentFolder, targetFolderName);
+        folderStack.add(new File(folderStack.peek(), targetFolderName));
         load();
     }
 
+    boolean back() {
+        folderStack.pop();
+        return !folderStack.empty();
+    }
 
-    private void load() {
+    void load() {
 
         files.clear();
+
+        var currentFolder = folderStack.peek();
 
         if (currentFolder.listFiles() != null)
             files.addAll(Arrays.stream(currentFolder.listFiles())

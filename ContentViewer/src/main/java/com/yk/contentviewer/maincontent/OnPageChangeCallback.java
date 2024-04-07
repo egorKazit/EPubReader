@@ -13,14 +13,14 @@ import java.util.function.Function;
  * Class to react on page loading
  */
 
-public final class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
+public final class OnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
 
     private static final float thresholdOffset = 0.5f;
     private static final int thresholdOffsetPixels = 1;
     private boolean checkDirection;
     private boolean isScrollingUp = false;
 
-    private final Function<Integer, ContentViewerWebView> retriever;
+    private final Function<Integer, WebView> retriever;
     private final int viewId;
     private final BookService bookService;
 
@@ -30,7 +30,7 @@ public final class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageCh
      * @param retriever retriever function
      * @param viewId    view
      */
-    public ContentViewerOnPageChangeCallback(Function<Integer, ContentViewerWebView> retriever, int viewId) throws BookServiceException {
+    public OnPageChangeCallback(Function<Integer, WebView> retriever, int viewId) throws BookServiceException {
         this.retriever = retriever;
         this.viewId = viewId;
         this.bookService = BookService.getBookService();
@@ -51,31 +51,38 @@ public final class ContentViewerOnPageChangeCallback extends ViewPager2.OnPageCh
         if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
             checkDirection = true;
         }
-
     }
 
 
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
-        ContentViewerWebView contentViewerWebView = retriever.apply(this.viewId);
+        WebView webView = retriever.apply(this.viewId);
         if (isScrollingUp && position > bookService.getCurrentChapterNumber()) {
-            ParentMethodCaller.callConsumerOnParent(contentViewerWebView, ViewPager2.class,
-                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapterNumber());
+            ParentMethodCaller.callConsumerOnParent(webView, ViewPager2.class,
+                    (viewPager2, o) -> {
+                        if (!viewPager2.isFakeDragging()) {
+                            viewPager2.setCurrentItem((Integer) o);
+                        }
+                    }, bookService.getCurrentChapterNumber());
             return;
         }
         if (!isScrollingUp && position < bookService.getCurrentChapterNumber()) {
-            ParentMethodCaller.callConsumerOnParent(contentViewerWebView, ViewPager2.class,
-                    (viewPager2, o) -> viewPager2.setCurrentItem((Integer) o), bookService.getCurrentChapterNumber());
+            ParentMethodCaller.callConsumerOnParent(webView, ViewPager2.class,
+                    (viewPager2, o) -> {
+                        if (!viewPager2.isFakeDragging()) {
+                            viewPager2.setCurrentItem((Integer) o);
+                        }
+                    }, bookService.getCurrentChapterNumber());
             return;
         }
-        if (contentViewerWebView != null) {
+        if (webView != null) {
             int height = 0;
             if (position < bookService.getCurrentChapterNumber())
                 height = 1000000000;
-            contentViewerWebView.scrollTo(0, height);
+            webView.scrollTo(0, height);
             bookService.setCurrentChapterPosition(height);
-            contentViewerWebView.setTextSize(bookService.getTextSize());
+            webView.setTextSize(bookService.getTextSize());
         }
         bookService.setCurrentChapterNumber(position);
         BookServiceHelper.updatePersistenceBook(bookService);

@@ -79,7 +79,6 @@ public final class NestedScrollableHost extends FrameLayout {
         if (parentViewPager == null) return;
         int orientation = parentViewPager.getOrientation();
 
-
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             initialY = e.getY();
             getParent().requestDisallowInterceptTouchEvent(true);

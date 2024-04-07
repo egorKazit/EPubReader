@@ -22,8 +22,6 @@ import com.yk.contentviewer.R;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import lombok.AllArgsConstructor;
 
@@ -32,12 +30,11 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor
-public final class ContentViewerJSHandler {
+public final class JavaScriptHandler {
 
     public static final String MAIN = "Main";
     private final Activity activity;
-    private final ExecutorService wordTranslationThreadOperator = Executors.newFixedThreadPool(20);
-    private final ExecutorService phraseTranslationThreadOperator = Executors.newFixedThreadPool(20);
+
 
     /**
      * Method to retrieve the word, translate it and put in correct place
@@ -62,8 +59,8 @@ public final class ContentViewerJSHandler {
         if (activity.findViewById(R.id.contentViewerTranslatedContext).getVisibility() != View.VISIBLE) {
             return;
         }
-        phraseTranslationThreadOperator.submit(() -> {
-            var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
+        ThreadHolder.phraseTranslationThreadOperator.submit(() -> {
+            var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedContext));
             try {
                 translatedWord.setText(WordTranslator.resolveTranslation(originPhrase, BookService.getBookService().getLanguage(),
                                 LanguageService.getInstance().getLanguage()).getTranslations()
@@ -117,7 +114,7 @@ public final class ContentViewerJSHandler {
     @SuppressLint("ClickableViewAccessibility")
     public void handleSelectedImage(@NonNull String imageUrl) {
         try {
-            ContentViewerImageDialog.openImageDialog(activity, imageUrl);
+            ImageDialog.openImageDialog(activity, imageUrl);
         } catch (URISyntaxException | BookServiceException | IOException e) {
             Toaster.make(activity.getApplicationContext(), R.string.can_not_load_image, e);
         }
@@ -127,12 +124,10 @@ public final class ContentViewerJSHandler {
         var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
         var translationProgressBar = (ProgressBar) activity.findViewById(R.id.contentViewerTranslationProgressBar);
         activity.runOnUiThread(() -> {
-            translatedWord.setText("");
-            translatedWord.setVisibility(View.INVISIBLE);
             translationProgressBar.setVisibility(View.VISIBLE);
         });
         // set translation text
-        wordTranslationThreadOperator.submit(() -> {
+        ThreadHolder.wordTranslationThreadOperator.submit(() -> {
             var dictionary = DictionaryService.getInstance().getDictionary(original.toLowerCase(Locale.ROOT));
             String translation = DictionaryService.getMainTranslation(dictionary);
             activity.runOnUiThread(() -> {

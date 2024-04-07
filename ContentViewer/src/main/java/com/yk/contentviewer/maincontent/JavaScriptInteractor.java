@@ -17,7 +17,7 @@ import lombok.Setter;
  */
 @Setter
 @SuppressWarnings("SpellCheckingInspection")
-class ContentViewerJavaScriptInteractor {
+class JavaScriptInteractor {
 
     private final WebView webView;
 
@@ -26,7 +26,7 @@ class ContentViewerJavaScriptInteractor {
      *
      * @param webView web view to which js functions should be added
      */
-    ContentViewerJavaScriptInteractor(WebView webView) {
+    JavaScriptInteractor(WebView webView) {
         this.webView = webView;
         webView.setWebChromeClient(new WebChromeClient() {
             @Override

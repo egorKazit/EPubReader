@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yk.common.service.book.BookService;
-import com.yk.contentviewer.tableofcontent.TableOfContentNestedListAdapter;
+import com.yk.contentviewer.tableofcontent.NestedListAdapter;
 
 import lombok.SneakyThrows;
 
@@ -27,6 +27,7 @@ public final class TableOfContentViewer extends AppCompatActivity {
         // fill recycler view with data
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(new TableOfContentNestedListAdapter(BookService.getBookService().getTableOfContent().getChapterTree(), 0));
+        recyclerView.setAdapter(new NestedListAdapter(BookService.getBookService().getTableOfContent().getChapterTree(), 0));
+        linearLayoutManager.scrollToPosition(BookService.getBookService().getCurrentChapterNumber());
     }
 }

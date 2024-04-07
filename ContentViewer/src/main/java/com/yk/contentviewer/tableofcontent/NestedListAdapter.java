@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<TableOfContentNestedListAdapter.NestedViewHolder> {
+public final class NestedListAdapter extends RecyclerView.Adapter<NestedListAdapter.NestedViewHolder> {
 
     private static final int ITEM_WITH_CHILDREN = 1;
     private static final int ITEM_WITHOUT_CHILDREN = 0;
@@ -33,7 +33,7 @@ public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<
     private LinkedList<TableOfContent.Chapter> chapterTree;
     private List<Boolean> isExpanded;
 
-    public TableOfContentNestedListAdapter(LinkedList<TableOfContent.Chapter> chapterTree, int level) {
+    public NestedListAdapter(LinkedList<TableOfContent.Chapter> chapterTree, int level) {
         this.level = level;
         setChapterTree(chapterTree);
     }
@@ -50,7 +50,7 @@ public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull NestedViewHolder holder, int position) {
         holder.chapterName.setText(chapterTree.get(position).getChapterName());
-        var subChaptersAdapter = new TableOfContentNestedListAdapter(new LinkedList<>(), level + 1);
+        var subChaptersAdapter = new NestedListAdapter(new LinkedList<>(), level + 1);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(holder.subChapters.getContext());
         holder.subChapters.setLayoutManager(linearLayoutManager);
         holder.subChapters.setAdapter(subChaptersAdapter);
@@ -83,7 +83,7 @@ public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<
                 IntStream.range(0, chapterTree.size()).mapToObj(operand -> false).collect(Collectors.toList()) : this.isExpanded;
     }
 
-    private void expandOrCollapse(TableOfContentNestedListAdapter subChaptersAdapter, int position) {
+    private void expandOrCollapse(NestedListAdapter subChaptersAdapter, int position) {
         if (isExpanded.size() <= position) return;
         if (isExpanded.get(position)) {
             isExpanded.set(position, false);
@@ -96,7 +96,7 @@ public final class TableOfContentNestedListAdapter extends RecyclerView.Adapter<
         }
     }
 
-    private void init(TableOfContentNestedListAdapter subChaptersAdapter, int position) {
+    private void init(NestedListAdapter subChaptersAdapter, int position) {
         if (isExpanded.size() <= position) return;
         if (isExpanded.get(position)) {
             subChaptersAdapter.setChapterTree(chapterTree.get(position).getSubChapters());

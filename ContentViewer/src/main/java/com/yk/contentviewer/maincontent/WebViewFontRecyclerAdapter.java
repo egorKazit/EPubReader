@@ -17,7 +17,7 @@ import com.yk.contentviewer.R;
 import java.util.List;
 
 
-public final class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.Adapter<ContentViewerWebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
+public final class WebViewFontRecyclerAdapter extends RecyclerView.Adapter<WebViewFontRecyclerAdapter.ContentViewerWebViewFontHolder> {
 
     public static final String FONTS = "fonts/";
     private final List<ContentFont> fontData = List.of(ContentFont.values());
@@ -26,7 +26,7 @@ public final class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.
     private Runnable runnableBeforeAction;
     private Runnable runnableAfterAction;
 
-    public ContentViewerWebViewFontRecyclerAdapter() {
+    public WebViewFontRecyclerAdapter() {
         super();
         index = Integer.parseInt(PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont().getId());
     }
@@ -58,9 +58,9 @@ public final class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.
             runnableBeforeAction.run();
             PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.setContentFont(contentFont);
             ViewPager2 viewPager = holder.textView.getRootView().findViewById(R.id.contentViewerChapterPager);
-            ContentViewerPagerAdapter contentViewerPagerAdapter = (ContentViewerPagerAdapter) viewPager.getAdapter();
-            if (contentViewerPagerAdapter != null)
-                contentViewerPagerAdapter.refresh();
+            PagerAdapter pagerAdapter = (PagerAdapter) viewPager.getAdapter();
+            if (pagerAdapter != null)
+                pagerAdapter.refresh();
             runnableAfterAction.run();
         });
     }
@@ -70,12 +70,12 @@ public final class ContentViewerWebViewFontRecyclerAdapter extends RecyclerView.
         return 3;
     }
 
-    public ContentViewerWebViewFontRecyclerAdapter setRunnableBeforeAction(Runnable runnableBeforeAction) {
+    public WebViewFontRecyclerAdapter setRunnableBeforeAction(Runnable runnableBeforeAction) {
         this.runnableBeforeAction = runnableBeforeAction;
         return this;
     }
 
-    public ContentViewerWebViewFontRecyclerAdapter setRunnableAfterAction(Runnable runnableAfterAction) {
+    public WebViewFontRecyclerAdapter setRunnableAfterAction(Runnable runnableAfterAction) {
         this.runnableAfterAction = runnableAfterAction;
         return this;
     }

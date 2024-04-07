@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public final class ContentViewerWebViewResourceGetter {
+public final class WebViewResourceGetter {
 
     private final Activity activity;
 
@@ -46,9 +46,9 @@ public final class ContentViewerWebViewResourceGetter {
                     inputStream = new InputStreamWrapper(BookService.getBookService().getResourceAsStream(resourcePath));
                 else
                     inputStream = new InputStreamWrapper(BookService.getBookService().getResourceAsStream(resourcePath))
-                            .setInjector(ContentViewerWebViewResourceEnum.HTML_TEXT_FONT_HEADER.toMap(
+                            .setInjector(WebViewResourceEnum.HTML_TEXT_FONT_HEADER.toMap(
                                     PreferenceHelper.PreferenceHelperHolder.INSTANCE.helper.getContentFont().getFontTechnicalName()))
-                            .setReplacer(ContentViewerWebViewResourceEnum.HTML_TEXT_FONT_BODY.toMap());
+                            .setReplacer(WebViewResourceEnum.HTML_TEXT_FONT_BODY.toMap());
             } else {
                 inputStream = BookService.getBookService().getResourceAsStream(resourcePath);
             }

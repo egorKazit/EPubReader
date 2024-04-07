@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
  */
 
 @AllArgsConstructor
-public final class ContentViewerItemSelector {
+public final class ItemSelector {
 
     private final Activity activity;
 
@@ -49,11 +49,11 @@ public final class ContentViewerItemSelector {
         if (BookService.getBookService().getTextSize() != 0)
             seekBar.setProgress(BookService.getBookService().getTextSize());
         seekBar.setVisibility(View.VISIBLE);
-        seekBar.setOnSeekBarChangeListener(ContentViewerOnSeekBarChangeListener.builder()
+        seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListener.builder()
                 .viewId(R.id.contentViewerItemContentItem)
                 .consumerOnProgressChange((viewId, progress) -> {
                     try {
-                        ((ContentViewerWebView) activity.findViewById(viewId)).setTextSize(progress);
+                        ((WebView) activity.findViewById(viewId)).setTextSize(progress);
 
                         String javascript = "var images = document.getElementsByTagName('img'); " +
                                 "for (var i = 0; i < images.length; i++) {" +
@@ -63,7 +63,7 @@ public final class ContentViewerItemSelector {
                                 "  console.log(targetWidth);" +
                                 "  img.width = targetWidth;" +
                                 "}";
-                        ((ContentViewerWebView) activity.findViewById(viewId)).loadUrl("javascript:" + javascript);
+                        ((WebView) activity.findViewById(viewId)).loadUrl("javascript:" + javascript);
                     } catch (BookServiceException bookServiceException) {
                         Log.e("Sizer issue", Objects.requireNonNull(bookServiceException.getMessage()));
                     }

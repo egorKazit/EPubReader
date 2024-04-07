@@ -15,7 +15,7 @@ import lombok.NonNull;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 
-public final class ContentViewerOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+public final class OnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
     @NonNull
     private final Integer viewId;
