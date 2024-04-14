@@ -1,13 +1,14 @@
 package com.yk.contentviewer.maincontent;
 
 import android.gesture.GestureOverlayView;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.contentviewer.R;
+
+import lombok.Getter;
 
 public class OnGestureListener implements GestureOverlayView.OnGestureListener {
 
@@ -16,6 +17,9 @@ public class OnGestureListener implements GestureOverlayView.OnGestureListener {
     private float verticalPosition = 0;
     private float initialVerticalPosition = 0;
     private SwipeDirection direction = SwipeDirection.NONE;
+    private boolean started = false;
+    @Getter
+    private static SwipeDirection lastDirection = SwipeDirection.NONE;
 
     public OnGestureListener(ViewPager2 contentViewPager) {
         this.contentViewPager = contentViewPager;
@@ -25,6 +29,7 @@ public class OnGestureListener implements GestureOverlayView.OnGestureListener {
     @Override
     public void onGestureStarted(GestureOverlayView overlay, @NonNull MotionEvent event) {
         verticalPosition = event.getY();
+        started = false;
 
     }
 
@@ -35,10 +40,18 @@ public class OnGestureListener implements GestureOverlayView.OnGestureListener {
         // idea is only one direction is allowed
         if (direction == SwipeDirection.NONE) {
             if ((event.getY() - verticalPosition) > 0) {
-                direction = SwipeDirection.DOWN;
+                lastDirection = direction = SwipeDirection.DOWN;
             } else {
-                direction = SwipeDirection.UP;
+                lastDirection = direction = SwipeDirection.UP;
             }
+        }
+
+        if (!isChangeChapterNeeded() && !started) {
+            lastDirection = direction = SwipeDirection.NOT_NEEDED;
+        }
+
+        if (!started) {
+            started = true;
         }
 
         var stopDrag = (direction == SwipeDirection.UP && (event.getY() - initialVerticalPosition) > 0)
@@ -81,7 +94,7 @@ public class OnGestureListener implements GestureOverlayView.OnGestureListener {
     }
 
     enum SwipeDirection {
-        DOWN, UP, NONE
+        DOWN, UP, NONE, NOT_NEEDED
     }
 
 }

@@ -2,5 +2,4 @@
     <string name="app_name">File Explorer</string>
     <string name="icon">Icon</string>
     <string name="folder_file_description">Folder/File description</string>
-    <string name="please_wait_this_may_take_a_moment">Please wait! This may take a moment.</string>
 </resources>

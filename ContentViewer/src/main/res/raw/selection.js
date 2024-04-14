@@ -1,6 +1,9 @@
 console.log(`start script loading`);
 var click = function (event){
                  var rangeForWord = document.caretRangeFromPoint(event.clientX, event.clientY);
+                 if(rangeForWord.startContainer.parentElement.tagName === 'a'){
+                     return;
+                 }
                  if(rangeForWord.startContainer.nodeType === Node.ELEMENT_NODE){
                     var src = rangeForWord.startContainer.getElementsByTagName('img')[0].src;
                     JavascriptImageInteractionInterface.interact(src);

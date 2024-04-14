@@ -18,13 +18,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentDictionaryBinding;
+import com.yk.bookviewer.utils.ButtonHider;
 import com.yk.common.context.FloatingActionButtonOnScrollListener;
 import com.yk.common.service.dictionary.DictionaryService;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -100,14 +101,14 @@ public final class DictionaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        var bottomNavigationView = (BottomNavigationView) requireView().getRootView().findViewById(R.id.nav_view);
-        var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
-        binding.dictionaryList.addOnScrollListener(new FloatingActionButtonOnScrollListener(floatingActionButton));
-        floatingActionButton.setOnClickListener(v -> {
+        ButtonHider.hide(this);
+        var libraryActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+        binding.dictionaryList.addOnScrollListener(new FloatingActionButtonOnScrollListener(List.of(libraryActionButton), List.of()));
+        libraryActionButton.setOnClickListener(v -> {
             if (!Objects.equals(Objects.requireNonNull(NavHostFragment.findNavController(this).getCurrentDestination()).getId(), R.id.navigation_home))
                 NavHostFragment.findNavController(this).navigate(R.id.navigation_home);
         });
-        floatingActionButton.setImageResource(R.drawable.ic_library_foreground);
+        libraryActionButton.setImageResource(R.drawable.ic_library_foreground);
     }
 
     @Override

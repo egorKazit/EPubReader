@@ -3,5 +3,4 @@
     <string name="app_name">Файлы</string>
     <string name="icon">Иконка</string>
     <string name="folder_file_description">Описание</string>
-    <string name="please_wait_this_may_take_a_moment">Пожалуйста, подождите! Это может занять какое-то время</string>
 </resources>

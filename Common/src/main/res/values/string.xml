@@ -18,4 +18,6 @@
     <string name="incorrect">Incorrect</string>
     <string name="error_on_work_handling">Error on work handling: %s</string>
     <string name="pick_translation">Pick Translation</string>
+    <string name="book_image">Book Image</string>
+    <string name="please_wait_this_may_take_a_moment">Please wait! This may take a moment.</string>
 </resources>

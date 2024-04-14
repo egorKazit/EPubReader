@@ -17,6 +17,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.yk.common.constants.GlobalConstants;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.FileExplorerRecyclerViewHolder> {
@@ -24,6 +26,7 @@ public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<
     private final FileExplorerListHolder fileExplorerListHolder;
     private FileExplorer fileExplorer;
     private final Context context;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     FileExplorerRecyclerViewAdapter(FileExplorerListHolder fileExplorerListHolder, Context context) {
         this.fileExplorerListHolder = fileExplorerListHolder;
@@ -47,19 +50,28 @@ public final class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.fileName.setText(fileExplorerItem.getFileName());
 
         var glide = Glide.with(holder.itemView.getContext());
-        RequestBuilder<Drawable> drawableRequestBuilder;
         if (!fileExplorerItem.isFile()) {
-            drawableRequestBuilder = glide.load(R.drawable.ic_folder_foreground);
+            executorService.submit(() -> ((Activity) holder.itemView.getContext()).runOnUiThread(() -> {
+                glide.load(R.drawable.ic_folder_foreground).centerCrop()
+                        .fitCenter()
+                        .into(holder.fileImage);
+            }));
         } else {
-            if (fileExplorerItem.getTitle() != null)
-                holder.fileName.setText(fileExplorerItem.getTitle());
-            if (fileExplorerItem.getBitmap() != null)
-                drawableRequestBuilder = glide.load(fileExplorerItem.getBitmap());
-            else drawableRequestBuilder = glide.load(R.drawable.ic_no_cover_foreground);
+            executorService.submit(() -> {
+                RequestBuilder<Drawable> drawableRequestBuilder;
+                if (fileExplorerItem.getCover() != null)
+                    drawableRequestBuilder = glide.load(fileExplorerItem.getCover());
+                else drawableRequestBuilder = glide.load(R.drawable.ic_no_cover_foreground);
+                var title = fileExplorerItem.fetchTitle();
+                ((Activity) holder.itemView.getContext()).runOnUiThread(() -> {
+                    if (title != null && !Objects.equals(title, ""))
+                        holder.fileName.setText(title);
+                    drawableRequestBuilder.centerCrop()
+                            .fitCenter()
+                            .into(holder.fileImage);
+                });
+            });
         }
-        drawableRequestBuilder.centerCrop()
-                .fitCenter()
-                .into(holder.fileImage);
 
         holder.itemView.setOnClickListener(view -> handleClick(fileExplorerItem));
         holder.itemView.setOnClickListener(view -> handleClick(fileExplorerItem));

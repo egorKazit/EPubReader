@@ -121,13 +121,11 @@ public final class JavaScriptHandler {
     }
 
     private void translateWithProgressBar(String original) {
-        var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
-        var translationProgressBar = (ProgressBar) activity.findViewById(R.id.contentViewerTranslationProgressBar);
-        activity.runOnUiThread(() -> {
-            translationProgressBar.setVisibility(View.VISIBLE);
-        });
         // set translation text
         ThreadHolder.wordTranslationThreadOperator.submit(() -> {
+            var translatedWord = ((TextView) activity.findViewById(R.id.contentViewerTranslatedWord));
+            var translationProgressBar = (ProgressBar) activity.findViewById(R.id.contentViewerTranslationProgressBar);
+            activity.runOnUiThread(() -> translationProgressBar.setVisibility(View.VISIBLE));
             var dictionary = DictionaryService.getInstance().getDictionary(original.toLowerCase(Locale.ROOT));
             String translation = DictionaryService.getMainTranslation(dictionary);
             activity.runOnUiThread(() -> {

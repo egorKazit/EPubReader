@@ -1,6 +1,5 @@
 package com.yk.common.context;
 
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 

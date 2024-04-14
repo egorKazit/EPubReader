@@ -4,6 +4,7 @@ import static com.yk.contentviewer.maincontent.WebViewSettings.initSettings;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
@@ -33,6 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 /**
  * Content web view.
@@ -53,7 +55,7 @@ public final class WebView extends android.webkit.WebView {
     @Getter
     private JavaScriptHandler JavaScriptHandler;
     private int allPageHeight = 0;
-    private int onePageHeight = 0;
+    private static int onePageHeight = 0;
     private WebViewResourceGetter webViewResourceGetter;
     private final ScaleGestureDetector scaleGestureDetector;
     private final JavaScriptInteractor javaScriptInteractor = new JavaScriptInteractor(this);
@@ -138,11 +140,7 @@ public final class WebView extends android.webkit.WebView {
 
         setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             verticalPosition = scrollY;
-//            if (verticalPosition > 0) {
-//                setContentPosition();
-//            }
             setContentPosition();
-//            ((Activity) getContext()).findViewById(R.id.contentViewerPosition).setVisibility(verticalPosition > 0 ? VISIBLE : INVISIBLE);
             StateSaver.getInstance().startContentSaver(verticalPosition);
         });
     }
@@ -150,7 +148,7 @@ public final class WebView extends android.webkit.WebView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        onePageHeight = getHeight();
+        onePageHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         allPageHeight = computeVerticalScrollRange();
         setContentPosition();
     }
@@ -175,6 +173,26 @@ public final class WebView extends android.webkit.WebView {
         TableOfContent.Spine spine = bookService.getTableOfContent().getSpineById(chapterPosition);
         loadUrl(INTERNAL_BOOK_PROTOCOL + LOCALHOST + spine.getChapterRef());
         this.addIntersections();
+        this.postVisualStateCallback(chapterPosition, new VisualStateCallback() {
+            @SneakyThrows
+            @Override
+            public void onComplete(long requestId) {
+                if (OnGestureListener.getLastDirection() == OnGestureListener.SwipeDirection.UP) {
+                    verticalPosition = 0;
+                } else if (OnGestureListener.getLastDirection() == OnGestureListener.SwipeDirection.DOWN) {
+                    verticalPosition = 10000000;
+                } else {
+                    if ((int) requestId > BookService.getBookService().getCurrentChapterNumber()) {
+                        verticalPosition = 0;
+                    } else if ((int) requestId < BookService.getBookService().getCurrentChapterNumber()) {
+                        verticalPosition = 10000000;
+                    } else {
+                        verticalPosition = BookService.getBookService().getCurrentChapterPosition();
+                    }
+                }
+                scrollTo(0, verticalPosition);
+            }
+        });
     }
 
     private WebResourceResponse onRequest(@NonNull Uri uri) {
@@ -208,21 +226,18 @@ public final class WebView extends android.webkit.WebView {
         String selectionScript = new BufferedReader(new InputStreamReader(this.getResources().openRawResource(R.raw.selection)))
                 .lines().collect(Collectors.joining());
         javaScriptInteractor.setupScript(selectionScript);
-        String javascript;
-        try {
-            javascript = "var images = document.getElementsByTagName('img'); " +
-                    "for (var i = 0; i < images.length; i++) {" +
-                    "  var img = images[i];" +
-                    String.format("  var targetWidth = Math.round(%s * img.width);", (float) BookService.getBookService().getTextSize() / 200) +
-                    "  targetWidth = targetWidth < 80 ? 80 : targetWidth;" +
-                    "  console.log('targetWidth = ' + targetWidth);" +
-                    "  img.width = targetWidth;" +
-                    "}";
-            loadUrl("javascript:" + javascript);
-        } catch (BookServiceException e) {
-            throw new RuntimeException(e);
-        }
-        scrollTo(0, verticalPosition);
+//        try {
+////var anchors = document.getElementsByTagName("a");
+////for (var i = 0; i < anchors.length; i++) {
+////    anchors[i].onclick = function() {return false;};
+////};
+////console.log("refs disabled");
+//            String onLoadScript = new BufferedReader(new InputStreamReader(this.getResources().openRawResource(R.raw.onload)))
+//                    .lines().collect(Collectors.joining()).replace("placeHolder", String.valueOf((float) BookService.getBookService().getTextSize() / 200));
+//            loadUrl("javascript:" + onLoadScript);
+//        } catch (BookServiceException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public final class ContentViewerWebViewScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

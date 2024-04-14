@@ -1,4 +1,4 @@
-package com.yk.bookviewer.ui.home;
+package com.yk.common.context;
 
 import android.content.Context;
 import android.view.Surface;
@@ -13,10 +13,10 @@ import java.util.Objects;
  * Extension of GridLayoutManager.
  * It sets layout span based on rotation state
  */
-class BookFragmentGridLayoutManager extends GridLayoutManager {
+public class BookFragmentGridLayoutManager extends GridLayoutManager {
     private final Context context;
 
-    BookFragmentGridLayoutManager(Context context) {
+    public BookFragmentGridLayoutManager(Context context) {
         super(context, 2, LinearLayoutManager.VERTICAL, false);
         this.context = context;
     }

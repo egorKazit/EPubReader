@@ -20,6 +20,8 @@ public final class ParentMethodCaller {
      * @param <T>           type of parent class
      */
     public static <T> void callConsumerOnParent(View view, Class<T> parentClass, BiConsumer<T, Object> consumer, Object consumerValue) {
+        if (view == null)
+            return;
         ViewParent parentView = view.getParent();
         do {
             if (parentView == null) {

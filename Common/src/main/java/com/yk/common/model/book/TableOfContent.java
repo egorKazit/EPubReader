@@ -50,19 +50,20 @@ public final class TableOfContent {
                                        TableOfContent tableOfContent) {
         if (navigationControl.getNavigationMap() == null) return;
         var navigationPoints = navigationControl.getNavigationMap().getNavigationPoints();
-        tableOfContent.chapterTree.addAll(mapNavigationToChapters(navigationPoints, tableOfContent));
+        tableOfContent.chapterTree.addAll(mapNavigationToChapters(navigationPoints, tableOfContent, 0));
     }
 
     private static List<Chapter> mapNavigationToChapters(List<NavigationControl.NavigationPoint> navigationPoints,
-                                                         TableOfContent tableOfContent) {
+                                                         TableOfContent tableOfContent, int deepness) {
 
         AtomicInteger index = new AtomicInteger();
         return navigationPoints.stream().map(navigationPoint -> {
             var chapterBuilder = Chapter.builder()
                     .chapterId(navigationPoint.getId() != null ? navigationPoint.getId() : "local_test_chapter" + index.getAndIncrement())
-                    .chapterName(String.join(" ", navigationPoint.getText())).chapterRef(navigationPoint.getContent().split("#")[0]);
+                    .chapterName(String.join(" ", navigationPoint.getText())).chapterRef(navigationPoint.getContent().split("#")[0])
+                    .deepness(deepness);
             if (navigationPoint.getNavigationPoints() != null && !navigationPoint.getNavigationPoints().isEmpty()) {
-                chapterBuilder.subChapters(new LinkedList<>(mapNavigationToChapters(navigationPoint.getNavigationPoints(), tableOfContent)));
+                chapterBuilder.subChapters(new LinkedList<>(mapNavigationToChapters(navigationPoint.getNavigationPoints(), tableOfContent, deepness + 1)));
             } else {
                 chapterBuilder.subChapters(new LinkedList<>());
             }
@@ -85,6 +86,7 @@ public final class TableOfContent {
         private final String chapterName;
         private final String chapterRef;
         private final int spineRefId;
+        private final int deepness;
         private final LinkedList<Chapter> subChapters;
 
     }

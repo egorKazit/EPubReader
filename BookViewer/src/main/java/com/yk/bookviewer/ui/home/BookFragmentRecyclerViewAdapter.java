@@ -17,10 +17,10 @@ import com.yk.common.service.book.BookPool;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
+import com.yk.common.service.cache.CacheService;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
-import kotlin.io.ByteStreamsKt;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -38,7 +38,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_book_item, parent, false);
+                .inflate(com.yk.common.R.layout.fragment_book_item, parent, false);
         return new BookViewHolder(view);
     }
 
@@ -52,10 +52,10 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
         if (book.getCover() != null) {
             try {
                 Glide.with(holder.itemView.getContext())
-                        .load(ByteStreamsKt.readBytes(BookService
-                                .getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
-                        .placeholder(R.mipmap.ic_default_book_cover_foreground)
-                        .error(R.mipmap.ic_default_book_cover_foreground)
+                        .load(CacheService.Instance.INSTANCE.cacheService.loadBitmapBytes(book.getRootPath() + book.getFilePath(),
+                                BookService.getResourceAsStreamForSingleFile(book.getFilePath(), book.getRootPath(), book.getCover())))
+                        .placeholder(com.yk.common.R.mipmap.ic_default_book_cover_foreground)
+                        .error(com.yk.common.R.mipmap.ic_default_book_cover_foreground)
                         .fitCenter()
                         .override(1000, 1000)
                         .into(holder.bookImage);
@@ -64,7 +64,7 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
                         book.getTitle()), bookServiceException);
             }
         } else
-            holder.bookImage.setImageResource(R.mipmap.ic_default_book_cover_foreground);
+            holder.bookImage.setImageResource(com.yk.common.R.mipmap.ic_default_book_cover_foreground);
 
     }
 
@@ -84,10 +84,10 @@ class BookFragmentRecyclerViewAdapter extends RecyclerView.Adapter<BookFragmentR
 
         public BookViewHolder(@NonNull View itemView) {
             super(itemView);
-            bookImage = itemView.findViewById(R.id.bookImage);
+            bookImage = itemView.findViewById(com.yk.common.R.id.bookImage);
             bookImage.setOnClickListener(v -> openBook());
             bookImage.setOnLongClickListener(new BookFragmentOnLongClickListener(bookImage.getContext(), this::openBook, this::deleteBook));
-            bookName = itemView.findViewById(R.id.bookName);
+            bookName = itemView.findViewById(com.yk.common.R.id.bookName);
             bookName.setOnClickListener(v -> openBook());
         }
 

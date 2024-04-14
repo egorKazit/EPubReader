@@ -3,7 +3,6 @@ package com.yk.contentviewer;
 import static com.yk.contentviewer.maincontent.LanguageOptionMenu.prepareLanguageOptionMenu;
 
 import android.content.Intent;
-import android.gesture.GestureOverlayView;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -21,8 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.yk.common.context.ActivityResultLauncherWrapper;
 import com.yk.common.context.ZoomOutPageTransformer;
@@ -33,6 +28,7 @@ import com.yk.common.service.dictionary.DictionaryService;
 import com.yk.common.service.dictionary.LanguageService;
 import com.yk.common.utils.PreferenceHelper;
 import com.yk.common.utils.Toaster;
+import com.yk.contentviewer.databinding.ActivityContentViewerBinding;
 import com.yk.contentviewer.maincontent.ItemSelector;
 import com.yk.contentviewer.maincontent.OnGestureListener;
 import com.yk.contentviewer.maincontent.OnPageChangeCallback;
@@ -58,6 +54,7 @@ import java.util.TimerTask;
 
 public final class ContentViewer extends AppCompatActivity {
 
+    private ActivityContentViewerBinding binding;
     private ActivityResultLauncher<Intent> intentActivityResultLauncher;
     private ItemSelector itemSelector;
     private final Map<Integer, Timer> timers = new HashMap<>();
@@ -69,67 +66,64 @@ public final class ContentViewer extends AppCompatActivity {
         DictionaryService.getInstance().init();
         LanguageService.getInstance().init(this);
         supportRequestWindowFeature(Window.FEATURE_ACTION_BAR);
-        setContentView(R.layout.activity_content_viewer);
+
+        binding = ActivityContentViewerBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        ViewPager2 contentViewPager = findViewById(R.id.contentViewerChapterPager);
-        contentViewPager.setUserInputEnabled(false);
+        binding.contentViewerChapterPager.setUserInputEnabled(false);
         // create and set adapter
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), getLifecycle());
-        contentViewPager.setAdapter(pagerAdapter);
+        binding.contentViewerChapterPager.setAdapter(pagerAdapter);
         // set zoom change animation
-        contentViewPager.setPageTransformer(new ZoomOutPageTransformer());
+        binding.contentViewerChapterPager.setPageTransformer(new ZoomOutPageTransformer());
         // move to the end of chapter if it goes to previous page
         try {
-            contentViewPager.registerOnPageChangeCallback(new OnPageChangeCallback(this::findViewById, R.id.contentViewerItemContentItem));
+            binding.contentViewerChapterPager.registerOnPageChangeCallback(new OnPageChangeCallback(this.findViewById(R.id.contentViewerItemContentItem)));
         } catch (BookServiceException e) {
             throw new RuntimeException(e);
         }
         try {
             // set current chapter
-            contentViewPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
+            binding.contentViewerChapterPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
         } catch (BookServiceException serviceException) {
             Toaster.make(getApplicationContext(), R.string.error_on_book_loading, serviceException);
         }
 
-        GestureOverlayView touchOverlay = findViewById(R.id.touchOverlay);
-        touchOverlay.addOnGestureListener(new OnGestureListener(contentViewPager));
+        binding.touchOverlay.addOnGestureListener(new OnGestureListener(binding.contentViewerChapterPager));
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            findViewById(R.id.contentViewerBackground).setVisibility(View.GONE);
+            binding.contentViewerBackground.setVisibility(View.GONE);
         }
 
-        RecyclerView recyclerViewFont = findViewById(R.id.contentViewerFont);
-        recyclerViewFont.setLayoutManager(new GridLayoutManager(this, 3));
+        binding.contentViewerFont.setLayoutManager(new GridLayoutManager(this, 3));
         WebViewFontRecyclerAdapter webViewFontRecyclerAdapter =
                 new WebViewFontRecyclerAdapter()
-                        .setRunnableBeforeAction(() -> cancelTimerForShownElement(R.id.contentViewerFontHolder))
-                        .setRunnableAfterAction(() -> startTimerForShownElement(R.id.contentViewerFontHolder));
-        recyclerViewFont.setAdapter(webViewFontRecyclerAdapter);
-        findViewById(R.id.contentViewerFontLeft).setOnClickListener(v -> {
-            cancelTimerForShownElement(R.id.contentViewerFontHolder);
+                        .setRunnableBeforeAction(() -> cancelTimerForShownElement(binding.contentViewerFontHolder))
+                        .setRunnableAfterAction(() -> startTimerForShownElement(binding.contentViewerFontHolder));
+        binding.contentViewerFont.setAdapter(webViewFontRecyclerAdapter);
+        binding.contentViewerFontLeft.setOnClickListener(v -> {
+            cancelTimerForShownElement(binding.contentViewerFontHolder);
             webViewFontRecyclerAdapter.left();
-            startTimerForShownElement(R.id.contentViewerFontHolder);
+            startTimerForShownElement(binding.contentViewerFontHolder);
         });
-        findViewById(R.id.contentViewerFontRight).setOnClickListener(v -> {
-            cancelTimerForShownElement(R.id.contentViewerFontHolder);
+        binding.contentViewerFontRight.setOnClickListener(v -> {
+            cancelTimerForShownElement(binding.contentViewerFontHolder);
             webViewFontRecyclerAdapter.right();
-            startTimerForShownElement(R.id.contentViewerFontHolder);
+            startTimerForShownElement(binding.contentViewerFontHolder);
         });
 
         // handle table of content load on click
-        findViewById(R.id.contentViewerTableOfContent).setOnClickListener(v -> {
+        binding.contentViewerTableOfContent.setOnClickListener(v -> {
             Intent intent = new Intent(this, TableOfContentViewer.class);
             intentActivityResultLauncher.launch(intent);
         });
 
         // handle on speech click
-        ImageView speechImage = findViewById(R.id.contentViewerSoundPlay);
-        speechImage.setOnClickListener(new OnSpeechClickListener(this));
+        binding.contentViewerSoundPlay.setOnClickListener(new OnSpeechClickListener(this));
 
         // handle on speech click
-        TextView textView = findViewById(R.id.contentViewerTranslatedWord);
-        textView.setOnClickListener(new OnTranslationClickListener(this));
+        binding.contentViewerTranslatedWord.setOnClickListener(new OnTranslationClickListener(this));
 
         // register activity result
         intentActivityResultLauncher =
@@ -138,7 +132,7 @@ public final class ContentViewer extends AppCompatActivity {
                                 new ActivityResultContracts.StartActivityForResult(),
                                 intent -> {
                                     try {
-                                        contentViewPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
+                                        binding.contentViewerChapterPager.setCurrentItem(BookService.getBookService().getCurrentChapterNumber());
                                     } catch (BookServiceException bookServiceException) {
                                         Toaster.make(getApplicationContext(), R.string.error_on_loading, bookServiceException);
                                     }
@@ -146,7 +140,7 @@ public final class ContentViewer extends AppCompatActivity {
                                 intent -> {
                                 });
 
-        itemSelector = new ItemSelector(this);
+        itemSelector = new ItemSelector(this, binding);
 
     }
 
@@ -191,9 +185,9 @@ public final class ContentViewer extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean returnValue = super.onPrepareOptionsMenu(menu);
-        prepareLanguageOptionMenu(menu, findViewById(R.id.contentViewerHeader),
-                List.of(findViewById(R.id.contentViewerTranslatedWord), findViewById(R.id.contentViewerSoundPlay)),
-                List.of(findViewById(R.id.contentViewerTableOfContent)));
+        prepareLanguageOptionMenu(menu, binding.contentViewerHeader,
+                List.of(binding.contentViewerTranslatedWord, binding.contentViewerSoundPlay),
+                List.of(binding.contentViewerTableOfContent));
         return returnValue;
     }
 
@@ -210,14 +204,15 @@ public final class ContentViewer extends AppCompatActivity {
             return true;
         } else if (itemId == R.id.callSizer) {
             try {
-                itemSelector.onSizerCall(() -> startTimerForShownElement(R.id.contentViewerItemSize), () -> cancelTimerForShownElement(R.id.contentViewerItemSize));
+                itemSelector.onSizerCall(() -> startTimerForShownElement(binding.contentViewerItemSize),
+                        () -> cancelTimerForShownElement(binding.contentViewerItemSize));
             } catch (BookServiceException e) {
                 Toaster.make(getApplicationContext(), R.string.error_on_loading, e);
             }
             return true;
         } else if (itemId == R.id.textFont) {
-            findViewById(R.id.contentViewerFontHolder).setVisibility(View.VISIBLE);
-            startTimerForShownElement(R.id.contentViewerFontHolder);
+            binding.contentViewerFontHolder.setVisibility(View.VISIBLE);
+            startTimerForShownElement(binding.contentViewerFontHolder);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -226,9 +221,9 @@ public final class ContentViewer extends AppCompatActivity {
     /**
      * Method to show progress bar for time that is defined in timer
      */
-    private void startTimerForShownElement(int contentId) {
-        timers.put(contentId, new Timer());
-        Timer timer = timers.get(contentId);
+    private void startTimerForShownElement(View view) {
+        timers.put(view.getId(), new Timer());
+        Timer timer = timers.get(view.getId());
         if (timer == null)
             return;
         timer.schedule(new TimerTask() {
@@ -236,7 +231,7 @@ public final class ContentViewer extends AppCompatActivity {
             public void run() {
                 runOnUiThread(() -> {
                     // hide progress bar
-                    findViewById(contentId).setVisibility(View.GONE);
+                    view.setVisibility(View.GONE);
                     try {
                         BookServiceHelper.updatePersistenceBook(BookService.getBookService());
                     } catch (BookServiceException bookServiceException) {
@@ -250,9 +245,9 @@ public final class ContentViewer extends AppCompatActivity {
     /**
      * Method to cancel timer
      */
-    private void cancelTimerForShownElement(int contentId) {
-        Objects.requireNonNull(timers.get(contentId)).cancel();
-        Objects.requireNonNull(timers.get(contentId)).purge();
+    private void cancelTimerForShownElement(View view) {
+        Objects.requireNonNull(timers.get(view.getId())).cancel();
+        Objects.requireNonNull(timers.get(view.getId())).purge();
     }
 
     @Override

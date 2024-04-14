@@ -18,8 +18,10 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yk.bookviewer.R;
 import com.yk.bookviewer.databinding.FragmentBookBinding;
+import com.yk.bookviewer.utils.ButtonHider;
 import com.yk.common.constants.GlobalConstants;
 import com.yk.common.context.ActivityResultLauncherWrapper;
+import com.yk.common.context.BookFragmentGridLayoutManager;
 import com.yk.common.context.FloatingActionButtonOnScrollListener;
 import com.yk.common.model.book.Book;
 import com.yk.common.service.book.BookPool;
@@ -29,6 +31,7 @@ import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.ContentViewer;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -91,10 +94,17 @@ public final class BookFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        var floatingActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
-        binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(floatingActionButton));
-        floatingActionButton.setOnClickListener(new BookFragmentOnClickListener(intentActivityResultLauncher::launch));
-        floatingActionButton.setImageResource(R.drawable.ic_add_book_foreground);
+        var localLibraryActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.libraryLocal);
+        localLibraryActionButton.setOnClickListener(new BookFragmentOnFileExplorerClickListener(intentActivityResultLauncher::launch));
+        var remoteLibraryActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.libraryRemote);
+        remoteLibraryActionButton.setOnClickListener(new BookFragmentOnRemoteExplorerClickListener(intentActivityResultLauncher::launch));
+        var libraryActionButton = (FloatingActionButton) requireView().getRootView().findViewById(R.id.library);
+        libraryActionButton.setOnClickListener(v -> {
+            ButtonHider.showOrHideButtons(this);
+        });
+        binding.bookList.addOnScrollListener(new FloatingActionButtonOnScrollListener(List.of(libraryActionButton),
+                List.of(localLibraryActionButton, remoteLibraryActionButton)));
+
     }
 
     @SuppressLint("NotifyDataSetChanged")

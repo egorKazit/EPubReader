@@ -59,8 +59,17 @@ public final class WebViewClient extends android.webkit.WebViewClient {
         webView.setScripts();
     }
 
-    @Override
-    public void onPageCommitVisible(android.webkit.WebView view, String url) {
-        super.onPageCommitVisible(view, url);
-    }
+//    @SneakyThrows
+//    @Override
+//    public void onPageCommitVisible(android.webkit.WebView view, String url) {
+//        super.onPageCommitVisible(view, url);
+////        if (webView != null) {
+////            int height = 0;
+////            if (webView.getChapterNumber() < BookService.getBookService().getCurrentChapterNumber())
+////                height = 1000000000;
+////            webView.scrollTo(0, height);
+////            BookService.getBookService().setCurrentChapterPosition(height);
+////            webView.setTextSize(BookService.getBookService().getTextSize());
+////        }
+//    }
 }

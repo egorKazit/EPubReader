@@ -24,7 +24,8 @@
         android:roundIcon="@mipmap/ic_launcher_main_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EPubReader"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:replace="android:icon,android:roundIcon">
         <activity
             android:name=".BookViewer"
             android:exported="true">
@@ -35,6 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.yk.fileexplorer.FileExplorer" />
+        <activity android:name="com.yk.remoteexplorer.RemoteExplorer" />
         <activity
             android:name="com.yk.contentviewer.ContentViewer"
             android:screenOrientation="nosensor"

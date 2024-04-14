@@ -7,8 +7,6 @@ import com.yk.common.service.book.BookServiceException;
 import com.yk.common.service.book.BookServiceHelper;
 import com.yk.common.utils.ParentMethodCaller;
 
-import java.util.function.Function;
-
 /**
  * Class to react on page loading
  */
@@ -20,19 +18,16 @@ public final class OnPageChangeCallback extends ViewPager2.OnPageChangeCallback 
     private boolean checkDirection;
     private boolean isScrollingUp = false;
 
-    private final Function<Integer, WebView> retriever;
-    private final int viewId;
+    private final WebView webView;
     private final BookService bookService;
 
     /**
      * Main constructor
      *
-     * @param retriever retriever function
-     * @param viewId    view
+     * @param webView web view
      */
-    public OnPageChangeCallback(Function<Integer, WebView> retriever, int viewId) throws BookServiceException {
-        this.retriever = retriever;
-        this.viewId = viewId;
+    public OnPageChangeCallback(WebView webView) throws BookServiceException {
+        this.webView = webView;
         this.bookService = BookService.getBookService();
     }
 
@@ -57,7 +52,6 @@ public final class OnPageChangeCallback extends ViewPager2.OnPageChangeCallback 
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
-        WebView webView = retriever.apply(this.viewId);
         if (isScrollingUp && position > bookService.getCurrentChapterNumber()) {
             ParentMethodCaller.callConsumerOnParent(webView, ViewPager2.class,
                     (viewPager2, o) -> {
@@ -76,14 +70,15 @@ public final class OnPageChangeCallback extends ViewPager2.OnPageChangeCallback 
                     }, bookService.getCurrentChapterNumber());
             return;
         }
-        if (webView != null) {
-            int height = 0;
-            if (position < bookService.getCurrentChapterNumber())
-                height = 1000000000;
-            webView.scrollTo(0, height);
-            bookService.setCurrentChapterPosition(height);
-            webView.setTextSize(bookService.getTextSize());
-        }
+//        if (webView != null) {
+//            int height = 0;
+//            if (position < bookService.getCurrentChapterNumber())
+////                height = 1000000000;
+//                height = webView.getContentHeight();
+//            webView.scrollTo(0, height);
+//            bookService.setCurrentChapterPosition(height);
+//            webView.setTextSize(bookService.getTextSize());
+//        }
         bookService.setCurrentChapterNumber(position);
         BookServiceHelper.updatePersistenceBook(bookService);
     }

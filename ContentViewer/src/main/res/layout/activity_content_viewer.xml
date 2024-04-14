@@ -1,181 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contentViewerHolder"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/contentViewerBackground"
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/contentViewerHolder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/content_background"
-        android:scaleType="centerCrop" />
+        android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/contentViewerBookContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/contentViewerContent"
+        <ImageView
+            android:id="@+id/contentViewerBackground"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/contentViewerTranslatedContext"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/context_to_translate"
-                android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/contentViewerHeader"
-                app:layout_constraintTop_toBottomOf="@+id/contentViewerHeader" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/contentViewerHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/contentViewerSoundPlay"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:contentDescription="@string/play"
-                    android:focusable="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/contentViewerTranslatedWord"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_speech_play_foreground" />
-
-                <ProgressBar
-                    android:id="@+id/contentViewerTranslationProgressBar"
-                    style="?android:attr/progressBarStyleSmall"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:indeterminateTint="#FF03DAC5"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
-                    app:layout_constraintHorizontal_weight="8"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/contentViewerTranslatedWord"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:padding="5dp"
-                    android:scrollHorizontally="true"
-                    android:singleLine="true"
-                    android:text="@string/string_to_translate"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
-                    app:layout_constraintHorizontal_weight="8"
-                    app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/contentViewerTableOfContent"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:contentDescription="@string/table_of_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@id/contentViewerTranslatedWord"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_table_of_content_foreground" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <android.gesture.GestureOverlayView
-            android:id="@+id/touchOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:nestedScrollingEnabled="false"
-            android:gestureColor="@android:color/transparent">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/contentViewerChapterPager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:nestedScrollingEnabled="false"
-                android:orientation="vertical" />
-        </android.gesture.GestureOverlayView>
-
-        <TextView
-            android:id="@+id/contentViewerPosition"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="3dp"
-            android:textSize="10sp"
-            android:visibility="visible"
-            tools:ignore="SmallSp" />
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/content_background"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
-            android:id="@+id/contentViewerFontHolder"
+            android:id="@+id/contentViewerBookContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="fill"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/contentViewerFontLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contentViewerContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/contentViewerTranslatedContext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="@string/context_to_translate"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/contentViewerHeader"
+                    app:layout_constraintTop_toBottomOf="@+id/contentViewerHeader" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/contentViewerHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/contentViewerSoundPlay"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:contentDescription="@string/play"
+                        android:focusable="false"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/contentViewerTranslatedWord"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_speech_play_foreground" />
+
+                    <ProgressBar
+                        android:id="@+id/contentViewerTranslationProgressBar"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:indeterminateTint="#FF03DAC5"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
+                        app:layout_constraintHorizontal_weight="8"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/contentViewerTranslatedWord"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:padding="5dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/string_to_translate"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/contentViewerTableOfContent"
+                        app:layout_constraintHorizontal_weight="8"
+                        app:layout_constraintStart_toEndOf="@id/contentViewerSoundPlay"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/contentViewerTableOfContent"
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:contentDescription="@string/table_of_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/contentViewerTranslatedWord"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_table_of_content_foreground" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <android.gesture.GestureOverlayView
+                android:id="@+id/touchOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:contentDescription="@string/font_left_arrow"
-                android:src="@drawable/ic_arrow_left_foreground" />
+                android:gestureColor="@android:color/transparent"
+                android:nestedScrollingEnabled="false">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/contentViewerFont"
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/contentViewerChapterPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical" />
+            </android.gesture.GestureOverlayView>
+
+            <TextView
+                android:id="@+id/contentViewerPosition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:foregroundGravity="center_vertical"
-                android:orientation="horizontal" />
+                android:gravity="center"
+                android:padding="3dp"
+                android:textSize="10sp"
+                android:visibility="visible"
+                tools:ignore="SmallSp" />
 
-            <ImageView
-                android:id="@+id/contentViewerFontRight"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:contentDescription="@string/font_right_arrow"
-                android:src="@drawable/ic_arrow_right_foreground" />
+            <LinearLayout
+                android:id="@+id/contentViewerFontHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/contentViewerFontLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/font_left_arrow"
+                    android:src="@drawable/ic_arrow_left_foreground" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/contentViewerFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:foregroundGravity="center_vertical"
+                    android:orientation="horizontal" />
+
+                <ImageView
+                    android:id="@+id/contentViewerFontRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/font_right_arrow"
+                    android:src="@drawable/ic_arrow_right_foreground" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/contentViewerItemSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="500"
+                android:min="150"
+                android:padding="5dp"
+                android:progress="100"
+                android:visibility="gone" />
 
         </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/contentViewerItemSize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="500"
-            android:min="150"
-            android:padding="5dp"
-            android:progress="100"
-            android:visibility="gone" />
-
-    </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

@@ -1,6 +1,7 @@
 package com.yk.contentviewer.maincontent;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,6 +15,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.yk.common.service.book.BookService;
 import com.yk.common.service.book.BookServiceException;
 import com.yk.contentviewer.R;
+import com.yk.contentviewer.databinding.ActivityContentViewerImageDialogBinding;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,14 +35,14 @@ public final class ImageDialog {
     private static double INITIAL_WIDTH;
 
     @SuppressLint("ClickableViewAccessibility")
-    static void openImageDialog(Context context, String imageUrl) throws URISyntaxException, BookServiceException, IOException {
+    static void openImageDialog(Activity context, String imageUrl) throws URISyntaxException, BookServiceException, IOException {
         URI url = new URI(imageUrl);
         Dialog dialog = new Dialog(context);
-        dialog.setContentView(R.layout.activity_content_viewer_image_dialog);
+        ActivityContentViewerImageDialogBinding binding = ActivityContentViewerImageDialogBinding.inflate(context.getLayoutInflater());
+        dialog.setContentView(binding.getRoot());
         Bitmap imageBitmap = BitmapFactory.decodeStream(BookService.getBookService().getResourceAsStream(url.getPath().substring(1)));
         float aspectRation = (float) imageBitmap.getWidth() / imageBitmap.getHeight();
-        PhotoView imageView = dialog.findViewById(R.id.contentViewerZoomedImage);
-        imageView.setImageBitmap(imageBitmap);
+        binding.contentViewerZoomedImage.setImageBitmap(imageBitmap);
         var displayMetrics = Resources.getSystem().getDisplayMetrics();
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
@@ -51,7 +53,7 @@ public final class ImageDialog {
             INITIAL_HEIGHT = height * .9;
             INITIAL_WIDTH = height * aspectRation * .9;
         }
-        setSize(imageView);
+        setSize(binding.contentViewerZoomedImage);
         dialog.show();
     }
 

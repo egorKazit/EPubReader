@@ -37,7 +37,7 @@ public final class BookService {
     static final String META_CONTENT = "META-INF/container.xml";
     public static final String LAST_BOOK_TXT = "lastBook.txt";
     public static final String NCX = ".ncx";
-    public static final  String SERVICE_TAG = "BookService";
+    public static final String SERVICE_TAG = "BookService";
 
 
     private static BookService bookService = null;
@@ -180,6 +180,13 @@ public final class BookService {
 
     public void setCurrentChapterNumber(int currentChapter) {
         book.setCurrentChapterNumber(currentChapter);
+    }
+
+    public int getRootChapterPosition() throws BookServiceException {
+        var currentChapter = getCurrentChapterNumber();
+        var chapterPosition = (int) getTableOfContent().getChapterTree().stream()
+                .filter(chapter -> chapter.getDeepness() == 0 && chapter.getSpineRefId() <= currentChapter).count();
+        return chapterPosition > 0 ? chapterPosition - 1 : 0;
     }
 
     public int getChapterByHRef(String href) throws BookServiceException {

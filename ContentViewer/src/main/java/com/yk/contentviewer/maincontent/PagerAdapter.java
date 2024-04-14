@@ -1,7 +1,6 @@
 package com.yk.contentviewer.maincontent;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,8 @@ import com.yk.common.utils.Toaster;
 import com.yk.contentviewer.R;
 
 import java.util.Objects;
+
+import lombok.SneakyThrows;
 
 /**
  * Class with implementation of page adapter
@@ -74,7 +75,7 @@ public final class PagerAdapter extends FragmentStateAdapter {
     public static class ContentFragment extends Fragment {
 
         private final int chapterNumber;
-        private  WebView webView;
+        private WebView webView;
 
         /**
          * Constructor without parameters.
@@ -102,10 +103,7 @@ public final class PagerAdapter extends FragmentStateAdapter {
             View rootView = inflater.inflate(R.layout.item_content_view, container, false);
             WebView webView = rootView.findViewById(R.id.contentViewerItemContentItem);
             try {
-                int chapterPosition =
-                        chapterNumber == BookService.getBookService().getCurrentChapterNumber() ?
-                                BookService.getBookService().getCurrentChapterPosition() : 0;
-                webView.uploadChapter(chapterNumber, chapterPosition);
+                webView.uploadChapter(chapterNumber, BookService.getBookService().getCurrentChapterPosition());
             } catch (BookServiceException e) {
                 Toaster.make(requireContext(), R.string.error_on_book_loading, e);
                 requireActivity().finish();
